@@ -23,7 +23,7 @@
 
 <!-- Install / Build -->
 
-[vot-dist]: https://raw.githubusercontent.com/ilyhalight/voice-over-translation/master/dist/vot.user.js
+[vot-dist]: https://raw.githubusercontent.com/xtalia/voice-over-translation/master/dist/vot.user.js
 [vot-releases]: https://github.com/ilyhalight/voice-over-translation/releases
 [nodejs-link]: https://nodejs.org
 [bun-link]: https://bun.sh/
@@ -72,6 +72,14 @@
 > Все права на оригинальное программное обеспечение принадлежат их правообладателям. Расширение не связано с оригинальными правообладателями.
 
 Большое спасибо разработчикам **[Yandex.Translate][yatranslate-link]**, **[Yandex.Browser][yabrowser-link]** и всем, [кто помогает делать расширение][contributors-link] еще лучше.
+
+## Этот форк и Contributors
+
+Добавлены пресеты и собственная надбавка громкости перевода относительно оригинала. [Установка и настройка → FORK.md](FORK.md).
+
+- **xtalia** — инициатор функции, требования и владелец форка.
+- **Hermes Agent (Nous Research), с использованием моделей OpenAI** — AI-помощник, которым написаны изменения, тесты и выполнены проверки. Код этой функции создан с помощью AI, а не написан владельцем форка вручную.
+- Авторы исходного VOT сохраняют авторство оригинального проекта.
 
 ## Установка расширения
 

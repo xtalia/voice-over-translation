@@ -61,6 +61,9 @@ export async function init(this: VideoHandler) {
     buttonPos: "default",
     showVideoSlider: true,
     syncVolume: false,
+    // [VOT-FORK:volume-offset] Preserve upstream behavior until explicitly selected.
+    volumeLinkMode: "delta",
+    translationVolumeOffset: 10,
     downloadWithName: isSupportGMXhr,
     sendNotifyOnComplete: false,
     subtitlesMaxLength: 300,

@@ -7,8 +7,8 @@
 // @name:ru        [VOT] - Закадровый перевод видео
 // @name:zh        [VOT] - 配音翻译
 // @namespace      vot
-// @version        1.11.17
-// @author         Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng
+// @version        1.11.17.1
+// @author         Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng; fork changes with Hermes Agent (AI)
 // @description    Watch videos in other languages with voice-over translation and subtitles in any browser
 // @description:de Sieh dir Videos in anderen Sprachen mit Voice-over-Übersetzung und Untertiteln in jedem Browser an
 // @description:es Ve videos en otros idiomas con voice-over y subtítulos en cualquier navegador
@@ -18,11 +18,11 @@
 // @description:zh 在任何浏览器中观看其他语言的视频，享受配音翻译和字幕
 // @license        MIT
 // @icon           https://translate.yandex.ru/icons/favicon.ico
-// @homepageURL    https://github.com/ilyhalight/voice-over-translation
-// @source         https://github.com/ilyhalight/voice-over-translation.git
-// @supportURL     https://github.com/ilyhalight/voice-over-translation/issues
-// @downloadURL    https://raw.githubusercontent.com/ilyhalight/voice-over-translation/master/dist/vot.user.js
-// @updateURL      https://raw.githubusercontent.com/ilyhalight/voice-over-translation/master/dist/vot.user.js
+// @homepageURL    https://github.com/xtalia/voice-over-translation
+// @source         https://github.com/xtalia/voice-over-translation.git
+// @supportURL     https://github.com/xtalia/voice-over-translation/issues
+// @downloadURL    https://raw.githubusercontent.com/xtalia/voice-over-translation/master/dist/vot.user.js
+// @updateURL      https://raw.githubusercontent.com/xtalia/voice-over-translation/master/dist/vot.user.js
 // @match          *://*.youtube.com/*
 // @match          *://*.youtube-nocookie.com/*
 // @match          *://*.youtubekids.com/*
@@ -7044,7 +7044,7 @@ var vot = (function(exports) {
 	var authServerUrl = "https://rust-server-531j.onrender.com";
 	var authLoginUrl = `${authServerUrl}/v1/auth/handle`;
 	var avatarServerUrl = "https://avatars.mds.yandex.net/get-yapic";
-	var repoPath = "ilyhalight/voice-over-translation";
+	var repoPath = "xtalia/voice-over-translation";
 	var contentUrl = `https://raw.githubusercontent.com/${repoPath}`;
 	var repositoryUrl = `https://github.com/${repoPath}`;
 	var defaultTranslationService = "yandexbrowser";
@@ -7073,6 +7073,8 @@ var vot = (function(exports) {
 		"buttonPos",
 		"showVideoSlider",
 		"syncVolume",
+		"volumeLinkMode",
+		"translationVolumeOffset",
 		"downloadWithName",
 		"sendNotifyOnComplete",
 		"subtitlesMaxLength",
@@ -10136,6 +10138,13 @@ var vot = (function(exports) {
 		VOTAutoSetVolume: "Reduce video volume to",
 		VOTShowVideoSlider: "Video volume slider",
 		VOTSyncVolume: "Link translation and video volume",
+		VOTVolumeLinkMode: "Volume linking mode",
+		VOTVolumeLinkDelta: "Classic: equal volume changes",
+		VOTVolumeLinkOffset: "Original + fixed offset",
+		VOTVolumeOffsetPreset: "Offset preset (percentage points)",
+		VOTVolumeOffsetCustom: "Custom value",
+		VOTVolumeOffset: "Translation louder by (percentage points, 0–100)",
+		VOTVolumeOffsetHelp: "At +10: original 10% → translation 20%. Capped at 100%. Muting or setting original volume to zero also silences translation. The original player controls volume.",
 		VOTDisableFromYourLang: "You have disabled the translation of the video in your language",
 		VOTVideoIsTooLong: "Video is too long",
 		VOTNoVideoIDFound: "No video ID found",
@@ -10512,7 +10521,7 @@ var vot = (function(exports) {
 		return buildVersion || scriptVersion || "unknown";
 	}
 	function getRuntimeLocaleVersion() {
-		return resolveRuntimeLocaleVersion(String("1.11.17"), typeof GM_info === "undefined" ? "" : String(GM_info?.script?.version || ""));
+		return resolveRuntimeLocaleVersion(String("1.11.17.1"), typeof GM_info === "undefined" ? "" : String(GM_info?.script?.version || ""));
 	}
 	var LocalizationProvider = class {
 		/**
@@ -36879,6 +36888,7 @@ var vot = (function(exports) {
 		_selectTitle;
 		_dialogTitle;
 		multiSelect;
+		searchable;
 		baseItems;
 		_items;
 		searchItemsProvider;
@@ -36890,7 +36900,7 @@ var vot = (function(exports) {
 		contentItemIndexDatasetKey = "votIndex";
 		selectedItems = [];
 		selectedValues;
-		constructor({ selectTitle, dialogTitle, items, searchItemsProvider, labelElement, dialogParent = document.documentElement, multiSelect }) {
+		constructor({ selectTitle, dialogTitle, items, searchItemsProvider, labelElement, dialogParent = document.documentElement, multiSelect, searchable = true }) {
 			super(["selectItem", "beforeOpen"]);
 			this._selectTitle = selectTitle;
 			this._dialogTitle = dialogTitle;
@@ -36898,6 +36908,7 @@ var vot = (function(exports) {
 			this._items = this.cloneItems(items);
 			this.searchItemsProvider = searchItemsProvider;
 			this.multiSelect = multiSelect ?? false;
+			this.searchable = searchable;
 			this.labelElement = labelElement;
 			this.dialogParent = dialogParent;
 			this.selectedValues = this.calcSelectedValues();
@@ -37004,8 +37015,8 @@ var vot = (function(exports) {
 					this.dialogParent.appendChild(tempDialog.container);
 					this.isDialogOpen = true;
 					outer.setAttribute("aria-expanded", "true");
-					const votSearchLangTextfield = new Textfield({ labelHtml: localizationProvider.get("searchField") });
-					votSearchLangTextfield.addEventListener("input", async (searchText) => {
+					const votSearchLangTextfield = this.searchable ? new Textfield({ labelHtml: localizationProvider.get("searchField") }) : void 0;
+					votSearchLangTextfield?.addEventListener("input", async (searchText) => {
 						const requestId = ++this.searchRequestId;
 						if (this.searchItemsProvider) {
 							const providedItems = await this.searchItemsProvider(searchText);
@@ -37016,7 +37027,8 @@ var vot = (function(exports) {
 						for (const contentItem of this.selectedItems) contentItem.hidden = !(contentItem.dataset[this.contentItemSearchDatasetKey] ?? "").includes(normalizedSearchText);
 					});
 					this.contentList = this.createDialogContentList();
-					tempDialog.bodyContainer.append(votSearchLangTextfield.container, this.contentList);
+					if (votSearchLangTextfield) tempDialog.bodyContainer.append(votSearchLangTextfield.container);
+					tempDialog.bodyContainer.append(this.contentList);
 					tempDialog.addEventListener("close", () => {
 						this.isDialogOpen = false;
 						this.restoreBaseItems();
@@ -37090,10 +37102,11 @@ var vot = (function(exports) {
 			this.updateTitle();
 		}
 		get disabled() {
-			return this.outer.getAttribute("disabled") === "true" || this.outer.getAttribute("aria-disabled") === "true";
+			return this.outer.hasAttribute("disabled") || this.outer.getAttribute("aria-disabled") === "true";
 		}
 		set disabled(isDisabled) {
 			this.outer.toggleAttribute("disabled", isDisabled);
+			this.outer.setAttribute("aria-disabled", String(isDisabled));
 		}
 	};
 	//#endregion
@@ -39130,6 +39143,7 @@ var vot = (function(exports) {
 		"change:showVideoVolume",
 		"change:audioBooster",
 		"change:syncVolume",
+		"change:volumeLinkSettings",
 		"change:subtitlesHighlightWords",
 		"change:subtitlesSmartLayout",
 		"select:responseLanguageSubtitles",
@@ -39152,6 +39166,17 @@ var vot = (function(exports) {
 		for (const key of SETTINGS_EVENT_KEYS) events[key] = new EventImpl();
 		return events;
 	}
+	var TRANSLATION_OFFSET_PRESETS = [
+		0,
+		5,
+		10,
+		15,
+		20,
+		30,
+		50,
+		75,
+		100
+	];
 	var GOOGLE_FONTS_SEARCH_LIMIT = 30;
 	var LANG_PREFIX = "langs.";
 	var [AUTO_SUBTITLE_LANGUAGE_VALUE$1, ORIGINAL_SUBTITLE_LANGUAGE_VALUE$1] = subtitleResponseLanguageModes;
@@ -39227,6 +39252,9 @@ var vot = (function(exports) {
 		audioBoosterCheckbox;
 		audioBoosterTooltip;
 		syncVolumeCheckbox;
+		volumeLinkModeSelect;
+		translationOffsetPresetSelect;
+		translationOffsetTextfield;
 		downloadWithNameCheckbox;
 		sendNotifyOnCompleteCheckbox;
 		useAudioDownloadCheckbox;
@@ -39462,7 +39490,7 @@ var vot = (function(exports) {
 			const envInfo = getEnvironmentInfo();
 			const safeGMInfo = typeof GM_info === "undefined" ? void 0 : GM_info;
 			const versionInfo = UI.createInformation(`${localizationProvider.get("VOTVersion")}:`, envInfo.scriptVersion === "unknown" ? safeGMInfo?.script?.version || localizationProvider.get("notFound") : envInfo.scriptVersion);
-			const buildAuthors = String("Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng");
+			const buildAuthors = String("Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng; fork changes with Hermes Agent (AI)");
 			const authorsInfo = UI.createInformation(`${localizationProvider.get("VOTAuthors")}:`, (safeGMInfo?.script)?.author || buildAuthors || localizationProvider.get("notFound"));
 			const loaderInfo = UI.createInformation(`${localizationProvider.get("VOTLoader")}:`, envInfo.loader);
 			const userBrowserInfo = UI.createInformation(`${localizationProvider.get("VOTBrowser")}:`, `${envInfo.browser} (${envInfo.os})`);
@@ -39477,6 +39505,19 @@ var vot = (function(exports) {
 				globalThis.location.reload();
 			});
 			aboutSection.content.append(versionInfo.container, authorsInfo.container, loaderInfo.container, userBrowserInfo.container, localeInfo.container, updateLocaleFilesButton);
+		}
+		updateVolumeLinkControls() {
+			const enabled = Boolean(this.data.syncVolume);
+			const offset = this.data.volumeLinkMode === "offset";
+			if (this.volumeLinkModeSelect) this.volumeLinkModeSelect.disabled = !enabled;
+			if (this.translationOffsetPresetSelect) {
+				this.translationOffsetPresetSelect.hidden = !offset;
+				this.translationOffsetPresetSelect.disabled = !enabled;
+			}
+			if (this.translationOffsetTextfield) {
+				this.translationOffsetTextfield.hidden = !offset;
+				this.translationOffsetTextfield.disabled = !enabled;
+			}
 		}
 		initUI() {
 			if (this.isInitialized()) throw new Error("[VOT] SettingsView is already initialized");
@@ -39553,6 +39594,53 @@ var vot = (function(exports) {
 				labelHtml: localizationProvider.get("VOTSyncVolume"),
 				checked: this.data.syncVolume
 			});
+			const linkMode = this.data.volumeLinkMode ?? "delta";
+			this.volumeLinkModeSelect = new Select({
+				selectTitle: localizationProvider.get("VOTVolumeLinkMode"),
+				dialogTitle: localizationProvider.get("VOTVolumeLinkMode"),
+				searchable: false,
+				labelElement: localizationProvider.get("VOTVolumeLinkMode"),
+				dialogParent: this.globalPortal,
+				items: [{
+					value: "delta",
+					label: localizationProvider.get("VOTVolumeLinkDelta"),
+					selected: linkMode === "delta"
+				}, {
+					value: "offset",
+					label: localizationProvider.get("VOTVolumeLinkOffset"),
+					selected: linkMode === "offset"
+				}]
+			});
+			const offsetValue = clampPercentInt(this.data.translationVolumeOffset ?? 10);
+			const offsetPreset = TRANSLATION_OFFSET_PRESETS.includes(offsetValue) ? String(offsetValue) : "custom";
+			this.translationOffsetPresetSelect = new Select({
+				selectTitle: localizationProvider.get("VOTVolumeOffsetPreset"),
+				dialogTitle: localizationProvider.get("VOTVolumeOffsetPreset"),
+				searchable: false,
+				labelElement: localizationProvider.get("VOTVolumeOffsetPreset"),
+				dialogParent: this.globalPortal,
+				items: [...TRANSLATION_OFFSET_PRESETS.map((value) => ({
+					value: String(value),
+					label: `+${value}`,
+					selected: String(value) === offsetPreset
+				})), {
+					value: "custom",
+					label: localizationProvider.get("VOTVolumeOffsetCustom"),
+					selected: offsetPreset === "custom"
+				}]
+			});
+			this.translationOffsetTextfield = new Textfield({
+				labelHtml: localizationProvider.get("VOTVolumeOffset"),
+				value: String(offsetValue)
+			});
+			const offsetInput = this.translationOffsetTextfield.input;
+			offsetInput.type = "number";
+			offsetInput.min = "0";
+			offsetInput.max = "100";
+			offsetInput.step = "1";
+			offsetInput.setAttribute("aria-label", localizationProvider.get("VOTVolumeOffset"));
+			offsetInput.title = localizationProvider.get("VOTVolumeOffsetHelp");
+			this.updateVolumeLinkControls();
 			this.downloadWithNameCheckbox = new Checkbox({
 				labelHtml: localizationProvider.get("VOTDownloadWithName"),
 				checked: this.data.downloadWithName
@@ -39579,7 +39667,7 @@ var vot = (function(exports) {
 				parentElement: this.globalPortal
 			});
 			accountSection.content.append(this.accountButton.container);
-			translationSection.content.append(this.autoTranslateCheckbox.container, this.autoSubtitlesCheckbox.container, this.dontTranslateLanguagesSelect.container, this.autoSetVolumeSlider.container, this.smartDuckingCheckbox.container, this.showVideoVolumeSliderCheckbox.container, this.audioBoosterCheckbox.container, this.syncVolumeCheckbox.container, this.downloadWithNameCheckbox.container, this.sendNotifyOnCompleteCheckbox.container, this.useAudioDownloadCheckbox.container);
+			translationSection.content.append(this.autoTranslateCheckbox.container, this.autoSubtitlesCheckbox.container, this.dontTranslateLanguagesSelect.container, this.autoSetVolumeSlider.container, this.smartDuckingCheckbox.container, this.showVideoVolumeSliderCheckbox.container, this.audioBoosterCheckbox.container, this.syncVolumeCheckbox.container, this.volumeLinkModeSelect.container, this.translationOffsetPresetSelect.container, this.translationOffsetTextfield.container, this.downloadWithNameCheckbox.container, this.sendNotifyOnCompleteCheckbox.container, this.useAudioDownloadCheckbox.container);
 			this.subtitlesDownloadFormatSelectLabel = new Label({ labelText: localizationProvider.get("VOTSubtitlesDownloadFormat") });
 			this.subtitlesDownloadFormatSelect = new Select({
 				selectTitle: this.data.subtitlesDownloadFormat ?? localizationProvider.get("VOTSubtitlesDownloadFormat"),
@@ -39975,6 +40063,7 @@ var vot = (function(exports) {
 				event: "change",
 				apply: (checked) => {
 					this.data.syncVolume = checked;
+					this.updateVolumeLinkControls();
 					this.autoSetVolumeSlider.disabled = !this.autoSetVolumeCheckbox?.checked;
 					this.smartDuckingCheckbox.disabled = checked || !this.autoSetVolumeCheckbox?.checked;
 					if (checked && this.smartDuckingCheckbox?.checked) this.smartDuckingCheckbox.checked = false;
@@ -39984,6 +40073,39 @@ var vot = (function(exports) {
 				logLabel: "syncVolume",
 				dispatch: (checked) => this.events["change:syncVolume"].dispatch(checked)
 			});
+			this.bindPersistedSetting({
+				control: this.volumeLinkModeSelect,
+				event: "selectItem",
+				apply: (value) => {
+					this.data.volumeLinkMode = value;
+					this.updateVolumeLinkControls();
+				},
+				storageKey: "volumeLinkMode",
+				readPersistedValue: () => this.data.volumeLinkMode,
+				logLabel: "volumeLinkMode",
+				dispatch: () => this.events["change:volumeLinkSettings"].dispatch()
+			});
+			const applyOffset = async (rawValue) => {
+				const number = rawValue.trim() === "" ? NaN : Number(rawValue);
+				if (!Number.isFinite(number)) {
+					this.translationOffsetTextfield.input.value = String(this.data.translationVolumeOffset ?? 10);
+					return;
+				}
+				const value = clampPercentInt(number);
+				this.data.translationVolumeOffset = value;
+				this.translationOffsetTextfield.input.value = String(value);
+				this.translationOffsetPresetSelect.setSelectedValue(TRANSLATION_OFFSET_PRESETS.includes(value) ? String(value) : "custom");
+				await votStorage.set("translationVolumeOffset", value);
+				this.events["change:volumeLinkSettings"].dispatch();
+			};
+			this.translationOffsetPresetSelect.addEventListener("selectItem", (value) => {
+				if (value === "custom") {
+					this.translationOffsetTextfield.input.focus();
+					return;
+				}
+				return applyOffset(value);
+			});
+			this.translationOffsetTextfield.addEventListener("change", applyOffset);
 			this.bindPersistedSetting({
 				control: this.downloadWithNameCheckbox,
 				event: "change",
@@ -40460,7 +40582,10 @@ var vot = (function(exports) {
 					this.videoHandler.syncTranslationPlaybackVolume();
 					if (!checked) return;
 					this.videoHandler.resetVolumeLinkState(Number(videoSlider.value), nextTranslation);
+					this.videoHandler.refreshVolumeLink();
 				});
+			}).addEventListener("change:volumeLinkSettings", () => {
+				this.videoHandler?.refreshVolumeLink();
 			}).addEventListener("change:subtitlesHighlightWords", (checked) => {
 				this.updateSubtitlesWidgetSetting(checked, this.data.highlightWords, (widget, value) => {
 					widget.setHighlightWords(value);
@@ -42044,10 +42169,11 @@ var vot = (function(exports) {
 		return Number.isFinite(numeric) ? clampPercentInt(numeric) : fallback;
 	}
 	function syncAudioTranslationVolumeFromVideo(self, videoPercent, options = {}) {
-		if (options.skipYouTubeLikeHosts && isYouTubeLikeHost(self.site.host)) return;
+		const fixedOffset = self.data?.volumeLinkMode === "offset";
+		if (!fixedOffset && options.skipYouTubeLikeHosts && isYouTubeLikeHost(self.site.host)) return;
 		if (self.smartVolumeDuckingInterval !== void 0) return;
 		if (!self.data?.syncVolume || !self.audioPlayer?.player?.src) return;
-		if (self.isLikelyInternalVideoVolumeChange(videoPercent)) return;
+		if (!fixedOffset && self.isLikelyInternalVideoVolumeChange(videoPercent)) return;
 		self.syncVolumeWrapper("video", videoPercent);
 	}
 	function applyOverlayLayout(self, overlayView, heightPx) {
@@ -42413,6 +42539,8 @@ var vot = (function(exports) {
 			buttonPos: "default",
 			showVideoSlider: true,
 			syncVolume: false,
+			volumeLinkMode: "delta",
+			translationVolumeOffset: 10,
 			downloadWithName: isSupportGMXhr,
 			sendNotifyOnComplete: false,
 			subtitlesMaxLength: 300,
@@ -43435,8 +43563,16 @@ var vot = (function(exports) {
 	* This preserves relative offset between sliders (until clamped by bounds),
 	* instead of forcing a 1:1 mirror.
 	*/
-	function applyVolumeLinkDelta({ state, fromType, newVolume, currentVideo, currentTranslation, translationMin, translationMax }) {
+	function applyVolumeLinkDelta({ state, fromType, newVolume, currentVideo, currentTranslation, translationMin, translationMax, offsetPercent }) {
 		const sharedTranslationRange = getSharedTranslationRange(translationMin, translationMax);
+		if (offsetPercent !== void 0) {
+			const video = clampPercentInt(fromType === "video" ? newVolume : currentVideo);
+			const nextTranslation = video === 0 ? 0 : clampInt(video + clampPercentInt(offsetPercent), sharedTranslationRange.min, sharedTranslationRange.max);
+			state.initialized = true;
+			state.lastVideoPercent = video;
+			state.lastTranslationPercent = nextTranslation;
+			return { nextTranslation };
+		}
 		if (!state.initialized) {
 			state.lastVideoPercent = clampPercentInt(currentVideo);
 			state.lastTranslationPercent = clampInt(Number(currentTranslation), sharedTranslationRange.min, sharedTranslationRange.max);
@@ -44066,6 +44202,16 @@ var vot = (function(exports) {
 			syncTranslationLinkSnapshot(this.volumeLinkState, translationPercent);
 			this.volumeLinkState.initialized = true;
 		}
+		/** Reapply the selected link mode immediately (startup and settings changes). */
+		refreshVolumeLink() {
+			const overlay = this.uiManager.votOverlayView;
+			if (!overlay?.isInitialized()) return;
+			const fixedOffset = Boolean(this.data?.syncVolume && this.data.volumeLinkMode === "offset");
+			overlay.translationVolumeSlider.disabled = fixedOffset;
+			if (!fixedOffset) return;
+			this.syncVideoVolumeSlider();
+			this.syncVolumeWrapper("video", Number(overlay.videoVolumeSlider.value));
+		}
 		clearVolumeLinkState() {
 			this.volumeLinkState.initialized = false;
 			this.volumeLinkState.lastVideoPercent = 0;
@@ -44104,15 +44250,17 @@ var vot = (function(exports) {
 			const result = applyVolumeLinkDelta({
 				state: this.volumeLinkState,
 				fromType,
-				newVolume,
-				currentVideo: Number(videoSlider.value),
+				newVolume: this.data?.volumeLinkMode === "offset" && this.isMuted() ? 0 : newVolume,
+				currentVideo: this.data?.volumeLinkMode === "offset" && this.isMuted() ? 0 : Number(videoSlider.value),
 				currentTranslation: Number(translationSlider.value),
 				translationMin: translationSlider.min,
-				translationMax: translationSlider.max
+				translationMax: translationSlider.max,
+				offsetPercent: this.data?.volumeLinkMode === "offset" ? this.data.translationVolumeOffset ?? 10 : void 0
 			});
 			const { nextVideo, nextTranslation } = result;
 			if (typeof nextTranslation === "number") {
 				translationSlider.value = nextTranslation;
+				this.syncTranslationPlaybackVolume();
 				return result;
 			}
 			if (typeof nextVideo === "number") {
@@ -44256,6 +44404,7 @@ var vot = (function(exports) {
 			}
 			debug.log("afterUpdateTranslation downloadTranslation", this.downloadTranslation);
 			this.syncTranslationPlaybackVolume();
+			this.refreshVolumeLink();
 			if (this.data?.sendNotifyOnComplete && this.hadAsyncWait && isSuccess) {
 				this.notifier.translationCompleted(globalThis.location.hostname);
 				this.hadAsyncWait = false;
@@ -44333,7 +44482,8 @@ var vot = (function(exports) {
 		* Configures audio settings such as volume.
 		*/
 		setupAudioSettings() {
-			return setupAudioSettings.call(this);
+			setupAudioSettings.call(this);
+			this.refreshVolumeLink();
 		}
 		applyManualVideoVolumeOverride(volume) {
 			return applyManualVideoVolumeOverride.call(this, volume);

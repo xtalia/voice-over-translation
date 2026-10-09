@@ -1,0 +1,1011 @@
+diff --git a/package.json b/package.json
+index fa9d0c4..decdbcd 100644
+--- a/package.json
++++ b/package.json
+@@ -7,7 +7,7 @@
+   "type": "module",
+   "repository": {
+     "type": "git",
+-    "url": "git+https://github.com/ilyhalight/voice-over-translation.git"
++    "url": "git+https://github.com/xtalia/voice-over-translation.git"
+   },
+   "keywords": [
+     "cli",
+diff --git a/src/VideoHandler.ts b/src/VideoHandler.ts
+index aab9602..1b7da14 100644
+--- a/src/VideoHandler.ts
++++ b/src/VideoHandler.ts
+@@ -1010,6 +1010,20 @@ export class VideoHandler {
+     this.volumeLinkState.initialized = true;
+   }
+ 
++  // [VOT-FORK:volume-offset] Reapply fork settings, including inactive-source preview.
++  /** Reapply the selected link mode immediately (startup and settings changes). */
++  refreshVolumeLink(): void {
++    const overlay = this.uiManager.votOverlayView;
++    if (!overlay?.isInitialized()) return;
++    const fixedOffset = Boolean(
++      this.data?.syncVolume && this.data.volumeLinkMode === "offset",
++    );
++    overlay.translationVolumeSlider.disabled = fixedOffset;
++    if (!fixedOffset) return;
++    this.syncVideoVolumeSlider();
++    this.syncVolumeWrapper("video", Number(overlay.videoVolumeSlider.value));
++  }
++
+   clearVolumeLinkState(): void {
+     this.volumeLinkState.initialized = false;
+     this.volumeLinkState.lastVideoPercent = 0;
+@@ -1062,20 +1076,33 @@ export class VideoHandler {
+       return undefined;
+     }
+ 
++    // [VOT-FORK:volume-offset] Mute-aware fixed offset; undefined retains upstream delta mode.
+     const result = applyVolumeLinkDelta({
+       state: this.volumeLinkState,
+       fromType,
+-      newVolume,
+-      currentVideo: Number(videoSlider.value),
++      newVolume:
++        this.data?.volumeLinkMode === "offset" && this.isMuted()
++          ? 0
++          : newVolume,
++      currentVideo:
++        this.data?.volumeLinkMode === "offset" && this.isMuted()
++          ? 0
++          : Number(videoSlider.value),
+       currentTranslation: Number(translationSlider.value),
+       translationMin: translationSlider.min,
+       translationMax: translationSlider.max,
++      offsetPercent:
++        this.data?.volumeLinkMode === "offset"
++          ? (this.data.translationVolumeOffset ?? 10)
++          : undefined,
+     });
+ 
+     const { nextVideo, nextTranslation } = result;
+ 
+     if (typeof nextTranslation === "number") {
+       translationSlider.value = nextTranslation;
++      // [VOT-FORK:volume-offset] Slider assignment must also update real audio.
++      this.syncTranslationPlaybackVolume();
+       return result;
+     }
+ 
+@@ -1337,6 +1364,7 @@ export class VideoHandler {
+       this.downloadTranslation,
+     );
+     this.syncTranslationPlaybackVolume();
++    this.refreshVolumeLink();
+     if (this.data?.sendNotifyOnComplete && this.hadAsyncWait && isSuccess) {
+       this.notifier.translationCompleted(globalThis.location.hostname);
+       this.hadAsyncWait = false;
+@@ -1442,7 +1470,8 @@ export class VideoHandler {
+    * Configures audio settings such as volume.
+    */
+   setupAudioSettings() {
+-    return setupAudioSettingsImpl.call(this);
++    setupAudioSettingsImpl.call(this);
++    this.refreshVolumeLink();
+   }
+ 
+   applyManualVideoVolumeOverride(volume: number) {
+diff --git a/src/config/config.ts b/src/config/config.ts
+index afbfe39..7779fb6 100644
+--- a/src/config/config.ts
++++ b/src/config/config.ts
+@@ -26,7 +26,8 @@ export const authServerUrl = "https://rust-server-531j.onrender.com";
+ export const authLoginUrl = `${authServerUrl}/v1/auth/handle`;
+ export const avatarServerUrl = "https://avatars.mds.yandex.net/get-yapic";
+ 
+-const repoPath = "ilyhalight/voice-over-translation";
++// [VOT-FORK:metadata] Keep runtime URLs on this fork after upstream merges.
++const repoPath = "xtalia/voice-over-translation";
+ export const contentUrl = `https://raw.githubusercontent.com/${repoPath}`;
+ export const repositoryUrl = `https://github.com/${repoPath}`;
+ 
+diff --git a/src/headers.json b/src/headers.json
+index 3070508..04f2c68 100644
+--- a/src/headers.json
++++ b/src/headers.json
+@@ -1,8 +1,8 @@
+ {
+   "name": "[VOT] - Voice Over Translation",
+   "description": "Watch videos in other languages with voice-over translation and subtitles in any browser",
+-  "version": "1.11.17",
+-  "author": "Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng",
++  "version": "1.11.17.1",
++  "author": "Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng; fork changes with Hermes Agent (AI)",
+   "namespace": "vot",
+   "icon": "https://translate.yandex.ru/icons/favicon.ico",
+   "match": [
+diff --git a/src/localization/hashes.json b/src/localization/hashes.json
+index fa79b28..8039a9f 100644
+--- a/src/localization/hashes.json
++++ b/src/localization/hashes.json
+@@ -12,7 +12,7 @@
+   "da": "0bf66d2d8cebbd68e2210735fd48bd26",
+   "de": "693dc0fa6d95f207aadf0738effe5fe6",
+   "el": "84ec30bcadeea146a359e66be35ad52f",
+-  "en": "6d917f205e7c8d889f0d2f0fef2af937",
++  "en": "97e1af3b71e6df88ebd9ecccb8409436",
+   "es": "9007d775384a52767cfa4d5973d7949b",
+   "et": "d25e5a779d1612f93d89108e4ef8f66d",
+   "eu": "a459a61223a447c7c3c78588d7a5a4bc",
+@@ -45,7 +45,7 @@
+   "pl": "3ebfb43f129e00fe13b3c111430a5e92",
+   "pt": "dbe37e141a20b0be1ca25b52ce315ae5",
+   "ro": "7272cccff857a455bc2c1ea9b7f3b0ce",
+-  "ru": "237c68699e9e887f7e18e6d267695e8e",
++  "ru": "4f7bc1491ab1f440535a23780c665c02",
+   "si": "39d3ce4e562cab0fbafd5649e7e0d248",
+   "sk": "ff831055ffd0222fe429a410e346fc0a",
+   "sl": "69bfcfc529929d0ecc4a3586ed082332",
+diff --git a/src/localization/locales/en.json b/src/localization/locales/en.json
+index b7ee9e7..efd578e 100644
+--- a/src/localization/locales/en.json
++++ b/src/localization/locales/en.json
+@@ -28,6 +28,13 @@
+   "VOTAutoSetVolume": "Reduce video volume to",
+   "VOTShowVideoSlider": "Video volume slider",
+   "VOTSyncVolume": "Link translation and video volume",
++  "VOTVolumeLinkMode": "Volume linking mode",
++  "VOTVolumeLinkDelta": "Classic: equal volume changes",
++  "VOTVolumeLinkOffset": "Original + fixed offset",
++  "VOTVolumeOffsetPreset": "Offset preset (percentage points)",
++  "VOTVolumeOffsetCustom": "Custom value",
++  "VOTVolumeOffset": "Translation louder by (percentage points, 0–100)",
++  "VOTVolumeOffsetHelp": "At +10: original 10% → translation 20%. Capped at 100%. Muting or setting original volume to zero also silences translation. The original player controls volume.",
+   "VOTDisableFromYourLang": "You have disabled the translation of the video in your language",
+   "VOTVideoIsTooLong": "Video is too long",
+   "VOTNoVideoIDFound": "No video ID found",
+diff --git a/src/localization/locales/ru.json b/src/localization/locales/ru.json
+index 3c6934f..d7d1d93 100644
+--- a/src/localization/locales/ru.json
++++ b/src/localization/locales/ru.json
+@@ -26,6 +26,13 @@
+   "VOTAutoSetVolume": "Уменьшать громкость видео до",
+   "VOTShowVideoSlider": "Ползунок громкости видео",
+   "VOTSyncVolume": "Связать громкость перевода и видео",
++  "VOTVolumeLinkMode": "Режим связи громкости",
++  "VOTVolumeLinkDelta": "Как раньше: одинаковое изменение",
++  "VOTVolumeLinkOffset": "Оригинал + фиксированная надбавка",
++  "VOTVolumeOffsetPreset": "Пресет надбавки (п.п.)",
++  "VOTVolumeOffsetCustom": "Своё значение",
++  "VOTVolumeOffset": "Перевод громче на (п.п., 0–100)",
++  "VOTVolumeOffsetHelp": "При +10: оригинал 10% → перевод 20%. Максимум 100%. При выключении звука или нулевой громкости перевод тоже замолкает. Громкостью управляет плеер оригинала.",
+   "VOTDisableFromYourLang": "Вы отключили перевод видео на вашем языке",
+   "VOTVideoIsTooLong": "Видео слишком длинное",
+   "VOTNoVideoIDFound": "Не найден идентификатор (ID) видео",
+diff --git a/src/types/components/select.ts b/src/types/components/select.ts
+index 3b87776..f81e3f1 100644
+--- a/src/types/components/select.ts
++++ b/src/types/components/select.ts
+@@ -20,6 +20,8 @@ export type SelectProps<
+   labelElement?: HTMLElement | string;
+   dialogParent?: HTMLElement;
+   multiSelect?: M;
++  /** Enable filtering in the dialog; defaults to true for existing controls. */
++  searchable?: boolean;
+ };
+ 
+ export type SelectUpdateItemsOptions = {
+diff --git a/src/types/localization.ts b/src/types/localization.ts
+index c819cb4..84019f9 100644
+--- a/src/types/localization.ts
++++ b/src/types/localization.ts
+@@ -98,6 +98,13 @@ export type Phrase =
+   | "VOTAutoSetVolume"
+   | "VOTShowVideoSlider"
+   | "VOTSyncVolume"
++  | "VOTVolumeLinkMode"
++  | "VOTVolumeLinkDelta"
++  | "VOTVolumeLinkOffset"
++  | "VOTVolumeOffsetPreset"
++  | "VOTVolumeOffsetCustom"
++  | "VOTVolumeOffset"
++  | "VOTVolumeOffsetHelp"
+   | "VOTDisableFromYourLang"
+   | "VOTVideoIsTooLong"
+   | "VOTNoVideoIDFound"
+@@ -350,6 +357,13 @@ export type Phrases = {
+   VOTAutoSetVolume: string;
+   VOTShowVideoSlider: string;
+   VOTSyncVolume: string;
++  VOTVolumeLinkMode: string;
++  VOTVolumeLinkDelta: string;
++  VOTVolumeLinkOffset: string;
++  VOTVolumeOffsetPreset: string;
++  VOTVolumeOffsetCustom: string;
++  VOTVolumeOffset: string;
++  VOTVolumeOffsetHelp: string;
+   VOTDisableFromYourLang: string;
+   VOTVideoIsTooLong: string;
+   VOTNoVideoIDFound: string;
+diff --git a/src/types/storage.ts b/src/types/storage.ts
+index 695cc60..b036a3d 100644
+--- a/src/types/storage.ts
++++ b/src/types/storage.ts
+@@ -34,6 +34,8 @@ export const storageKeys = [
+   "buttonPos",
+   "showVideoSlider",
+   "syncVolume",
++  "volumeLinkMode",
++  "translationVolumeOffset",
+   "downloadWithName",
+   "sendNotifyOnComplete",
+   "subtitlesMaxLength",
+@@ -99,6 +101,10 @@ export type StorageData = {
+   buttonPos: Position;
+   showVideoSlider: boolean;
+   syncVolume: boolean;
++  // [VOT-FORK:volume-offset] Persisted settings; keep these keys stable across updates.
++  volumeLinkMode: "delta" | "offset";
++  /** Fixed translation volume bonus in percentage points (0..100). */
++  translationVolumeOffset: number;
+   downloadWithName: boolean;
+   sendNotifyOnComplete: boolean;
+   subtitlesMaxLength: number;
+diff --git a/src/types/views/settings.ts b/src/types/views/settings.ts
+index 304e302..0220773 100644
+--- a/src/types/views/settings.ts
++++ b/src/types/views/settings.ts
+@@ -24,6 +24,7 @@ export type SettingsViewEventMap = {
+   "change:showVideoVolume": [checked: boolean];
+   "change:audioBooster": [checked: boolean];
+   "change:syncVolume": [checked: boolean];
++  "change:volumeLinkSettings": [];
+   "change:subtitlesHighlightWords": [checked: boolean];
+   "change:subtitlesSmartLayout": [checked: boolean];
+   "select:responseLanguageSubtitles": [item: ResponseLanguageSubtitles];
+diff --git a/src/ui/components/select.ts b/src/ui/components/select.ts
+index 6beb161..dae3925 100644
+--- a/src/ui/components/select.ts
++++ b/src/ui/components/select.ts
+@@ -31,6 +31,7 @@ export default class Select<
+   private _selectTitle: string;
+   private readonly _dialogTitle: string;
+   private readonly multiSelect: MultiSelect;
++  private readonly searchable: boolean;
+   private baseItems: SelectItem<T>[];
+   private _items: SelectItem<T>[];
+   private readonly searchItemsProvider?: SelectProps<
+@@ -56,6 +57,8 @@ export default class Select<
+     labelElement,
+     dialogParent = document.documentElement,
+     multiSelect,
++    // [VOT-FORK:compact-select] Only the fork volume controls opt out of search.
++    searchable = true,
+   }: SelectProps<T, MultiSelect>) {
+     super(["selectItem", "beforeOpen"]);
+     this._selectTitle = selectTitle;
+@@ -64,6 +67,7 @@ export default class Select<
+     this._items = this.cloneItems(items);
+     this.searchItemsProvider = searchItemsProvider;
+     this.multiSelect = (multiSelect ?? false) as MultiSelect;
++    this.searchable = searchable;
+     this.labelElement = labelElement;
+     this.dialogParent = dialogParent;
+     this.selectedValues = this.calcSelectedValues();
+@@ -233,34 +237,39 @@ export default class Select<
+         this.isDialogOpen = true;
+         outer.setAttribute("aria-expanded", "true");
+ 
+-        // Always show the search box (even for small lists) for consistent UX.
+-        const votSearchLangTextfield = new Textfield({
+-          labelHtml: localizationProvider.get("searchField"),
+-        });
++        const votSearchLangTextfield = this.searchable
++          ? new Textfield({
++              labelHtml: localizationProvider.get("searchField"),
++            })
++          : undefined;
++
++        votSearchLangTextfield?.addEventListener(
++          "input",
++          async (searchText) => {
++            const requestId = ++this.searchRequestId;
++            if (this.searchItemsProvider) {
++              const providedItems = await this.searchItemsProvider(searchText);
++              if (requestId !== this.searchRequestId) {
++                return;
++              }
++              this.updateItems(providedItems, { persist: false });
++            }
+ 
+-        votSearchLangTextfield.addEventListener("input", async (searchText) => {
+-          const requestId = ++this.searchRequestId;
+-          if (this.searchItemsProvider) {
+-            const providedItems = await this.searchItemsProvider(searchText);
+-            if (requestId !== this.searchRequestId) {
+-              return;
++            const normalizedSearchText = searchText.toLowerCase();
++            for (const contentItem of this.selectedItems) {
++              const searchableText =
++                contentItem.dataset[this.contentItemSearchDatasetKey] ?? "";
++              contentItem.hidden =
++                !searchableText.includes(normalizedSearchText);
+             }
+-            this.updateItems(providedItems, { persist: false });
+-          }
+-
+-          const normalizedSearchText = searchText.toLowerCase();
+-          for (const contentItem of this.selectedItems) {
+-            const searchableText =
+-              contentItem.dataset[this.contentItemSearchDatasetKey] ?? "";
+-            contentItem.hidden = !searchableText.includes(normalizedSearchText);
+-          }
+-        });
++          },
++        );
+ 
+         this.contentList = this.createDialogContentList();
+-        tempDialog.bodyContainer.append(
+-          votSearchLangTextfield.container,
+-          this.contentList,
+-        );
++        if (votSearchLangTextfield) {
++          tempDialog.bodyContainer.append(votSearchLangTextfield.container);
++        }
++        tempDialog.bodyContainer.append(this.contentList);
+ 
+         tempDialog.addEventListener("close", () => {
+           this.isDialogOpen = false;
+@@ -379,14 +388,16 @@ export default class Select<
+     this.updateTitle();
+   }
+ 
++  // [VOT-FORK:select-disabled] Boolean HTML attributes use presence, not value="true".
+   get disabled() {
+     return (
+-      this.outer.getAttribute("disabled") === "true" ||
++      this.outer.hasAttribute("disabled") ||
+       this.outer.getAttribute("aria-disabled") === "true"
+     );
+   }
+ 
+   set disabled(isDisabled: boolean) {
+     this.outer.toggleAttribute("disabled", isDisabled);
++    this.outer.setAttribute("aria-disabled", String(isDisabled));
+   }
+ }
+diff --git a/src/ui/manager.ts b/src/ui/manager.ts
+index b7fa9de..def8f9c 100644
+--- a/src/ui/manager.ts
++++ b/src/ui/manager.ts
+@@ -388,8 +388,13 @@ export class UIManager {
+             Number(videoSlider.value),
+             nextTranslation,
+           );
++          this.videoHandler.refreshVolumeLink();
+         });
+       })
++      // [VOT-FORK:volume-offset] Apply settings without waiting for a player-volume event.
++      .addEventListener("change:volumeLinkSettings", () => {
++        this.videoHandler?.refreshVolumeLink();
++      })
+       .addEventListener("change:subtitlesHighlightWords", (checked) => {
+         this.updateSubtitlesWidgetSetting(
+           checked,
+diff --git a/src/ui/views/settings.ts b/src/ui/views/settings.ts
+index 5c2a564..9aa025d 100644
+--- a/src/ui/views/settings.ts
++++ b/src/ui/views/settings.ts
+@@ -11,6 +11,7 @@ const SETTINGS_EVENT_KEYS: Array<keyof SettingsViewEventMap> = [
+   "change:showVideoVolume",
+   "change:audioBooster",
+   "change:syncVolume",
++  "change:volumeLinkSettings",
+   "change:subtitlesHighlightWords",
+   "change:subtitlesSmartLayout",
+   "select:responseLanguageSubtitles",
+@@ -99,6 +100,7 @@ import { getEnvironmentInfo } from "../../utils/environment";
+ import { isProxyOnlyExtension, isSupportGMXhr } from "../../utils/gm";
+ import { votStorage } from "../../utils/storage";
+ import { isPiPAvailable } from "../../utils/utils";
++import { clampPercentInt } from "../../utils/volume";
+ import type { VideoHandler } from "../../VideoHandler";
+ import { getCountryCode } from "../../videoHandler/shared";
+ import { normalizeButtonPosition } from "../buttonPlacement";
+@@ -116,6 +118,8 @@ import Textfield from "../components/textfield";
+ import Tooltip from "../components/tooltip";
+ import { HELP_ICON, WARNING_ICON } from "../icons";
+ 
++// [VOT-FORK:volume-offset] Presets and controls are documented in FORK-MAINTENANCE.md.
++const TRANSLATION_OFFSET_PRESETS = [0, 5, 10, 15, 20, 30, 50, 75, 100];
+ const GOOGLE_FONTS_SEARCH_LIMIT = 30;
+ const LANG_PREFIX = "langs.";
+ const [AUTO_SUBTITLE_LANGUAGE_VALUE, ORIGINAL_SUBTITLE_LANGUAGE_VALUE] =
+@@ -235,6 +239,9 @@ export class SettingsView {
+   audioBoosterCheckbox?: Checkbox;
+   audioBoosterTooltip?: Tooltip;
+   syncVolumeCheckbox?: Checkbox;
++  volumeLinkModeSelect?: Select<StorageData["volumeLinkMode"]>;
++  translationOffsetPresetSelect?: Select;
++  translationOffsetTextfield?: Textfield;
+   downloadWithNameCheckbox?: Checkbox;
+   sendNotifyOnCompleteCheckbox?: Checkbox;
+   useAudioDownloadCheckbox?: Checkbox;
+@@ -649,6 +656,21 @@ export class SettingsView {
+     );
+   }
+ 
++  private updateVolumeLinkControls(): void {
++    const enabled = Boolean(this.data.syncVolume);
++    const offset = this.data.volumeLinkMode === "offset";
++    if (this.volumeLinkModeSelect)
++      this.volumeLinkModeSelect.disabled = !enabled;
++    if (this.translationOffsetPresetSelect) {
++      this.translationOffsetPresetSelect.hidden = !offset;
++      this.translationOffsetPresetSelect.disabled = !enabled;
++    }
++    if (this.translationOffsetTextfield) {
++      this.translationOffsetTextfield.hidden = !offset;
++      this.translationOffsetTextfield.disabled = !enabled;
++    }
++  }
++
+   initUI() {
+     if (this.isInitialized()) {
+       throw new Error("[VOT] SettingsView is already initialized");
+@@ -748,6 +770,69 @@ export class SettingsView {
+       labelHtml: localizationProvider.get("VOTSyncVolume"),
+       checked: this.data.syncVolume,
+     });
++    // [VOT-FORK:volume-offset] BEGIN mode, preset and custom-value controls.
++    const linkMode = this.data.volumeLinkMode ?? "delta";
++    this.volumeLinkModeSelect = new Select<StorageData["volumeLinkMode"]>({
++      selectTitle: localizationProvider.get("VOTVolumeLinkMode"),
++      dialogTitle: localizationProvider.get("VOTVolumeLinkMode"),
++      searchable: false,
++      labelElement: localizationProvider.get("VOTVolumeLinkMode"),
++      dialogParent: this.globalPortal,
++      items: [
++        {
++          value: "delta",
++          label: localizationProvider.get("VOTVolumeLinkDelta"),
++          selected: linkMode === "delta",
++        },
++        {
++          value: "offset",
++          label: localizationProvider.get("VOTVolumeLinkOffset"),
++          selected: linkMode === "offset",
++        },
++      ],
++    });
++    const offsetValue = clampPercentInt(
++      this.data.translationVolumeOffset ?? 10,
++    );
++    const offsetPreset = TRANSLATION_OFFSET_PRESETS.includes(offsetValue)
++      ? String(offsetValue)
++      : "custom";
++    this.translationOffsetPresetSelect = new Select({
++      selectTitle: localizationProvider.get("VOTVolumeOffsetPreset"),
++      dialogTitle: localizationProvider.get("VOTVolumeOffsetPreset"),
++      searchable: false,
++      labelElement: localizationProvider.get("VOTVolumeOffsetPreset"),
++      dialogParent: this.globalPortal,
++      items: [
++        ...TRANSLATION_OFFSET_PRESETS.map((value) => ({
++          value: String(value),
++          label: `+${value}`,
++          selected: String(value) === offsetPreset,
++        })),
++        {
++          value: "custom",
++          label: localizationProvider.get("VOTVolumeOffsetCustom"),
++          selected: offsetPreset === "custom",
++        },
++      ],
++    });
++    this.translationOffsetTextfield = new Textfield({
++      labelHtml: localizationProvider.get("VOTVolumeOffset"),
++      value: String(offsetValue),
++    });
++    const offsetInput = this.translationOffsetTextfield
++      .input as HTMLInputElement;
++    offsetInput.type = "number";
++    offsetInput.min = "0";
++    offsetInput.max = "100";
++    offsetInput.step = "1";
++    offsetInput.setAttribute(
++      "aria-label",
++      localizationProvider.get("VOTVolumeOffset"),
++    );
++    offsetInput.title = localizationProvider.get("VOTVolumeOffsetHelp");
++    this.updateVolumeLinkControls();
++    // [VOT-FORK:volume-offset] END controls.
+     this.downloadWithNameCheckbox = new Checkbox({
+       labelHtml: localizationProvider.get("VOTDownloadWithName"),
+       checked: this.data.downloadWithName,
+@@ -785,6 +870,9 @@ export class SettingsView {
+       this.showVideoVolumeSliderCheckbox.container,
+       this.audioBoosterCheckbox.container,
+       this.syncVolumeCheckbox.container,
++      this.volumeLinkModeSelect.container,
++      this.translationOffsetPresetSelect.container,
++      this.translationOffsetTextfield.container,
+       this.downloadWithNameCheckbox.container,
+       this.sendNotifyOnCompleteCheckbox.container,
+       this.useAudioDownloadCheckbox.container,
+@@ -1289,6 +1377,7 @@ export class SettingsView {
+       event: "change",
+       apply: (checked) => {
+         this.data.syncVolume = checked;
++        this.updateVolumeLinkControls();
+         this.autoSetVolumeSlider.disabled =
+           !this.autoSetVolumeCheckbox?.checked;
+         this.smartDuckingCheckbox.disabled =
+@@ -1302,6 +1391,47 @@ export class SettingsView {
+       logLabel: "syncVolume",
+       dispatch: (checked) => this.events["change:syncVolume"].dispatch(checked),
+     });
++    this.bindPersistedSetting({
++      control: this.volumeLinkModeSelect,
++      event: "selectItem",
++      apply: (value: StorageData["volumeLinkMode"]) => {
++        this.data.volumeLinkMode = value;
++        this.updateVolumeLinkControls();
++      },
++      storageKey: "volumeLinkMode",
++      readPersistedValue: () => this.data.volumeLinkMode,
++      logLabel: "volumeLinkMode",
++      dispatch: () => this.events["change:volumeLinkSettings"].dispatch(),
++    });
++    // [VOT-FORK:volume-offset] Persist custom/preset offset and apply immediately.
++    const applyOffset = async (rawValue: string) => {
++      const number = rawValue.trim() === "" ? NaN : Number(rawValue);
++      if (!Number.isFinite(number)) {
++        this.translationOffsetTextfield.input.value = String(
++          this.data.translationVolumeOffset ?? 10,
++        );
++        return;
++      }
++      const value = clampPercentInt(number);
++      this.data.translationVolumeOffset = value;
++      this.translationOffsetTextfield.input.value = String(value);
++      this.translationOffsetPresetSelect.setSelectedValue(
++        TRANSLATION_OFFSET_PRESETS.includes(value) ? String(value) : "custom",
++      );
++      await votStorage.set("translationVolumeOffset", value);
++      this.events["change:volumeLinkSettings"].dispatch();
++    };
++    this.translationOffsetPresetSelect.addEventListener(
++      "selectItem",
++      (value) => {
++        if (value === "custom") {
++          this.translationOffsetTextfield.input.focus();
++          return;
++        }
++        return applyOffset(value);
++      },
++    );
++    this.translationOffsetTextfield.addEventListener("change", applyOffset);
+     this.bindPersistedSetting({
+       control: this.downloadWithNameCheckbox,
+       event: "change",
+diff --git a/src/videoHandler/modules/events.ts b/src/videoHandler/modules/events.ts
+index fd18ac3..b130444 100644
+--- a/src/videoHandler/modules/events.ts
++++ b/src/videoHandler/modules/events.ts
+@@ -102,21 +102,30 @@ function toPercentInt(value: unknown, fallback = 0): number {
+   const numeric = typeof value === "number" ? value : Number(value);
+   return Number.isFinite(numeric) ? clampPercentInt(numeric) : fallback;
+ }
+-function syncAudioTranslationVolumeFromVideo(
++export function syncAudioTranslationVolumeFromVideo(
+   self: VideoHandler,
+   videoPercent: number,
+   options: {
+     skipYouTubeLikeHosts?: boolean;
+   } = {},
+ ): void {
+-  if (options.skipYouTubeLikeHosts && isYouTubeLikeHost(self.site.host)) {
++  // [VOT-FORK:volume-offset] Native mute/YouTube events must reach the fixed-offset path.
++  const fixedOffset = self.data?.volumeLinkMode === "offset";
++  if (
++    !fixedOffset &&
++    options.skipYouTubeLikeHosts &&
++    isYouTubeLikeHost(self.site.host)
++  ) {
+     return;
+   }
+   // While smart ducking is active, the script drives video volume itself.
+   // Ignore observer-driven sync to avoid feedback loops/jitter.
+   if (self.smartVolumeDuckingInterval !== undefined) return;
+   if (!self.data?.syncVolume || !self.audioPlayer?.player?.src) return;
+-  if (self.isLikelyInternalVideoVolumeChange(videoPercent)) return;
++  // Fixed-offset linking is idempotent: native mute/unmute and auto-volume writes
++  // must still refresh translation, even when YouTube aria attributes do not change.
++  if (!fixedOffset && self.isLikelyInternalVideoVolumeChange(videoPercent))
++    return;
+   self.syncVolumeWrapper("video", videoPercent);
+ }
+ function applyOverlayLayout(
+diff --git a/src/videoHandler/modules/init.ts b/src/videoHandler/modules/init.ts
+index cafeded..204fa02 100644
+--- a/src/videoHandler/modules/init.ts
++++ b/src/videoHandler/modules/init.ts
+@@ -61,6 +61,9 @@ export async function init(this: VideoHandler) {
+     buttonPos: "default",
+     showVideoSlider: true,
+     syncVolume: false,
++    // [VOT-FORK:volume-offset] Preserve upstream behavior until explicitly selected.
++    volumeLinkMode: "delta",
++    translationVolumeOffset: 10,
+     downloadWithName: isSupportGMXhr,
+     sendNotifyOnComplete: false,
+     subtitlesMaxLength: 300,
+diff --git a/src/videoHandler/volumeLink.ts b/src/videoHandler/volumeLink.ts
+index 261d768..5dbb508 100644
+--- a/src/videoHandler/volumeLink.ts
++++ b/src/videoHandler/volumeLink.ts
+@@ -16,6 +16,8 @@ type ApplyVolumeLinkDeltaInput = {
+   currentTranslation: number;
+   translationMin: number;
+   translationMax: number;
++  /** When present, the original is the master and the offset is in percentage points. */
++  offsetPercent?: number;
+ };
+ 
+ export type ApplyVolumeLinkDeltaResult = {
+@@ -67,12 +69,33 @@ export function applyVolumeLinkDelta({
+   currentTranslation,
+   translationMin,
+   translationMax,
++  offsetPercent,
+ }: ApplyVolumeLinkDeltaInput): ApplyVolumeLinkDeltaResult {
+   const sharedTranslationRange = getSharedTranslationRange(
+     translationMin,
+     translationMax,
+   );
+ 
++  // [VOT-FORK:volume-offset] BEGIN original-master percentage-point mode.
++  if (offsetPercent !== undefined) {
++    const video = clampPercentInt(
++      fromType === "video" ? newVolume : currentVideo,
++    );
++    const nextTranslation =
++      video === 0
++        ? 0
++        : clampInt(
++            video + clampPercentInt(offsetPercent),
++            sharedTranslationRange.min,
++            sharedTranslationRange.max,
++          );
++    state.initialized = true;
++    state.lastVideoPercent = video;
++    state.lastTranslationPercent = nextTranslation;
++    return { nextTranslation };
++  }
++
++  // [VOT-FORK:volume-offset] END; upstream delta algorithm follows unchanged.
+   if (!state.initialized) {
+     state.lastVideoPercent = clampPercentInt(currentVideo);
+     state.lastTranslationPercent = clampInt(
+diff --git a/tests/browser-volume-offset.html b/tests/browser-volume-offset.html
+new file mode 100644
+index 0000000..ee589f8
+--- /dev/null
++++ b/tests/browser-volume-offset.html
+@@ -0,0 +1,4 @@
++<!doctype html>
++<html lang="ru"><meta charset="utf-8"><title>VOT volume-offset browser test</title>
++<body><h1>VOT volume-offset browser test</h1><p>Local fixture: no translation API requests. Uses real settings, sliders, video and audio elements.</p>
++<div id="player"></div><div id="portal"></div><script>globalThis.GM_info = { script: { version: "1.11.17.1", author: "Toil, xtalia", name: "VOT fixture" }, scriptHandler: "Fixture", version: "1.0" };</script><script type="module" src="./browser-volume-offset.ts"></script></body></html>
+diff --git a/tests/browser-volume-offset.ts b/tests/browser-volume-offset.ts
+new file mode 100644
+index 0000000..2032772
+--- /dev/null
++++ b/tests/browser-volume-offset.ts
+@@ -0,0 +1,112 @@
++import "../src/styles/main.scss";
++import { VOTVideoManager } from "../src/core/videoManager";
++import ru from "../src/localization/locales/ru.json";
++import { localizationProvider } from "../src/localization/localizationProvider";
++import Slider from "../src/ui/components/slider";
++import { UIManager } from "../src/ui/manager";
++import { SettingsView } from "../src/ui/views/settings";
++import { votStorage } from "../src/utils/storage";
++import { VideoHandler } from "../src/VideoHandler";
++import { syncAudioTranslationVolumeFromVideo } from "../src/videoHandler/modules/events";
++
++async function main() {
++  localizationProvider.setLocaleFromJsonString(JSON.stringify(ru));
++  const data = await votStorage.getValues({
++    syncVolume: true,
++    volumeLinkMode: "offset" as const,
++    translationVolumeOffset: 10,
++    enabledAutoVolume: false,
++    enabledSmartDucking: false,
++    showVideoSlider: true,
++    defaultVolume: 100,
++    audioBooster: false,
++    localeLangOverride: "ru",
++    account: {},
++  });
++  const video = document.createElement("video");
++  video.controls = true;
++  video.volume = 0.1;
++  const audio = document.createElement("audio");
++  // Minimal silent WAV fixture; no remote media or translation service.
++  const wav = new ArrayBuffer(46);
++  const view = new DataView(wav);
++  const text = (at: number, value: string) =>
++    [...value].forEach((c, i) => {
++      view.setUint8(at + i, c.charCodeAt(0));
++    });
++  text(0, "RIFF");
++  view.setUint32(4, 38, true);
++  text(8, "WAVEfmt ");
++  view.setUint32(16, 16, true);
++  view.setUint16(20, 1, true);
++  view.setUint16(22, 1, true);
++  view.setUint32(24, 8000, true);
++  view.setUint32(28, 16000, true);
++  view.setUint16(32, 2, true);
++  view.setUint16(34, 16, true);
++  text(36, "data");
++  view.setUint32(40, 2, true);
++  audio.src = URL.createObjectURL(new Blob([wav], { type: "audio/wav" }));
++  const handler = Object.create(VideoHandler.prototype) as VideoHandler;
++  Object.assign(handler, {
++    video,
++    data,
++    site: { host: "custom" },
++    audioPlayer: { player: audio },
++    volumeLinkState: {
++      initialized: false,
++      lastVideoPercent: 10,
++      lastTranslationPercent: 100,
++    },
++    internalVideoVolumeSetHistory: [],
++    internalVideoVolumeSetHistoryLimit: 48,
++    internalVideoVolumeSuppressionMs: 250,
++  });
++  handler.videoManager = new VOTVideoManager(handler);
++  handler.isMuted = () => video.muted;
++  handler.syncVideoVolumeSlider = () =>
++    handler.videoManager.syncVideoVolumeSlider();
++  const videoSlider = new Slider({ labelHtml: "Original", value: 10 });
++  const translationSlider = new Slider({
++    labelHtml: "Translation",
++    value: 100,
++  });
++  const manager = Object.create(UIManager.prototype) as UIManager;
++  Object.assign(manager, {
++    data,
++    videoHandler: handler,
++    votOverlayView: {
++      isInitialized: () => true,
++      videoVolumeSlider: videoSlider,
++      translationVolumeSlider: translationSlider,
++    },
++  });
++  handler.uiManager = manager;
++  const settings = new SettingsView({
++    globalPortal: document.querySelector("#portal") as HTMLElement,
++    data,
++    videoHandler: handler,
++  });
++  settings.initUI().initUIEvents();
++  manager.votSettingsView = settings;
++  (manager as any).bindSettingsViewEvents();
++  video.addEventListener("volumechange", () => {
++    handler.syncVideoVolumeSlider();
++    syncAudioTranslationVolumeFromVideo(handler, videoSlider.value);
++  });
++  videoSlider.addEventListener("input", (value, fromSetter) => {
++    if (!fromSetter) video.volume = value / 100;
++  });
++  document
++    .querySelector("#player")
++    ?.append(video, videoSlider.container, translationSlider.container);
++  handler.refreshVolumeLink();
++  settings.open();
++  Object.assign(window, {
++    fixture: { data, video, audio, handler, manager, settings, votStorage },
++  });
++}
++void main().catch((error) => {
++  Object.assign(window, { fixtureError: String(error) });
++  console.error(error);
++});
+diff --git a/tests/fork-metadata.test.ts b/tests/fork-metadata.test.ts
+new file mode 100644
+index 0000000..8ead1a2
+--- /dev/null
++++ b/tests/fork-metadata.test.ts
+@@ -0,0 +1,13 @@
++import { expect, test } from "bun:test";
++import { contentUrl, repositoryUrl } from "../src/config/config";
++import headers from "../src/headers.json";
++
++test("fork update and localization URLs stay on xtalia's fork", () => {
++  expect(contentUrl).toBe(
++    "https://raw.githubusercontent.com/xtalia/voice-over-translation",
++  );
++  expect(repositoryUrl).toBe(
++    "https://github.com/xtalia/voice-over-translation",
++  );
++  expect(headers.version).toBe("1.11.17.1");
++});
+diff --git a/tests/volume-link-offset.test.ts b/tests/volume-link-offset.test.ts
+new file mode 100644
+index 0000000..8320fd5
+--- /dev/null
++++ b/tests/volume-link-offset.test.ts
+@@ -0,0 +1,173 @@
++import { describe, expect, test } from "bun:test";
++import { applyVolumeLinkDelta } from "../src/videoHandler/volumeLink";
++
++function makeInput() {
++  return {
++    state: {
++      initialized: true,
++      lastVideoPercent: 50,
++      lastTranslationPercent: 100,
++    },
++    fromType: "video" as const,
++    newVolume: 10,
++    currentVideo: 10,
++    currentTranslation: 100,
++    translationMin: 0,
++    translationMax: 100,
++    offsetPercent: 10,
++  };
++}
++
++describe("fixed translation volume offset", () => {
++  test("10% original plus 10 percentage points produces 20% translation", () => {
++    const input = makeInput();
++    expect(applyVolumeLinkDelta(input)).toEqual({ nextTranslation: 20 });
++    expect(input.state.lastTranslationPercent).toBe(20);
++  });
++
++  test("zero original volume silences translation despite a positive offset", () => {
++    const input = makeInput();
++    input.newVolume = 0;
++    expect(applyVolumeLinkDelta(input)).toEqual({ nextTranslation: 0 });
++  });
++
++  test("fixed offset recovers after reaching maximum volume", () => {
++    const input = makeInput();
++    input.offsetPercent = 20;
++    input.newVolume = 95;
++    expect(applyVolumeLinkDelta(input)).toEqual({ nextTranslation: 100 });
++    input.newVolume = 50;
++    expect(applyVolumeLinkDelta(input)).toEqual({ nextTranslation: 70 });
++  });
++
++  test("fixed offset treats the original as master even for translation input", () => {
++    const input = {
++      ...makeInput(),
++      fromType: "translation" as const,
++      newVolume: 90,
++    };
++    expect(applyVolumeLinkDelta(input)).toEqual({ nextTranslation: 20 });
++  });
++
++  test("custom offsets are clamped to the 0..100 range", () => {
++    const input = makeInput();
++    input.offsetPercent = -10;
++    expect(applyVolumeLinkDelta(input)).toEqual({ nextTranslation: 10 });
++    input.offsetPercent = 150;
++    expect(applyVolumeLinkDelta(input)).toEqual({ nextTranslation: 100 });
++  });
++
++  test("classic delta mode preserves its previous behavior", () => {
++    const input = { ...makeInput(), offsetPercent: undefined };
++    expect(applyVolumeLinkDelta(input)).toEqual({ nextTranslation: 60 });
++  });
++
++  test("handler applies the offset to both the slider and actual audio", async () => {
++    (globalThis as unknown as { DEBUG_MODE: boolean }).DEBUG_MODE = false;
++    const previousWindow = globalThis.window;
++    const previousKeyboardInit = globalThis.__votKeyboardNavInitialized;
++    globalThis.__votKeyboardNavInitialized = true;
++    Object.defineProperty(globalThis, "window", {
++      configurable: true,
++      value: globalThis,
++    });
++    let VideoHandler: typeof import("../src/VideoHandler").VideoHandler;
++    try {
++      ({ VideoHandler } = await import("../src/VideoHandler"));
++    } finally {
++      globalThis.__votKeyboardNavInitialized = previousKeyboardInit;
++      Object.defineProperty(globalThis, "window", {
++        configurable: true,
++        value: previousWindow,
++      });
++    }
++    const handler = Object.create(VideoHandler.prototype);
++    const translationSlider = { value: 100, min: 0, max: 100, disabled: false };
++    handler.data = {
++      syncVolume: true,
++      volumeLinkMode: "offset",
++      translationVolumeOffset: 10,
++    };
++    handler.volumeLinkState = makeInput().state;
++    handler.uiManager = {
++      votOverlayView: {
++        isInitialized: () => true,
++        videoVolumeSlider: { value: 10 },
++        translationVolumeSlider: translationSlider,
++      },
++    };
++    handler.audioPlayer = { player: { volume: 0.8 } };
++    handler.isMuted = () => false;
++    handler.syncVolumeWrapper("video", 10);
++    expect(translationSlider.value).toBe(20);
++    expect(handler.audioPlayer.player.volume).toBeCloseTo(0.2);
++    // Changing a preset/mode must apply immediately, without moving the player slider.
++    handler.data.translationVolumeOffset = 25;
++    handler.syncVideoVolumeSlider = () => {};
++    handler.audioPlayer.player.src = "test-audio";
++    handler.refreshVolumeLink?.();
++    expect(handler.audioPlayer.player.volume).toBeCloseTo(0.35);
++    expect(translationSlider.disabled).toBe(true);
++    handler.isMuted = () => true;
++    handler.syncVolumeWrapper("video", 10);
++    expect(handler.audioPlayer.player.volume).toBe(0);
++    handler.isMuted = () => false;
++    handler.syncVolumeWrapper("video", 10);
++    expect(handler.audioPlayer.player.volume).toBeCloseTo(0.35);
++    // Settings must preview the derived level before a translation source exists.
++    handler.audioPlayer.player.src = "";
++    handler.data.translationVolumeOffset = 17;
++    handler.refreshVolumeLink();
++    expect(translationSlider.value).toBe(27);
++    expect(handler.audioPlayer.player.volume).toBeCloseTo(0.27);
++  });
++
++  test("offset settings controls are disabled when linking is off", async () => {
++    // VideoHandler was imported above; SettingsView and its UI dependencies are cached.
++    const { SettingsView } = await import("../src/ui/views/settings");
++    const view = Object.create(SettingsView.prototype);
++    view.data = { syncVolume: false, volumeLinkMode: "offset" };
++    view.volumeLinkModeSelect = { disabled: false };
++    view.translationOffsetPresetSelect = { hidden: false, disabled: false };
++    view.translationOffsetTextfield = { hidden: false, disabled: false };
++    view.updateVolumeLinkControls?.();
++    expect(view.volumeLinkModeSelect.disabled).toBe(true);
++    expect(view.translationOffsetPresetSelect.disabled).toBe(true);
++    expect(view.translationOffsetTextfield.disabled).toBe(true);
++  });
++
++  test("native YouTube mute events are not skipped in fixed-offset mode", async () => {
++    const events = (await import("../src/videoHandler/modules/events")) as any;
++    let synced: number | undefined;
++    const handler = {
++      site: { host: "youtube" },
++      data: { syncVolume: true, volumeLinkMode: "offset" },
++      audioPlayer: { player: { src: "test-audio" } },
++      isLikelyInternalVideoVolumeChange: () => true,
++      syncVolumeWrapper: (_from: string, value: number) => {
++        synced = value;
++      },
++    };
++    events.syncAudioTranslationVolumeFromVideo?.(handler, 0, {
++      skipYouTubeLikeHosts: true,
++    });
++    expect(synced).toBe(0);
++  });
++
++  test("Select disabled setter actually blocks opening a disabled control", async () => {
++    const { default: Select } = await import("../src/ui/components/select");
++    const control = Object.create(Select.prototype);
++    const attributes = new Map<string, string>();
++    control.outer = {
++      toggleAttribute: (key: string, enabled: boolean) =>
++        enabled ? attributes.set(key, "") : attributes.delete(key),
++      getAttribute: (key: string) => attributes.get(key) ?? null,
++      hasAttribute: (key: string) => attributes.has(key),
++      setAttribute: (key: string, value: string) => attributes.set(key, value),
++    };
++    control.disabled = true;
++    expect(control.disabled).toBe(true);
++    control.disabled = false;
++    expect(control.disabled).toBe(false);
++  });
++});

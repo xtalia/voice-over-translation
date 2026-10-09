@@ -26,7 +26,8 @@ export const authServerUrl = "https://rust-server-531j.onrender.com";
 export const authLoginUrl = `${authServerUrl}/v1/auth/handle`;
 export const avatarServerUrl = "https://avatars.mds.yandex.net/get-yapic";
 
-const repoPath = "ilyhalight/voice-over-translation";
+// [VOT-FORK:metadata] Keep runtime URLs on this fork after upstream merges.
+const repoPath = "xtalia/voice-over-translation";
 export const contentUrl = `https://raw.githubusercontent.com/${repoPath}`;
 export const repositoryUrl = `https://github.com/${repoPath}`;
 

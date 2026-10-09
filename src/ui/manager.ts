@@ -388,7 +388,12 @@ export class UIManager {
             Number(videoSlider.value),
             nextTranslation,
           );
+          this.videoHandler.refreshVolumeLink();
         });
+      })
+      // [VOT-FORK:volume-offset] Apply settings without waiting for a player-volume event.
+      .addEventListener("change:volumeLinkSettings", () => {
+        this.videoHandler?.refreshVolumeLink();
       })
       .addEventListener("change:subtitlesHighlightWords", (checked) => {
         this.updateSubtitlesWidgetSetting(

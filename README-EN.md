@@ -23,7 +23,7 @@
 
 <!-- Install / Build -->
 
-[vot-dist]: https://raw.githubusercontent.com/ilyhalight/voice-over-translation/master/dist/vot.user.js
+[vot-dist]: https://raw.githubusercontent.com/xtalia/voice-over-translation/master/dist/vot.user.js
 [vot-releases]: https://github.com/ilyhalight/voice-over-translation/releases
 [nodejs-link]: https://nodejs.org
 [bun-link]: https://bun.sh/
@@ -72,6 +72,14 @@
 > All rights to the original software belong to their respective owners. This extension is not affiliated with the original rights holders.
 
 Thanks to the **[Yandex.Translate][yatranslate-link]** and **[Yandex.Browser][yabrowser-link]** teams, and everyone [helping make the extension][contributors-link] even better.
+
+## This fork and Contributors
+
+Adds presets and a custom translation-volume offset relative to the original. [Installation and setup → FORK.md](FORK.md).
+
+- **xtalia** — feature initiator, requirements and fork maintainer.
+- **Hermes Agent (Nous Research), using OpenAI models** — AI coding assistant used to implement the changes, write tests and run verification. This feature was implemented with AI assistance, rather than manually written by the fork owner.
+- Original VOT authors retain credit for the upstream project.
 
 ## Installing the extension
 

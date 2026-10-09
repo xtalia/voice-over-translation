@@ -11,6 +11,7 @@ const SETTINGS_EVENT_KEYS: Array<keyof SettingsViewEventMap> = [
   "change:showVideoVolume",
   "change:audioBooster",
   "change:syncVolume",
+  "change:volumeLinkSettings",
   "change:subtitlesHighlightWords",
   "change:subtitlesSmartLayout",
   "select:responseLanguageSubtitles",
@@ -99,6 +100,7 @@ import { getEnvironmentInfo } from "../../utils/environment";
 import { isProxyOnlyExtension, isSupportGMXhr } from "../../utils/gm";
 import { votStorage } from "../../utils/storage";
 import { isPiPAvailable } from "../../utils/utils";
+import { clampPercentInt } from "../../utils/volume";
 import type { VideoHandler } from "../../VideoHandler";
 import { getCountryCode } from "../../videoHandler/shared";
 import { normalizeButtonPosition } from "../buttonPlacement";
@@ -116,6 +118,8 @@ import Textfield from "../components/textfield";
 import Tooltip from "../components/tooltip";
 import { HELP_ICON, WARNING_ICON } from "../icons";
 
+// [VOT-FORK:volume-offset] Presets and controls are documented in FORK-MAINTENANCE.md.
+const TRANSLATION_OFFSET_PRESETS = [0, 5, 10, 15, 20, 30, 50, 75, 100];
 const GOOGLE_FONTS_SEARCH_LIMIT = 30;
 const LANG_PREFIX = "langs.";
 const [AUTO_SUBTITLE_LANGUAGE_VALUE, ORIGINAL_SUBTITLE_LANGUAGE_VALUE] =
@@ -235,6 +239,9 @@ export class SettingsView {
   audioBoosterCheckbox?: Checkbox;
   audioBoosterTooltip?: Tooltip;
   syncVolumeCheckbox?: Checkbox;
+  volumeLinkModeSelect?: Select<StorageData["volumeLinkMode"]>;
+  translationOffsetPresetSelect?: Select;
+  translationOffsetTextfield?: Textfield;
   downloadWithNameCheckbox?: Checkbox;
   sendNotifyOnCompleteCheckbox?: Checkbox;
   useAudioDownloadCheckbox?: Checkbox;
@@ -649,6 +656,21 @@ export class SettingsView {
     );
   }
 
+  private updateVolumeLinkControls(): void {
+    const enabled = Boolean(this.data.syncVolume);
+    const offset = this.data.volumeLinkMode === "offset";
+    if (this.volumeLinkModeSelect)
+      this.volumeLinkModeSelect.disabled = !enabled;
+    if (this.translationOffsetPresetSelect) {
+      this.translationOffsetPresetSelect.hidden = !offset;
+      this.translationOffsetPresetSelect.disabled = !enabled;
+    }
+    if (this.translationOffsetTextfield) {
+      this.translationOffsetTextfield.hidden = !offset;
+      this.translationOffsetTextfield.disabled = !enabled;
+    }
+  }
+
   initUI() {
     if (this.isInitialized()) {
       throw new Error("[VOT] SettingsView is already initialized");
@@ -748,6 +770,69 @@ export class SettingsView {
       labelHtml: localizationProvider.get("VOTSyncVolume"),
       checked: this.data.syncVolume,
     });
+    // [VOT-FORK:volume-offset] BEGIN mode, preset and custom-value controls.
+    const linkMode = this.data.volumeLinkMode ?? "delta";
+    this.volumeLinkModeSelect = new Select<StorageData["volumeLinkMode"]>({
+      selectTitle: localizationProvider.get("VOTVolumeLinkMode"),
+      dialogTitle: localizationProvider.get("VOTVolumeLinkMode"),
+      searchable: false,
+      labelElement: localizationProvider.get("VOTVolumeLinkMode"),
+      dialogParent: this.globalPortal,
+      items: [
+        {
+          value: "delta",
+          label: localizationProvider.get("VOTVolumeLinkDelta"),
+          selected: linkMode === "delta",
+        },
+        {
+          value: "offset",
+          label: localizationProvider.get("VOTVolumeLinkOffset"),
+          selected: linkMode === "offset",
+        },
+      ],
+    });
+    const offsetValue = clampPercentInt(
+      this.data.translationVolumeOffset ?? 10,
+    );
+    const offsetPreset = TRANSLATION_OFFSET_PRESETS.includes(offsetValue)
+      ? String(offsetValue)
+      : "custom";
+    this.translationOffsetPresetSelect = new Select({
+      selectTitle: localizationProvider.get("VOTVolumeOffsetPreset"),
+      dialogTitle: localizationProvider.get("VOTVolumeOffsetPreset"),
+      searchable: false,
+      labelElement: localizationProvider.get("VOTVolumeOffsetPreset"),
+      dialogParent: this.globalPortal,
+      items: [
+        ...TRANSLATION_OFFSET_PRESETS.map((value) => ({
+          value: String(value),
+          label: `+${value}`,
+          selected: String(value) === offsetPreset,
+        })),
+        {
+          value: "custom",
+          label: localizationProvider.get("VOTVolumeOffsetCustom"),
+          selected: offsetPreset === "custom",
+        },
+      ],
+    });
+    this.translationOffsetTextfield = new Textfield({
+      labelHtml: localizationProvider.get("VOTVolumeOffset"),
+      value: String(offsetValue),
+    });
+    const offsetInput = this.translationOffsetTextfield
+      .input as HTMLInputElement;
+    offsetInput.type = "number";
+    offsetInput.min = "0";
+    offsetInput.max = "100";
+    offsetInput.step = "1";
+    offsetInput.setAttribute(
+      "aria-label",
+      localizationProvider.get("VOTVolumeOffset"),
+    );
+    offsetInput.title = localizationProvider.get("VOTVolumeOffsetHelp");
+    this.updateVolumeLinkControls();
+    // [VOT-FORK:volume-offset] END controls.
     this.downloadWithNameCheckbox = new Checkbox({
       labelHtml: localizationProvider.get("VOTDownloadWithName"),
       checked: this.data.downloadWithName,
@@ -785,6 +870,9 @@ export class SettingsView {
       this.showVideoVolumeSliderCheckbox.container,
       this.audioBoosterCheckbox.container,
       this.syncVolumeCheckbox.container,
+      this.volumeLinkModeSelect.container,
+      this.translationOffsetPresetSelect.container,
+      this.translationOffsetTextfield.container,
       this.downloadWithNameCheckbox.container,
       this.sendNotifyOnCompleteCheckbox.container,
       this.useAudioDownloadCheckbox.container,
@@ -1289,6 +1377,7 @@ export class SettingsView {
       event: "change",
       apply: (checked) => {
         this.data.syncVolume = checked;
+        this.updateVolumeLinkControls();
         this.autoSetVolumeSlider.disabled =
           !this.autoSetVolumeCheckbox?.checked;
         this.smartDuckingCheckbox.disabled =
@@ -1302,6 +1391,47 @@ export class SettingsView {
       logLabel: "syncVolume",
       dispatch: (checked) => this.events["change:syncVolume"].dispatch(checked),
     });
+    this.bindPersistedSetting({
+      control: this.volumeLinkModeSelect,
+      event: "selectItem",
+      apply: (value: StorageData["volumeLinkMode"]) => {
+        this.data.volumeLinkMode = value;
+        this.updateVolumeLinkControls();
+      },
+      storageKey: "volumeLinkMode",
+      readPersistedValue: () => this.data.volumeLinkMode,
+      logLabel: "volumeLinkMode",
+      dispatch: () => this.events["change:volumeLinkSettings"].dispatch(),
+    });
+    // [VOT-FORK:volume-offset] Persist custom/preset offset and apply immediately.
+    const applyOffset = async (rawValue: string) => {
+      const number = rawValue.trim() === "" ? NaN : Number(rawValue);
+      if (!Number.isFinite(number)) {
+        this.translationOffsetTextfield.input.value = String(
+          this.data.translationVolumeOffset ?? 10,
+        );
+        return;
+      }
+      const value = clampPercentInt(number);
+      this.data.translationVolumeOffset = value;
+      this.translationOffsetTextfield.input.value = String(value);
+      this.translationOffsetPresetSelect.setSelectedValue(
+        TRANSLATION_OFFSET_PRESETS.includes(value) ? String(value) : "custom",
+      );
+      await votStorage.set("translationVolumeOffset", value);
+      this.events["change:volumeLinkSettings"].dispatch();
+    };
+    this.translationOffsetPresetSelect.addEventListener(
+      "selectItem",
+      (value) => {
+        if (value === "custom") {
+          this.translationOffsetTextfield.input.focus();
+          return;
+        }
+        return applyOffset(value);
+      },
+    );
+    this.translationOffsetTextfield.addEventListener("change", applyOffset);
     this.bindPersistedSetting({
       control: this.downloadWithNameCheckbox,
       event: "change",

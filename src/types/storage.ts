@@ -34,6 +34,8 @@ export const storageKeys = [
   "buttonPos",
   "showVideoSlider",
   "syncVolume",
+  "volumeLinkMode",
+  "translationVolumeOffset",
   "downloadWithName",
   "sendNotifyOnComplete",
   "subtitlesMaxLength",
@@ -99,6 +101,10 @@ export type StorageData = {
   buttonPos: Position;
   showVideoSlider: boolean;
   syncVolume: boolean;
+  // [VOT-FORK:volume-offset] Persisted settings; keep these keys stable across updates.
+  volumeLinkMode: "delta" | "offset";
+  /** Fixed translation volume bonus in percentage points (0..100). */
+  translationVolumeOffset: number;
   downloadWithName: boolean;
   sendNotifyOnComplete: boolean;
   subtitlesMaxLength: number;

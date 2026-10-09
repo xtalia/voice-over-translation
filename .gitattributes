@@ -1,0 +1,2 @@
+# Preserve diff context lines (a single space is meaningful in a patch).
+patches/*.patch text eol=lf -whitespace

@@ -102,21 +102,30 @@ function toPercentInt(value: unknown, fallback = 0): number {
   const numeric = typeof value === "number" ? value : Number(value);
   return Number.isFinite(numeric) ? clampPercentInt(numeric) : fallback;
 }
-function syncAudioTranslationVolumeFromVideo(
+export function syncAudioTranslationVolumeFromVideo(
   self: VideoHandler,
   videoPercent: number,
   options: {
     skipYouTubeLikeHosts?: boolean;
   } = {},
 ): void {
-  if (options.skipYouTubeLikeHosts && isYouTubeLikeHost(self.site.host)) {
+  // [VOT-FORK:volume-offset] Native mute/YouTube events must reach the fixed-offset path.
+  const fixedOffset = self.data?.volumeLinkMode === "offset";
+  if (
+    !fixedOffset &&
+    options.skipYouTubeLikeHosts &&
+    isYouTubeLikeHost(self.site.host)
+  ) {
     return;
   }
   // While smart ducking is active, the script drives video volume itself.
   // Ignore observer-driven sync to avoid feedback loops/jitter.
   if (self.smartVolumeDuckingInterval !== undefined) return;
   if (!self.data?.syncVolume || !self.audioPlayer?.player?.src) return;
-  if (self.isLikelyInternalVideoVolumeChange(videoPercent)) return;
+  // Fixed-offset linking is idempotent: native mute/unmute and auto-volume writes
+  // must still refresh translation, even when YouTube aria attributes do not change.
+  if (!fixedOffset && self.isLikelyInternalVideoVolumeChange(videoPercent))
+    return;
   self.syncVolumeWrapper("video", videoPercent);
 }
 function applyOverlayLayout(
