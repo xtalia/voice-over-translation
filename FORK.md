@@ -1,6 +1,6 @@
 # VOT: фиксированная надбавка громкости перевода
 
-Форк [ilyhalight/voice-over-translation](https://github.com/ilyhalight/voice-over-translation), локальная сборка userscript **1.11.17.2** (публикация в `master` — отдельный шаг).
+Форк [ilyhalight/voice-over-translation](https://github.com/ilyhalight/voice-over-translation), сборка userscript **1.11.17.2**. Устанавливаемая версия находится в `master/dist/vot.user.js`.
 
 ## Contributors и AI-участие
 
