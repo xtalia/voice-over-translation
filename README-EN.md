@@ -73,13 +73,33 @@
 
 Thanks to the **[Yandex.Translate][yatranslate-link]** and **[Yandex.Browser][yabrowser-link]** teams, and everyone [helping make the extension][contributors-link] even better.
 
-## This fork and Contributors
+## About xtalia's personal fork
 
-Adds presets and a custom translation-volume offset relative to the original. [Installation and setup → FORK.md](FORK.md).
+I am an ordinary VOT user adjusting the script to my viewing habits. This is an unofficial personal fork of [ilyhalight/voice-over-translation](https://github.com/ilyhalight/voice-over-translation), not a separate product or an official VOT release. I am not the author of the original project and do not claim authorship of it.
 
-- **xtalia** — feature initiator, requirements and fork maintainer.
-- **Hermes Agent (Nous Research), using OpenAI models** — AI coding assistant used to implement the changes, write tests and run verification. This feature was implemented with AI assistance, rather than manually written by the fork owner.
-- Original VOT authors retain credit for the upstream project.
+### Install this fork
+
+**[Install / update userscript 1.11.17.2](https://raw.githubusercontent.com/xtalia/voice-over-translation/master/dist/vot.user.js)** — open the link with Tampermonkey or Violentmonkey installed and confirm installation. Do not enable upstream VOT and this fork simultaneously. This userscript receives updates from xtalia's fork.
+
+The native extensions from Chrome WebStore, Firefox Add-ons and upstream Releases described below belong to the original VOT project, not this fork build.
+
+### Changes compared with upstream
+
+- **Fixed translation-volume offset.** The original track controls both tracks, with translation a configurable number of **percentage points** louder. Original **15%** + **10 pp** → translation **25%**, not 16.5%. Adjust the native YouTube volume slider without separately readjusting translation.
+- **Presets and custom values.** Offset from 0 to 100 pp, with presets and manual input. The existing equal-change linking mode remains available and is still the default.
+- **Original-volume restoration.** Disabling reduction or stopping translation restores the pre-reduction level. A replacement video element captures its own baseline.
+- **Two reduction modes.** “Reduce once” permits later manual adjustments. “Keep below the limit” prevents increases above the ceiling while allowing lower levels. Upstream adaptive reduction is preserved for compatibility.
+- **Quick controls below Subtitles.** 🔉 original reduction, 🔗 fixed-offset linking, 🔊 extended boost. They use the same persisted settings as the full menu and show their active state. Boost is unavailable while volume linking is enabled.
+- **Consistent combined behavior.** Translation follows the actual, already-capped original level. Mute or zero volume silences both tracks; unmuting restores the link. Settings persist across page reloads.
+
+[Detailed setup → FORK.md](FORK.md) · [Maintaining changes and updating from upstream → FORK-MAINTENANCE.md](FORK-MAINTENANCE.md)
+
+### Authors, rights and AI assistance
+
+- **Original VOT:** ilyhalight (Toil), sodapng, SashaXser, MrSoczekXD, mynovelhost and [the other contributors][contributors-link]. Original code and materials retain their authorship; this fork does not claim their work.
+- **Rights and license:** sodapng's and ilyhalight's original copyright notices and the [MIT license](LICENSE) remain unchanged. Third-party code, services and materials belong to their respective rights holders. This fork is distributed under the original MIT license and is not an official release.
+- **xtalia:** an ordinary user, initiator of these personal adjustments and fork owner, providing requirements and checking usability.
+- **Hermes Agent (Nous Research), using OpenAI models:** AI assistance for implementation, tests and verification. These changes were created with AI assistance, rather than manually written by the fork owner.
 
 ## Installing the extension
 
