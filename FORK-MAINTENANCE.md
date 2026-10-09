@@ -27,6 +27,19 @@
 | `tests/browser-volume-offset.{html,ts}` | Локальную фикстуру настоящих настроек/video/audio без API перевода |
 | `dist/vot.user.js`, `dist/vot-min.user.js` | Не редактировать вручную: пересобрать из уже объединённых исходников |
 
+## Дополнение: быстрые настройки громкости (1.11.17.2)
+
+- База дополнения — опубликованный коммит форка **`ff420e19213088f47968f4cede6cf7b1add6180f`**; работа ведётся в `feat/volume-quick-controls`.
+- Маркеры **`[VOT-FORK:auto-volume-limit]`** и **`[VOT-FORK:volume-quick]`** отмечают новое поведение.
+- `patches/volume-quick-controls.patch` — дополнительный source-only снимок относительно этой базы. Он проверяется на указанном коммите форка, уже содержащем первую функцию. На чистом upstream новый патч сам по себе неприменим; переносить оба набора через merge-коммиты или отдельно проверять последовательное применение патчей. Не считать совместимость с новым upstream доказанной старой проверкой.
+- `src/videoHandler/autoVolumeLimit.ts` сохраняет исходный уровень в WeakMap на время перевода: once применяется однократно, hold ограничивает потолок, выключение восстанавливает baseline.
+- `src/VideoHandler.ts` ограничивает VOT/programmatic writes до изменения плеера; при `replaceVideo()` восстанавливает старый элемент и заново сохраняет исходный уровень нового. `src/videoHandler/modules/{smartDuckingRuntime,events}.ts` подключают восстановление, native events и YouTube observer; не связывать перевод с попыткой превысить лимит.
+- `src/types/storage.ts` / `modules/init.ts`: сохранять `autoVolumeMode` (`once` / `hold` / совместимый `adaptive`) и миграцию из `enabledSmartDucking`.
+- `src/ui/components/volumeQuickControls.ts`, `src/ui/volumeQuickState.ts`, `src/styles/components/volume-quick.scss`: компактные кнопки, aria-pressed, actual values, отсутствие дублирующих сохранённых настроек.
+- `src/ui/views/{settings,overlay}.ts`, `src/ui/manager.ts`, `src/types/views/{settings,overlay}.ts`: переключатели под Subtitles, общая persistence-цепочка и обновление состояния из полных настроек. Расширенное усиление недоступно при связи громкостей.
+- `tests/auto-volume-limit.test.ts`, `tests/volume-quick-state.test.ts`, дополнительные проверки в `tests/volume-link-offset.test.ts` и `tests/browser-volume-quick*`: сохранять проверки restoration, once/hold, actual-volume offset, mute/unmute, quick settings и storage.
+- После обновления локалей пересчитать hashes для `en` / `ru`, повысить `src/headers.json` version и собрать обе userscript-версии. Source-only patch не включает `dist`; опубликованный `master` не считается обновлённым, пока отдельно не проверены удалённый commit и raw userscript.
+
 ## Как обновлять от оригинала, не теряя функцию
 
 Не заменять исходники файлом `dist/vot.user.js` из оригинала. Не использовать `git reset --hard upstream/master` и не запускать авто-синхронизацию форка, которая перезапишет наши коммиты.

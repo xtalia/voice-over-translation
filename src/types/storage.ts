@@ -29,6 +29,7 @@ export const storageKeys = [
   "dontTranslateLanguages",
   "enabledDontTranslateLanguages",
   "enabledAutoVolume",
+  "autoVolumeMode",
   "enabledSmartDucking",
   "autoVolume",
   "buttonPos",
@@ -90,6 +91,8 @@ export type StorageData = {
   dontTranslateLanguages: LanguageSelectKey[];
   enabledDontTranslateLanguages: boolean;
   enabledAutoVolume: boolean;
+  /** [VOT-FORK:auto-volume-limit] Explicit reduction policy; adaptive preserves upstream ducking. */
+  autoVolumeMode: "once" | "hold" | "adaptive";
   /**
    * Smart Auto-Volume ducking: only lower original video volume while translated
    * audio is actually audible.

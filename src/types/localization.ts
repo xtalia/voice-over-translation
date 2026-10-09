@@ -105,6 +105,15 @@ export type Phrase =
   | "VOTVolumeOffsetCustom"
   | "VOTVolumeOffset"
   | "VOTVolumeOffsetHelp"
+  | "VOTAutoVolumeMode"
+  | "VOTAutoVolumeModeOnce"
+  | "VOTAutoVolumeModeHold"
+  | "VOTAutoVolumeModeAdaptive"
+  | "VOTAutoVolumeModeDesc"
+  | "VOTQuickReduce"
+  | "VOTQuickLink"
+  | "VOTQuickBoost"
+  | "VOTQuickBoostUnavailableLinked"
   | "VOTDisableFromYourLang"
   | "VOTVideoIsTooLong"
   | "VOTNoVideoIDFound"
@@ -364,6 +373,15 @@ export type Phrases = {
   VOTVolumeOffsetCustom: string;
   VOTVolumeOffset: string;
   VOTVolumeOffsetHelp: string;
+  VOTAutoVolumeMode: string;
+  VOTAutoVolumeModeOnce: string;
+  VOTAutoVolumeModeHold: string;
+  VOTAutoVolumeModeAdaptive: string;
+  VOTAutoVolumeModeDesc: string;
+  VOTQuickReduce: string;
+  VOTQuickLink: string;
+  VOTQuickBoost: string;
+  VOTQuickBoostUnavailableLinked: string;
   VOTDisableFromYourLang: string;
   VOTVideoIsTooLong: string;
   VOTNoVideoIDFound: string;

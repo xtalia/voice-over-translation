@@ -9,5 +9,5 @@ test("fork update and localization URLs stay on xtalia's fork", () => {
   expect(repositoryUrl).toBe(
     "https://github.com/xtalia/voice-over-translation",
   );
-  expect(headers.version).toBe("1.11.17.1");
+  expect(headers.version).toBe("1.11.17.2");
 });

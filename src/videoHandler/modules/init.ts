@@ -56,6 +56,9 @@ export async function init(this: VideoHandler) {
     dontTranslateLanguages: [calculatedResLang],
     enabledDontTranslateLanguages: true,
     enabledAutoVolume: true,
+    autoVolumeMode: (await votStorage.get("enabledSmartDucking", true))
+      ? "adaptive"
+      : "once",
     enabledSmartDucking: true,
     autoVolume: defaultAutoVolume,
     buttonPos: "default",

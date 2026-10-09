@@ -12,6 +12,7 @@ const SETTINGS_EVENT_KEYS: Array<keyof SettingsViewEventMap> = [
   "change:audioBooster",
   "change:syncVolume",
   "change:volumeLinkSettings",
+  "change:volumePreferences",
   "change:subtitlesHighlightWords",
   "change:subtitlesSmartLayout",
   "select:responseLanguageSubtitles",
@@ -117,6 +118,7 @@ import SliderLabel from "../components/sliderLabel";
 import Textfield from "../components/textfield";
 import Tooltip from "../components/tooltip";
 import { HELP_ICON, WARNING_ICON } from "../icons";
+import type { VolumeQuickKey } from "../volumeQuickState";
 
 // [VOT-FORK:volume-offset] Presets and controls are documented in FORK-MAINTENANCE.md.
 const TRANSLATION_OFFSET_PRESETS = [0, 5, 10, 15, 20, 30, 50, 75, 100];
@@ -235,6 +237,7 @@ export class SettingsView {
   autoSetVolumeCheckbox?: Checkbox;
   smartDuckingCheckbox?: Checkbox;
   autoSetVolumeSlider?: Slider;
+  autoVolumeModeSelect?: Select<StorageData["autoVolumeMode"]>;
   showVideoVolumeSliderCheckbox?: Checkbox;
   audioBoosterCheckbox?: Checkbox;
   audioBoosterTooltip?: Tooltip;
@@ -407,10 +410,21 @@ export class SettingsView {
       apply(value);
       await votStorage.set(storageKey as any, readPersistedValue() as any);
       debug.log(`${logLabel} value changed. New value:`, value);
-      if (afterPersist) {
-        await afterPersist(value);
-      }
+      await afterPersist?.(value);
       dispatch?.(value);
+      if (
+        [
+          "enabledAutoVolume",
+          "autoVolume",
+          "autoVolumeMode",
+          "syncVolume",
+          "audioBooster",
+          "volumeLinkMode",
+          "translationVolumeOffset",
+        ].includes(storageKey)
+      ) {
+        this.events["change:volumePreferences"].dispatch();
+      }
     });
   }
 
@@ -659,6 +673,32 @@ export class SettingsView {
   private updateVolumeLinkControls(): void {
     const enabled = Boolean(this.data.syncVolume);
     const offset = this.data.volumeLinkMode === "offset";
+    if (this.audioBoosterCheckbox)
+      this.audioBoosterCheckbox.disabled =
+        !this.videoHandler?.isAudioContextSupported || enabled;
+    if (this.autoVolumeModeSelect) {
+      const selected =
+        this.data.autoVolumeMode ??
+        (this.data.enabledSmartDucking ? "adaptive" : "once");
+      this.autoVolumeModeSelect.updateItems([
+        {
+          label: localizationProvider.get("VOTAutoVolumeModeOnce"),
+          value: "once",
+          selected: selected === "once",
+        },
+        {
+          label: localizationProvider.get("VOTAutoVolumeModeHold"),
+          value: "hold",
+          selected: selected === "hold",
+        },
+        {
+          label: localizationProvider.get("VOTAutoVolumeModeAdaptive"),
+          value: "adaptive",
+          selected: selected === "adaptive",
+          disabled: enabled,
+        },
+      ]);
+    }
     if (this.volumeLinkModeSelect)
       this.volumeLinkModeSelect.disabled = !enabled;
     if (this.translationOffsetPresetSelect) {
@@ -748,6 +788,41 @@ export class SettingsView {
     });
     this.smartDuckingCheckbox.disabled =
       syncVolumeEnabled || !this.autoSetVolumeCheckbox.checked;
+    // [VOT-FORK:auto-volume-limit] Preserve existing users' adaptive mode; offer explicit once/hold.
+    const reductionMode =
+      this.data.autoVolumeMode ??
+      (this.data.enabledSmartDucking ? "adaptive" : "once");
+    this.autoVolumeModeSelect = new Select<StorageData["autoVolumeMode"]>({
+      selectTitle: localizationProvider.get("VOTAutoVolumeMode"),
+      dialogTitle: localizationProvider.get("VOTAutoVolumeMode"),
+      labelElement: localizationProvider.get("VOTAutoVolumeMode"),
+      searchable: false,
+      dialogParent: this.globalPortal,
+      items: [
+        {
+          label: localizationProvider.get("VOTAutoVolumeModeOnce"),
+          value: "once",
+          selected: reductionMode === "once",
+        },
+        {
+          label: localizationProvider.get("VOTAutoVolumeModeHold"),
+          value: "hold",
+          selected: reductionMode === "hold",
+        },
+        {
+          label: localizationProvider.get("VOTAutoVolumeModeAdaptive"),
+          value: "adaptive",
+          selected: reductionMode === "adaptive",
+          disabled: syncVolumeEnabled,
+        },
+      ],
+    });
+    this.autoVolumeModeSelect.container.title = localizationProvider.get(
+      "VOTAutoVolumeModeDesc",
+    );
+    this.autoVolumeModeSelect.disabled = !this.autoSetVolumeCheckbox.checked;
+    this.smartDuckingCheckbox.hidden = true;
+
     this.showVideoVolumeSliderCheckbox = new Checkbox({
       labelHtml: localizationProvider.get("showVideoVolumeSlider"),
       checked: this.data.showVideoSlider,
@@ -866,7 +941,7 @@ export class SettingsView {
       this.autoSubtitlesCheckbox.container,
       this.dontTranslateLanguagesSelect.container,
       this.autoSetVolumeSlider.container,
-      this.smartDuckingCheckbox.container,
+      this.autoVolumeModeSelect.container,
       this.showVideoVolumeSliderCheckbox.container,
       this.audioBoosterCheckbox.container,
       this.syncVolumeCheckbox.container,
@@ -1220,6 +1295,29 @@ export class SettingsView {
     this.initialized = true;
     return this;
   }
+  // [VOT-FORK:volume-quick] Drive the same checkbox/persistence pipeline as full settings.
+  async toggleQuickVolumeSetting(key: VolumeQuickKey): Promise<void> {
+    if (!this.isInitialized()) return;
+    const controls = {
+      enabledAutoVolume: this.autoSetVolumeCheckbox,
+      syncVolume: this.syncVolumeCheckbox,
+      audioBooster: this.audioBoosterCheckbox,
+    };
+    const control = controls[key];
+    if (control.disabled) return;
+    if (
+      key === "syncVolume" &&
+      !control.checked &&
+      this.data.volumeLinkMode !== "offset"
+    ) {
+      this.data.volumeLinkMode = "offset";
+      this.volumeLinkModeSelect?.setSelectedValue("offset");
+      await votStorage.set("volumeLinkMode", "offset");
+      this.events["change:volumeLinkSettings"].dispatch();
+    }
+    control.checked = !control.checked;
+  }
+
   initUIEvents() {
     if (!this.isInitialized()) {
       throw new Error("[VOT] SettingsView isn't initialized");
@@ -1319,6 +1417,7 @@ export class SettingsView {
       apply: (checked) => {
         this.data.enabledAutoVolume = checked;
         this.autoSetVolumeSlider.disabled = !checked;
+        this.autoVolumeModeSelect.disabled = !checked;
         this.smartDuckingCheckbox.disabled =
           !checked || Boolean(this.syncVolumeCheckbox?.checked);
       },
@@ -1326,6 +1425,24 @@ export class SettingsView {
       readPersistedValue: () => this.data.enabledAutoVolume,
       logLabel: "enabledAutoVolume",
       afterPersist: async () => this.videoHandler?.setupAudioSettings?.(),
+    });
+    this.bindPersistedSetting({
+      control: this.autoVolumeModeSelect,
+      event: "selectItem",
+      apply: (value: StorageData["autoVolumeMode"]) => {
+        this.data.autoVolumeMode = value;
+        this.data.enabledSmartDucking = value === "adaptive";
+      },
+      storageKey: "autoVolumeMode",
+      readPersistedValue: () => this.data.autoVolumeMode,
+      logLabel: "autoVolumeMode",
+      afterPersist: async () => {
+        await votStorage.set(
+          "enabledSmartDucking",
+          this.data.enabledSmartDucking,
+        );
+        this.videoHandler?.setupAudioSettings?.();
+      },
     });
     this.bindPersistedSetting({
       control: this.smartDuckingCheckbox,
@@ -1347,6 +1464,7 @@ export class SettingsView {
       storageKey: "autoVolume",
       readPersistedValue: () => this.data.autoVolume,
       logLabel: "autoVolume",
+      afterPersist: async () => this.videoHandler?.setupAudioSettings?.(),
     });
     this.bindPersistedSetting({
       control: this.showVideoVolumeSliderCheckbox,
@@ -1389,6 +1507,13 @@ export class SettingsView {
       storageKey: "syncVolume",
       readPersistedValue: () => this.data.syncVolume,
       logLabel: "syncVolume",
+      afterPersist: async () => {
+        if (this.data.syncVolume && this.data.autoVolumeMode === "adaptive") {
+          this.data.autoVolumeMode = "once";
+          this.autoVolumeModeSelect?.setSelectedValue("once");
+          await votStorage.set("autoVolumeMode", "once");
+        }
+      },
       dispatch: (checked) => this.events["change:syncVolume"].dispatch(checked),
     });
     this.bindPersistedSetting({

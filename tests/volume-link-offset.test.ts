@@ -154,6 +154,35 @@ describe("fixed translation volume offset", () => {
     expect(synced).toBe(0);
   });
 
+  test("handler clamps hold-mode volume writes before they reach the player", async () => {
+    const { VideoHandler } = await import("../src/VideoHandler");
+    const { applyAutoVolumeLimit, stopAutoVolumeLimit } = await import(
+      "../src/videoHandler/autoVolumeLimit"
+    );
+    const handler = Object.create(VideoHandler.prototype);
+    let volume = 0.8;
+    handler.data = {
+      enabledAutoVolume: true,
+      autoVolumeMode: "hold",
+      autoVolume: 15,
+    };
+    handler.hasActiveSource = () => true;
+    handler.getVideoVolume = () => volume;
+    handler.videoManager = {
+      setVideoVolume: (next: number) => {
+        volume = next;
+      },
+    };
+    handler.internalVideoVolumeSetHistory = [];
+    handler.internalVideoVolumeSetHistoryLimit = 48;
+    handler.internalVideoVolumeSuppressionMs = 250;
+    applyAutoVolumeLimit(handler);
+    handler.setVideoVolume(0.6);
+    expect(volume).toBeCloseTo(0.15);
+    stopAutoVolumeLimit(handler);
+    expect(volume).toBeCloseTo(0.8);
+  });
+
   test("Select disabled setter actually blocks opening a disabled control", async () => {
     const { default: Select } = await import("../src/ui/components/select");
     const control = Object.create(Select.prototype);

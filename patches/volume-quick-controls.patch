@@ -1,0 +1,1530 @@
+diff --git a/src/VideoHandler.ts b/src/VideoHandler.ts
+index 1b7da14..0266ae9 100644
+--- a/src/VideoHandler.ts
++++ b/src/VideoHandler.ts
+@@ -49,6 +49,11 @@ import {
+   volume01ToPercent,
+ } from "./utils/volume";
+ import VOTLocalizedError from "./VOTLocalizedError";
++import {
++  applyAutoVolumeLimit,
++  clampAutoVolumeRequest,
++  stopAutoVolumeLimit,
++} from "./videoHandler/autoVolumeLimit";
+ import {
+   getAutoHideDelay as getAutoHideDelayImpl,
+   initExtraEvents as initExtraEventsImpl,
+@@ -934,7 +939,8 @@ export class VideoHandler {
+       suppressSyncMs?: number;
+     } = {},
+   ): this {
+-    const snapped = snapVolume01(volume);
++    // [VOT-FORK:auto-volume-limit] Clamp VOT slider/programmatic writes before playback changes.
++    const snapped = clampAutoVolumeRequest(this, snapVolume01(volume));
+     const suppressSyncMs =
+       typeof options.suppressSyncMs === "number" &&
+       Number.isFinite(options.suppressSyncMs)
+@@ -1498,11 +1504,14 @@ export class VideoHandler {
+     if (this.video === video) return;
+ 
+     debug.log("[VideoHandler] replaceVideo", video);
++    // [VOT-FORK:auto-volume-limit] Restore the old element before capturing the replacement's own baseline.
++    stopAutoVolumeLimit(this);
+     await this.audioPlayer.replaceVideo(video);
+     this.abortController.abort();
+     this.releaseExtraEvents();
+ 
+     this.video = video;
++    applyAutoVolumeLimit(this);
+     this.abortController = new AbortController();
+     this.fullscreenHelper?.updateVideo(video);
+     this.resetSubtitlesWidget();
+diff --git a/src/headers.json b/src/headers.json
+index 04f2c68..35ad341 100644
+--- a/src/headers.json
++++ b/src/headers.json
+@@ -1,7 +1,7 @@
+ {
+   "name": "[VOT] - Voice Over Translation",
+   "description": "Watch videos in other languages with voice-over translation and subtitles in any browser",
+-  "version": "1.11.17.1",
++  "version": "1.11.17.2",
+   "author": "Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng; fork changes with Hermes Agent (AI)",
+   "namespace": "vot",
+   "icon": "https://translate.yandex.ru/icons/favicon.ico",
+diff --git a/src/localization/hashes.json b/src/localization/hashes.json
+index 8039a9f..7066b59 100644
+--- a/src/localization/hashes.json
++++ b/src/localization/hashes.json
+@@ -12,7 +12,7 @@
+   "da": "0bf66d2d8cebbd68e2210735fd48bd26",
+   "de": "693dc0fa6d95f207aadf0738effe5fe6",
+   "el": "84ec30bcadeea146a359e66be35ad52f",
+-  "en": "97e1af3b71e6df88ebd9ecccb8409436",
++  "en": "be06b98aa551290b69bf3625b5620742",
+   "es": "9007d775384a52767cfa4d5973d7949b",
+   "et": "d25e5a779d1612f93d89108e4ef8f66d",
+   "eu": "a459a61223a447c7c3c78588d7a5a4bc",
+@@ -45,7 +45,7 @@
+   "pl": "3ebfb43f129e00fe13b3c111430a5e92",
+   "pt": "dbe37e141a20b0be1ca25b52ce315ae5",
+   "ro": "7272cccff857a455bc2c1ea9b7f3b0ce",
+-  "ru": "4f7bc1491ab1f440535a23780c665c02",
++  "ru": "1c6622873130a24c8beeea10f974cc9a",
+   "si": "39d3ce4e562cab0fbafd5649e7e0d248",
+   "sk": "ff831055ffd0222fe429a410e346fc0a",
+   "sl": "69bfcfc529929d0ecc4a3586ed082332",
+diff --git a/src/localization/locales/en.json b/src/localization/locales/en.json
+index efd578e..d5e90e9 100644
+--- a/src/localization/locales/en.json
++++ b/src/localization/locales/en.json
+@@ -20,6 +20,15 @@
+   "VOTYouTubeSignInSuggested": "Sign in to YouTube and try translation again",
+   "VOTFailedDownloadAudio": "Failed to download audio",
+   "audioFormatNotSupported": "The audio format is not supported",
++  "VOTAutoVolumeMode": "Original volume reduction",
++  "VOTAutoVolumeModeOnce": "Reduce once",
++  "VOTAutoVolumeModeHold": "Keep below the limit",
++  "VOTAutoVolumeModeAdaptive": "Adaptive (upstream)",
++  "VOTAutoVolumeModeDesc": "Once allows later manual changes; keep below the limit enforces a ceiling. Disabling reduction or translation restores the previous volume.",
++  "VOTQuickReduce": "Reduce original to",
++  "VOTQuickLink": "Link volumes",
++  "VOTQuickBoost": "Extended volume boost",
++  "VOTQuickBoostUnavailableLinked": "Extended boost is unavailable while volumes are linked. Disable linking first.",
+   "VOTAutoTranslate": "Translate on open",
+   "VOTAutoSubtitles": "Subtitles on open",
+   "VOTDontTranslateYourLang": "Don't translate from my language",
+diff --git a/src/localization/locales/ru.json b/src/localization/locales/ru.json
+index d7d1d93..51bcd51 100644
+--- a/src/localization/locales/ru.json
++++ b/src/localization/locales/ru.json
+@@ -18,6 +18,15 @@
+   "audioNotReceived": "Не получена ссылка на аудио",
+   "VOTYouTubeSignInSuggested": "Войдите в YouTube и повторите перевод",
+   "audioFormatNotSupported": "Формат аудио не поддерживается",
++  "VOTAutoVolumeMode": "Режим уменьшения громкости оригинала",
++  "VOTAutoVolumeModeOnce": "Уменьшить один раз",
++  "VOTAutoVolumeModeHold": "Постоянно удерживать лимит",
++  "VOTAutoVolumeModeAdaptive": "Адаптивное снижение (как в оригинальном VOT)",
++  "VOTAutoVolumeModeDesc": "Один раз — дальше громкость можно менять вручную. Удерживать лимит — не даёт поднять оригинал выше указанного уровня. Выключение уменьшения или перевода возвращает прежнюю громкость.",
++  "VOTQuickReduce": "Уменьшать оригинал до",
++  "VOTQuickLink": "Связать громкости",
++  "VOTQuickBoost": "Расширенное увеличение громкости",
++  "VOTQuickBoostUnavailableLinked": "Расширенное увеличение недоступно при связи громкостей. Сначала выключите связь.",
+   "VOTAutoTranslate": "Переводить при открытии",
+   "VOTAutoSubtitles": "Субтитры при открытии",
+   "VOTDontTranslateYourLang": "Не переводить с родного языка",
+diff --git a/src/styles/components/volume-quick.scss b/src/styles/components/volume-quick.scss
+new file mode 100644
+index 0000000..c6d358a
+--- /dev/null
++++ b/src/styles/components/volume-quick.scss
+@@ -0,0 +1,30 @@
++// [VOT-FORK:volume-quick] Compact, keyboard-accessible toggles below Subtitles.
++.vot-volume-quick-controls {
++  display: flex;
++  flex-direction: row;
++  flex-shrink: 0;
++  gap: var(--vot-space-2, 8px);
++  width: 100%;
++}
++.vot-volume-quick-button {
++  appearance: none;
++  flex: 1;
++  min-width: 0;
++  text-align: center;
++  font: inherit;
++  font-size: 13px;
++  line-height: 1.4;
++  padding: 9px 12px;
++  border: 1px solid var(--vot-border-color);
++  border-radius: var(--vot-radius-s, 10px);
++  background: transparent;
++  color: rgb(var(--vot-onsurface-rgb, 227, 227, 227));
++  cursor: pointer;
++  transition: background var(--vot-duration-fast, 120ms);
++  &[aria-pressed="true"] {
++    background: rgba(var(--vot-primary-rgb, 139, 180, 245), 0.16);
++    border-color: rgba(var(--vot-primary-rgb, 139, 180, 245), 0.6);
++  }
++  &:focus-visible { outline: 2px solid var(--vot-focus-ring-color); outline-offset: 2px; }
++  &:disabled { opacity: 0.45; cursor: not-allowed; }
++}
+diff --git a/src/styles/main.scss b/src/styles/main.scss
+index 876b8b8..bc0160a 100644
+--- a/src/styles/main.scss
++++ b/src/styles/main.scss
+@@ -17,6 +17,7 @@
+ @use "components/segmented-button.scss";
+ @use "components/tooltip.scss";
+ @use "components/menu.scss";
++@use "components/volume-quick.scss";
+ @use "components/voice-popover.scss";
+ @use "components/dialog.scss";
+ @use "components/loader.scss";
+diff --git a/src/types/localization.ts b/src/types/localization.ts
+index 84019f9..7d21599 100644
+--- a/src/types/localization.ts
++++ b/src/types/localization.ts
+@@ -105,6 +105,15 @@ export type Phrase =
+   | "VOTVolumeOffsetCustom"
+   | "VOTVolumeOffset"
+   | "VOTVolumeOffsetHelp"
++  | "VOTAutoVolumeMode"
++  | "VOTAutoVolumeModeOnce"
++  | "VOTAutoVolumeModeHold"
++  | "VOTAutoVolumeModeAdaptive"
++  | "VOTAutoVolumeModeDesc"
++  | "VOTQuickReduce"
++  | "VOTQuickLink"
++  | "VOTQuickBoost"
++  | "VOTQuickBoostUnavailableLinked"
+   | "VOTDisableFromYourLang"
+   | "VOTVideoIsTooLong"
+   | "VOTNoVideoIDFound"
+@@ -364,6 +373,15 @@ export type Phrases = {
+   VOTVolumeOffsetCustom: string;
+   VOTVolumeOffset: string;
+   VOTVolumeOffsetHelp: string;
++  VOTAutoVolumeMode: string;
++  VOTAutoVolumeModeOnce: string;
++  VOTAutoVolumeModeHold: string;
++  VOTAutoVolumeModeAdaptive: string;
++  VOTAutoVolumeModeDesc: string;
++  VOTQuickReduce: string;
++  VOTQuickLink: string;
++  VOTQuickBoost: string;
++  VOTQuickBoostUnavailableLinked: string;
+   VOTDisableFromYourLang: string;
+   VOTVideoIsTooLong: string;
+   VOTNoVideoIDFound: string;
+diff --git a/src/types/storage.ts b/src/types/storage.ts
+index b036a3d..b113f02 100644
+--- a/src/types/storage.ts
++++ b/src/types/storage.ts
+@@ -29,6 +29,7 @@ export const storageKeys = [
+   "dontTranslateLanguages",
+   "enabledDontTranslateLanguages",
+   "enabledAutoVolume",
++  "autoVolumeMode",
+   "enabledSmartDucking",
+   "autoVolume",
+   "buttonPos",
+@@ -90,6 +91,8 @@ export type StorageData = {
+   dontTranslateLanguages: LanguageSelectKey[];
+   enabledDontTranslateLanguages: boolean;
+   enabledAutoVolume: boolean;
++  /** [VOT-FORK:auto-volume-limit] Explicit reduction policy; adaptive preserves upstream ducking. */
++  autoVolumeMode: "once" | "hold" | "adaptive";
+   /**
+    * Smart Auto-Volume ducking: only lower original video volume while translated
+    * audio is actually audible.
+diff --git a/src/types/views/overlay.ts b/src/types/views/overlay.ts
+index c739175..eea2a42 100644
+--- a/src/types/views/overlay.ts
++++ b/src/types/views/overlay.ts
+@@ -13,6 +13,7 @@ export type OverlayViewProps = {
+ };
+ 
+ export type OverlayViewEventMap = {
++  "click:volumeQuick": ["enabledAutoVolume" | "syncVolume" | "audioBooster"];
+   "click:settings": [];
+   "click:pip": [];
+   "click:subtitles": [];
+diff --git a/src/types/views/settings.ts b/src/types/views/settings.ts
+index 0220773..1cccbf5 100644
+--- a/src/types/views/settings.ts
++++ b/src/types/views/settings.ts
+@@ -25,6 +25,7 @@ export type SettingsViewEventMap = {
+   "change:audioBooster": [checked: boolean];
+   "change:syncVolume": [checked: boolean];
+   "change:volumeLinkSettings": [];
++  "change:volumePreferences": [];
+   "change:subtitlesHighlightWords": [checked: boolean];
+   "change:subtitlesSmartLayout": [checked: boolean];
+   "select:responseLanguageSubtitles": [item: ResponseLanguageSubtitles];
+diff --git a/src/ui/components/volumeQuickControls.ts b/src/ui/components/volumeQuickControls.ts
+new file mode 100644
+index 0000000..0877abe
+--- /dev/null
++++ b/src/ui/components/volumeQuickControls.ts
+@@ -0,0 +1,54 @@
++// [VOT-FORK:volume-quick] Shared setting state; no independent stored values.
++import { localizationProvider } from "../../localization/localizationProvider";
++import type { StorageData } from "../../types/storage";
++import { getVolumeQuickStates, type VolumeQuickKey } from "../volumeQuickState";
++
++export class VolumeQuickControls {
++  readonly container = document.createElement("vot-block");
++  readonly buttons = new Map<VolumeQuickKey, HTMLButtonElement>();
++  constructor(
++    private readonly data: Partial<StorageData>,
++    private readonly supportsBoost: boolean,
++    private readonly onToggle: (key: VolumeQuickKey) => void | Promise<void>,
++  ) {
++    this.container.className = "vot-volume-quick-controls";
++    for (const state of getVolumeQuickStates(data, supportsBoost)) {
++      const button = document.createElement("button");
++      button.type = "button";
++      button.className = "vot-volume-quick-button";
++      button.dataset.volumeSetting = state.key;
++      button.addEventListener("click", async (event) => {
++        event.preventDefault();
++        event.stopPropagation();
++        if (button.disabled) return;
++        button.disabled = true;
++        try {
++          await this.onToggle(state.key);
++        } catch (error) {
++          console.error("[VOT] Quick volume setting failed", error);
++        } finally {
++          this.refresh();
++        }
++      });
++      this.buttons.set(state.key, button);
++      this.container.append(button);
++    }
++    this.refresh();
++  }
++  refresh(): void {
++    for (const state of getVolumeQuickStates(this.data, this.supportsBoost)) {
++      const button = this.buttons.get(state.key);
++      if (!button) continue;
++      const label = localizationProvider.get(state.labelKey);
++      const fullLabel = `${label}${state.detail ? ` ${state.detail}` : ""}`;
++      button.textContent = `${state.emoji}${state.detail ? ` ${state.detail}` : ""}`;
++      button.setAttribute("aria-label", fullLabel);
++      button.setAttribute("aria-pressed", String(state.active));
++      button.disabled = state.disabled;
++      button.title =
++        state.key === "audioBooster" && this.data.syncVolume
++          ? localizationProvider.get("VOTQuickBoostUnavailableLinked")
++          : fullLabel;
++    }
++  }
++}
+diff --git a/src/ui/manager.ts b/src/ui/manager.ts
+index def8f9c..2b9fbce 100644
+--- a/src/ui/manager.ts
++++ b/src/ui/manager.ts
+@@ -196,6 +196,14 @@ export class UIManager {
+ 
+         await this.videoHandler.toggleSubtitlesForCurrentLangPair();
+       })
++      .addEventListener("click:volumeQuick", (key) => {
++        const settingsView = this.votSettingsView;
++        if (!settingsView) return;
++        this.runDetached(
++          settingsView.toggleQuickVolumeSetting(key),
++          "Failed to toggle volume preference",
++        );
++      })
+       .addEventListener("click:settings", async () => {
+         this.videoHandler?.subtitlesWidget?.releaseTooltip();
+         this.videoHandler?.overlayVisibility?.cancel();
+@@ -221,15 +229,23 @@ export class UIManager {
+           }
+           const nextVolume01 = volume / 100;
+           this.videoHandler.setVideoVolume(nextVolume01);
+-          this.videoHandler.applyManualVideoVolumeOverride(nextVolume01);
++          this.videoHandler.applyManualVideoVolumeOverride(
++            this.videoHandler.getVideoVolume(),
++          );
+         }
+ 
++        // [VOT-FORK:auto-volume-limit] A clamped write may not emit volumechange if already at the ceiling.
++        const actualVolume =
++          volume === 0
++            ? 0
++            : Math.round(this.videoHandler.getVideoVolume() * 100);
++        if (actualVolume !== volume) this.videoHandler.syncVideoVolumeSlider();
+         if (!this.data.syncVolume) {
+-          this.videoHandler.onVideoVolumeSliderSynced(volume);
++          this.videoHandler.onVideoVolumeSliderSynced(actualVolume);
+           return;
+         }
+ 
+-        this.videoHandler.syncVolumeWrapper("video", volume);
++        this.videoHandler.syncVolumeWrapper("video", actualVolume);
+       })
+       .addEventListener("input:translationVolume", (volume) => {
+         if (!this.videoHandler) {
+@@ -391,8 +407,12 @@ export class UIManager {
+           this.videoHandler.refreshVolumeLink();
+         });
+       })
++      .addEventListener("change:volumePreferences", () => {
++        this.votOverlayView?.refreshVolumeQuickControls();
++      })
+       // [VOT-FORK:volume-offset] Apply settings without waiting for a player-volume event.
+       .addEventListener("change:volumeLinkSettings", () => {
++        this.votOverlayView?.refreshVolumeQuickControls();
+         this.videoHandler?.refreshVolumeLink();
+       })
+       .addEventListener("change:subtitlesHighlightWords", (checked) => {
+diff --git a/src/ui/views/overlay.ts b/src/ui/views/overlay.ts
+index 29a5759..565b7d1 100644
+--- a/src/ui/views/overlay.ts
++++ b/src/ui/views/overlay.ts
+@@ -36,6 +36,7 @@ import Slider from "../components/slider";
+ import SliderLabel from "../components/sliderLabel";
+ import Tooltip from "../components/tooltip";
+ import VoicePopover, { type VoiceType } from "../components/voicePopover";
++import { VolumeQuickControls } from "../components/volumeQuickControls";
+ import VOTButton from "../components/votButton";
+ import VOTMenu from "../components/votMenu";
+ import { SETTINGS_ICON, SUBTITLES_ICON } from "./../icons";
+@@ -92,6 +93,9 @@ export class OverlayView {
+     "click:downloadTranslation": new EventImpl<
+       OverlayViewEventMap["click:downloadTranslation"]
+     >(),
++    "click:volumeQuick": new EventImpl<
++      OverlayViewEventMap["click:volumeQuick"]
++    >(),
+     "click:downloadSubtitles": new EventImpl<
+       OverlayViewEventMap["click:downloadSubtitles"]
+     >(),
+@@ -125,6 +129,7 @@ export class OverlayView {
+   // menu
+   votMenu?: VOTMenu;
+   downloadTranslationButton?: DownloadButton;
++  volumeQuickControls?: VolumeQuickControls;
+   downloadSubtitlesButton?: HTMLElement;
+   openSettingsButton?: HTMLElement;
+   languagePairSelect?: LanguagePairSelect<RequestLang, ResponseLang>;
+@@ -210,6 +215,7 @@ export class OverlayView {
+     // #region Menu type
+     votMenu: VOTMenu;
+     downloadTranslationButton: DownloadButton;
++    volumeQuickControls: VolumeQuickControls;
+     downloadSubtitlesButton: HTMLElement;
+     openSettingsButton: HTMLElement;
+     languagePairSelect: LanguagePairSelect<RequestLang, ResponseLang>;
+@@ -485,6 +491,15 @@ export class OverlayView {
+     );
+ 
+     // #region VOT Menu Header
++    // [VOT-FORK:volume-quick] Keep these directly beneath the subtitles row.
++    this.volumeQuickControls = new VolumeQuickControls(
++      this.data,
++      Boolean(this.videoHandler?.isAudioContextSupported),
++      (key) => {
++        this.events["click:volumeQuick"].dispatch(key);
++      },
++    );
++
+     this.downloadTranslationButton = new DownloadButton();
+     this.downloadTranslationButton.hidden = true;
+ 
+@@ -576,6 +591,7 @@ export class OverlayView {
+     this.votMenu.bodyContainer.append(
+       this.languagePairSelect.container,
+       this.subtitlesSelect.container,
++      this.volumeQuickControls.container,
+       this.videoVolumeSlider.container,
+       this.translationVolumeSlider.container,
+     );
+@@ -585,6 +601,10 @@ export class OverlayView {
+     return this;
+   }
+ 
++  refreshVolumeQuickControls(): void {
++    this.volumeQuickControls?.refresh();
++  }
++
+   initUIEvents() {
+     if (!this.isInitialized()) {
+       throw new Error("[VOT] OverlayView isn't initialized");
+diff --git a/src/ui/views/settings.ts b/src/ui/views/settings.ts
+index 9aa025d..22e8080 100644
+--- a/src/ui/views/settings.ts
++++ b/src/ui/views/settings.ts
+@@ -12,6 +12,7 @@ const SETTINGS_EVENT_KEYS: Array<keyof SettingsViewEventMap> = [
+   "change:audioBooster",
+   "change:syncVolume",
+   "change:volumeLinkSettings",
++  "change:volumePreferences",
+   "change:subtitlesHighlightWords",
+   "change:subtitlesSmartLayout",
+   "select:responseLanguageSubtitles",
+@@ -117,6 +118,7 @@ import SliderLabel from "../components/sliderLabel";
+ import Textfield from "../components/textfield";
+ import Tooltip from "../components/tooltip";
+ import { HELP_ICON, WARNING_ICON } from "../icons";
++import type { VolumeQuickKey } from "../volumeQuickState";
+ 
+ // [VOT-FORK:volume-offset] Presets and controls are documented in FORK-MAINTENANCE.md.
+ const TRANSLATION_OFFSET_PRESETS = [0, 5, 10, 15, 20, 30, 50, 75, 100];
+@@ -235,6 +237,7 @@ export class SettingsView {
+   autoSetVolumeCheckbox?: Checkbox;
+   smartDuckingCheckbox?: Checkbox;
+   autoSetVolumeSlider?: Slider;
++  autoVolumeModeSelect?: Select<StorageData["autoVolumeMode"]>;
+   showVideoVolumeSliderCheckbox?: Checkbox;
+   audioBoosterCheckbox?: Checkbox;
+   audioBoosterTooltip?: Tooltip;
+@@ -407,10 +410,21 @@ export class SettingsView {
+       apply(value);
+       await votStorage.set(storageKey as any, readPersistedValue() as any);
+       debug.log(`${logLabel} value changed. New value:`, value);
+-      if (afterPersist) {
+-        await afterPersist(value);
+-      }
++      await afterPersist?.(value);
+       dispatch?.(value);
++      if (
++        [
++          "enabledAutoVolume",
++          "autoVolume",
++          "autoVolumeMode",
++          "syncVolume",
++          "audioBooster",
++          "volumeLinkMode",
++          "translationVolumeOffset",
++        ].includes(storageKey)
++      ) {
++        this.events["change:volumePreferences"].dispatch();
++      }
+     });
+   }
+ 
+@@ -659,6 +673,32 @@ export class SettingsView {
+   private updateVolumeLinkControls(): void {
+     const enabled = Boolean(this.data.syncVolume);
+     const offset = this.data.volumeLinkMode === "offset";
++    if (this.audioBoosterCheckbox)
++      this.audioBoosterCheckbox.disabled =
++        !this.videoHandler?.isAudioContextSupported || enabled;
++    if (this.autoVolumeModeSelect) {
++      const selected =
++        this.data.autoVolumeMode ??
++        (this.data.enabledSmartDucking ? "adaptive" : "once");
++      this.autoVolumeModeSelect.updateItems([
++        {
++          label: localizationProvider.get("VOTAutoVolumeModeOnce"),
++          value: "once",
++          selected: selected === "once",
++        },
++        {
++          label: localizationProvider.get("VOTAutoVolumeModeHold"),
++          value: "hold",
++          selected: selected === "hold",
++        },
++        {
++          label: localizationProvider.get("VOTAutoVolumeModeAdaptive"),
++          value: "adaptive",
++          selected: selected === "adaptive",
++          disabled: enabled,
++        },
++      ]);
++    }
+     if (this.volumeLinkModeSelect)
+       this.volumeLinkModeSelect.disabled = !enabled;
+     if (this.translationOffsetPresetSelect) {
+@@ -748,6 +788,41 @@ export class SettingsView {
+     });
+     this.smartDuckingCheckbox.disabled =
+       syncVolumeEnabled || !this.autoSetVolumeCheckbox.checked;
++    // [VOT-FORK:auto-volume-limit] Preserve existing users' adaptive mode; offer explicit once/hold.
++    const reductionMode =
++      this.data.autoVolumeMode ??
++      (this.data.enabledSmartDucking ? "adaptive" : "once");
++    this.autoVolumeModeSelect = new Select<StorageData["autoVolumeMode"]>({
++      selectTitle: localizationProvider.get("VOTAutoVolumeMode"),
++      dialogTitle: localizationProvider.get("VOTAutoVolumeMode"),
++      labelElement: localizationProvider.get("VOTAutoVolumeMode"),
++      searchable: false,
++      dialogParent: this.globalPortal,
++      items: [
++        {
++          label: localizationProvider.get("VOTAutoVolumeModeOnce"),
++          value: "once",
++          selected: reductionMode === "once",
++        },
++        {
++          label: localizationProvider.get("VOTAutoVolumeModeHold"),
++          value: "hold",
++          selected: reductionMode === "hold",
++        },
++        {
++          label: localizationProvider.get("VOTAutoVolumeModeAdaptive"),
++          value: "adaptive",
++          selected: reductionMode === "adaptive",
++          disabled: syncVolumeEnabled,
++        },
++      ],
++    });
++    this.autoVolumeModeSelect.container.title = localizationProvider.get(
++      "VOTAutoVolumeModeDesc",
++    );
++    this.autoVolumeModeSelect.disabled = !this.autoSetVolumeCheckbox.checked;
++    this.smartDuckingCheckbox.hidden = true;
++
+     this.showVideoVolumeSliderCheckbox = new Checkbox({
+       labelHtml: localizationProvider.get("showVideoVolumeSlider"),
+       checked: this.data.showVideoSlider,
+@@ -866,7 +941,7 @@ export class SettingsView {
+       this.autoSubtitlesCheckbox.container,
+       this.dontTranslateLanguagesSelect.container,
+       this.autoSetVolumeSlider.container,
+-      this.smartDuckingCheckbox.container,
++      this.autoVolumeModeSelect.container,
+       this.showVideoVolumeSliderCheckbox.container,
+       this.audioBoosterCheckbox.container,
+       this.syncVolumeCheckbox.container,
+@@ -1220,6 +1295,29 @@ export class SettingsView {
+     this.initialized = true;
+     return this;
+   }
++  // [VOT-FORK:volume-quick] Drive the same checkbox/persistence pipeline as full settings.
++  async toggleQuickVolumeSetting(key: VolumeQuickKey): Promise<void> {
++    if (!this.isInitialized()) return;
++    const controls = {
++      enabledAutoVolume: this.autoSetVolumeCheckbox,
++      syncVolume: this.syncVolumeCheckbox,
++      audioBooster: this.audioBoosterCheckbox,
++    };
++    const control = controls[key];
++    if (control.disabled) return;
++    if (
++      key === "syncVolume" &&
++      !control.checked &&
++      this.data.volumeLinkMode !== "offset"
++    ) {
++      this.data.volumeLinkMode = "offset";
++      this.volumeLinkModeSelect?.setSelectedValue("offset");
++      await votStorage.set("volumeLinkMode", "offset");
++      this.events["change:volumeLinkSettings"].dispatch();
++    }
++    control.checked = !control.checked;
++  }
++
+   initUIEvents() {
+     if (!this.isInitialized()) {
+       throw new Error("[VOT] SettingsView isn't initialized");
+@@ -1319,6 +1417,7 @@ export class SettingsView {
+       apply: (checked) => {
+         this.data.enabledAutoVolume = checked;
+         this.autoSetVolumeSlider.disabled = !checked;
++        this.autoVolumeModeSelect.disabled = !checked;
+         this.smartDuckingCheckbox.disabled =
+           !checked || Boolean(this.syncVolumeCheckbox?.checked);
+       },
+@@ -1327,6 +1426,24 @@ export class SettingsView {
+       logLabel: "enabledAutoVolume",
+       afterPersist: async () => this.videoHandler?.setupAudioSettings?.(),
+     });
++    this.bindPersistedSetting({
++      control: this.autoVolumeModeSelect,
++      event: "selectItem",
++      apply: (value: StorageData["autoVolumeMode"]) => {
++        this.data.autoVolumeMode = value;
++        this.data.enabledSmartDucking = value === "adaptive";
++      },
++      storageKey: "autoVolumeMode",
++      readPersistedValue: () => this.data.autoVolumeMode,
++      logLabel: "autoVolumeMode",
++      afterPersist: async () => {
++        await votStorage.set(
++          "enabledSmartDucking",
++          this.data.enabledSmartDucking,
++        );
++        this.videoHandler?.setupAudioSettings?.();
++      },
++    });
+     this.bindPersistedSetting({
+       control: this.smartDuckingCheckbox,
+       event: "change",
+@@ -1347,6 +1464,7 @@ export class SettingsView {
+       storageKey: "autoVolume",
+       readPersistedValue: () => this.data.autoVolume,
+       logLabel: "autoVolume",
++      afterPersist: async () => this.videoHandler?.setupAudioSettings?.(),
+     });
+     this.bindPersistedSetting({
+       control: this.showVideoVolumeSliderCheckbox,
+@@ -1389,6 +1507,13 @@ export class SettingsView {
+       storageKey: "syncVolume",
+       readPersistedValue: () => this.data.syncVolume,
+       logLabel: "syncVolume",
++      afterPersist: async () => {
++        if (this.data.syncVolume && this.data.autoVolumeMode === "adaptive") {
++          this.data.autoVolumeMode = "once";
++          this.autoVolumeModeSelect?.setSelectedValue("once");
++          await votStorage.set("autoVolumeMode", "once");
++        }
++      },
+       dispatch: (checked) => this.events["change:syncVolume"].dispatch(checked),
+     });
+     this.bindPersistedSetting({
+diff --git a/src/ui/volumeQuickState.ts b/src/ui/volumeQuickState.ts
+new file mode 100644
+index 0000000..bd85bd5
+--- /dev/null
++++ b/src/ui/volumeQuickState.ts
+@@ -0,0 +1,46 @@
++import type { StorageData } from "../types/storage";
++export type VolumeQuickKey =
++  | "enabledAutoVolume"
++  | "syncVolume"
++  | "audioBooster";
++export function getVolumeQuickStates(
++  data: Partial<StorageData>,
++  supportsBoost: boolean,
++): Array<{
++  key: VolumeQuickKey;
++  active: boolean;
++  disabled: boolean;
++  detail: string;
++  emoji: string;
++  labelKey: "VOTQuickReduce" | "VOTQuickLink" | "VOTQuickBoost";
++}> {
++  return [
++    {
++      key: "enabledAutoVolume",
++      active: Boolean(data.enabledAutoVolume),
++      disabled: false,
++      detail: `${data.autoVolume ?? 15}%`,
++      emoji: "🔉",
++      labelKey: "VOTQuickReduce",
++    },
++    {
++      key: "syncVolume",
++      active: Boolean(data.syncVolume),
++      disabled: false,
++      detail:
++        data.volumeLinkMode === "offset"
++          ? `+${data.translationVolumeOffset ?? 10}`
++          : "Δ",
++      emoji: "🔗",
++      labelKey: "VOTQuickLink",
++    },
++    {
++      key: "audioBooster",
++      active: Boolean(data.audioBooster),
++      disabled: !supportsBoost || Boolean(data.syncVolume),
++      detail: "",
++      emoji: "🔊",
++      labelKey: "VOTQuickBoost",
++    },
++  ];
++}
+diff --git a/src/videoHandler/autoVolumeLimit.ts b/src/videoHandler/autoVolumeLimit.ts
+new file mode 100644
+index 0000000..e1e6f5a
+--- /dev/null
++++ b/src/videoHandler/autoVolumeLimit.ts
+@@ -0,0 +1,102 @@
++// [VOT-FORK:auto-volume-limit] Original-volume ceiling and restoration.
++export type AutoVolumeLimitHandler = {
++  data?: {
++    enabledAutoVolume?: boolean;
++    autoVolumeMode?: string;
++    autoVolume?: number;
++  };
++  hasActiveSource(): boolean;
++  getVideoVolume(): number;
++  setVideoVolume(
++    value: number,
++    options?: { preserveYoutubeVolumeStorage?: boolean },
++  ): unknown;
++};
++const states = new WeakMap<
++  AutoVolumeLimitHandler,
++  { baseline: number; target: number; mode: string }
++>();
++const targetOf = (handler: AutoVolumeLimitHandler) => {
++  const configured = handler.data?.autoVolume;
++  return (
++    Math.round(
++      Math.max(
++        0,
++        Math.min(
++          100,
++          typeof configured === "number" && Number.isFinite(configured)
++            ? configured
++            : 15,
++        ),
++      ),
++    ) / 100
++  );
++};
++
++export function stopAutoVolumeLimit(handler: AutoVolumeLimitHandler): boolean {
++  const state = states.get(handler);
++  if (!state) return false;
++  states.delete(handler);
++  handler.setVideoVolume(state.baseline, {
++    preserveYoutubeVolumeStorage: true,
++  });
++  return true;
++}
++
++export function applyAutoVolumeLimit(handler: AutoVolumeLimitHandler): void {
++  const mode = handler.data?.autoVolumeMode;
++  if (
++    !handler.data?.enabledAutoVolume ||
++    !handler.hasActiveSource() ||
++    (mode !== "hold" && mode !== "once")
++  ) {
++    stopAutoVolumeLimit(handler);
++    return;
++  }
++  let state = states.get(handler);
++  const target = targetOf(handler);
++  if (!state) {
++    state = { baseline: handler.getVideoVolume(), target, mode };
++    states.set(handler, state);
++    handler.setVideoVolume(Math.min(state.baseline, target), {
++      preserveYoutubeVolumeStorage: true,
++    });
++  } else if (state.target !== target || state.mode !== mode) {
++    state.target = target;
++    state.mode = mode;
++    handler.setVideoVolume(Math.min(handler.getVideoVolume(), target), {
++      preserveYoutubeVolumeStorage: true,
++    });
++  }
++  if (mode === "hold") enforceAutoVolumeCeiling(handler);
++}
++
++export function clampAutoVolumeRequest(
++  handler: AutoVolumeLimitHandler,
++  requested: number,
++): number {
++  if (
++    !states.has(handler) ||
++    !handler.data?.enabledAutoVolume ||
++    handler.data.autoVolumeMode !== "hold" ||
++    !handler.hasActiveSource()
++  )
++    return requested;
++  return Math.min(requested, targetOf(handler));
++}
++
++export function enforceAutoVolumeCeiling(
++  handler: AutoVolumeLimitHandler,
++): boolean {
++  if (
++    !states.has(handler) ||
++    !handler.data?.enabledAutoVolume ||
++    handler.data.autoVolumeMode !== "hold" ||
++    !handler.hasActiveSource()
++  )
++    return false;
++  const target = targetOf(handler);
++  if (handler.getVideoVolume() <= target + 0.00001) return false;
++  handler.setVideoVolume(target, { preserveYoutubeVolumeStorage: true });
++  return true;
++}
+diff --git a/src/videoHandler/modules/events.ts b/src/videoHandler/modules/events.ts
+index b130444..47cfb23 100644
+--- a/src/videoHandler/modules/events.ts
++++ b/src/videoHandler/modules/events.ts
+@@ -16,6 +16,7 @@ import { GM_fetch } from "../../utils/gm";
+ import { isIframe } from "../../utils/iframeConnector";
+ import { clampPercentInt } from "../../utils/volume";
+ import type { VideoHandler } from "../../VideoHandler";
++import { enforceAutoVolumeCeiling } from "../autoVolumeLimit";
+ import { handlePlaybackResumedTranslationRefresh } from "./translation";
+ 
+ type ScopedAddListener = (
+@@ -109,6 +110,11 @@ export function syncAudioTranslationVolumeFromVideo(
+     skipYouTubeLikeHosts?: boolean;
+   } = {},
+ ): void {
++  // [VOT-FORK:auto-volume-limit] YouTube observers and native events share the same ceiling.
++  if (enforceAutoVolumeCeiling(self)) {
++    self.syncVideoVolumeSlider();
++    videoPercent = clampPercentInt(self.getVideoVolume() * 100);
++  }
+   // [VOT-FORK:volume-offset] Native mute/YouTube events must reach the fixed-offset path.
+   const fixedOffset = self.data?.volumeLinkMode === "offset";
+   if (
+@@ -537,6 +543,8 @@ function bindVideoLifecycleEvents(ctx: ExtraEventsContext): void {
+   });
+   if (!isMuteSyncDisabledHost(self.site.host)) {
+     add(self.video, "volumechange", () => {
++      // [VOT-FORK:auto-volume-limit] Link from the actual clamped original, never the attempted volume.
++      enforceAutoVolumeCeiling(self);
+       self.syncVideoVolumeSlider();
+       const activeOverlayView = self.uiManager.votOverlayView;
+       if (!activeOverlayView?.isInitialized()) return;
+diff --git a/src/videoHandler/modules/init.ts b/src/videoHandler/modules/init.ts
+index 204fa02..653351f 100644
+--- a/src/videoHandler/modules/init.ts
++++ b/src/videoHandler/modules/init.ts
+@@ -56,6 +56,9 @@ export async function init(this: VideoHandler) {
+     dontTranslateLanguages: [calculatedResLang],
+     enabledDontTranslateLanguages: true,
+     enabledAutoVolume: true,
++    autoVolumeMode: (await votStorage.get("enabledSmartDucking", true))
++      ? "adaptive"
++      : "once",
+     enabledSmartDucking: true,
+     autoVolume: defaultAutoVolume,
+     buttonPos: "default",
+diff --git a/src/videoHandler/modules/smartDuckingRuntime.ts b/src/videoHandler/modules/smartDuckingRuntime.ts
+index 6aec987..43ae2e2 100644
+--- a/src/videoHandler/modules/smartDuckingRuntime.ts
++++ b/src/videoHandler/modules/smartDuckingRuntime.ts
+@@ -4,6 +4,7 @@ import debug from "../../utils/debug";
+ import { clamp } from "../../utils/utils";
+ import { snapVolume01 } from "../../utils/volume";
+ import type { VideoHandler } from "../../VideoHandler";
++import { applyAutoVolumeLimit, stopAutoVolumeLimit } from "../autoVolumeLimit";
+ import { safeSetPlayerVolume } from "../translationVolume";
+ import {
+   computeSmartDuckingStep,
+@@ -302,6 +303,8 @@ export function stopSmartVolumeDucking(
+   options: StopSmartVolumeDuckingOptions = {},
+ ): void {
+   const { restoreVolume } = options;
++  // [VOT-FORK:auto-volume-limit] Restore the exact pre-reduction level, not a mutated ducking baseline.
++  const restoredLimit = stopAutoVolumeLimit(handler);
+ 
+   if (handler.smartVolumeDuckingInterval !== undefined) {
+     clearTimeout(handler.smartVolumeDuckingInterval);
+@@ -314,8 +317,10 @@ export function stopSmartVolumeDucking(
+       : (handler.smartVolumeDuckingBaseline ?? handler.volumeOnStart);
+ 
+   if (
++    !restoredLimit &&
+     typeof baseline === "number" &&
+-    (typeof restoreVolume === "number" || handler.smartVolumeIsDucked)
++    (handler.smartVolumeIsDucked ||
++      typeof handler.smartVolumeDuckingBaseline === "number")
+   ) {
+     try {
+       handler.setVideoVolume(baseline);
+@@ -506,6 +511,20 @@ export function setupAudioSettings(this: VideoHandler) {
+     safeSetPlayerVolume(this.audioPlayer.player, this.data.defaultVolume / 100);
+   }
+ 
++  // [VOT-FORK:auto-volume-limit] Once/hold do not use the adaptive timer or legacy baseline.
++  if (
++    this.data?.enabledAutoVolume &&
++    (this.data.autoVolumeMode === "once" || this.data.autoVolumeMode === "hold")
++  ) {
++    if (
++      this.smartVolumeDuckingInterval !== undefined ||
++      this.smartVolumeIsDucked
++    ) {
++      stopSmartVolumeDucking(this);
++    }
++    applyAutoVolumeLimit(this);
++    return;
++  }
+   const autoVolumeMode = getAutoVolumeMode(this);
+ 
+   if (autoVolumeMode === "off") {
+@@ -515,6 +534,8 @@ export function setupAudioSettings(this: VideoHandler) {
+     return;
+   }
+ 
++  // Transitioning to upstream adaptive mode releases a fork ceiling first.
++  stopAutoVolumeLimit(this);
+   const targetVolume =
+     clamp(this.data.autoVolume ?? defaultAutoVolume, 0, 100) / 100;
+ 
+@@ -580,6 +601,12 @@ export function applyManualVideoVolumeOverride(
+     return;
+   }
+ 
++  // [VOT-FORK:auto-volume-limit] Once/hold have an immutable restoration baseline of their own.
++  if (
++    this.data?.autoVolumeMode === "once" ||
++    this.data?.autoVolumeMode === "hold"
++  )
++    return;
+   const nextVolume = snapVolume01(volume01);
+   this.smartVolumeDuckingBaseline = nextVolume;
+   this.smartVolumeLastApplied = nextVolume;
+diff --git a/tests/auto-volume-limit.test.ts b/tests/auto-volume-limit.test.ts
+new file mode 100644
+index 0000000..3c2b8d8
+--- /dev/null
++++ b/tests/auto-volume-limit.test.ts
+@@ -0,0 +1,217 @@
++import { describe, expect, test } from "bun:test";
++import {
++  applyAutoVolumeLimit,
++  enforceAutoVolumeCeiling,
++  stopAutoVolumeLimit,
++} from "../src/videoHandler/autoVolumeLimit";
++
++function fixture(mode: "once" | "hold" = "hold") {
++  let volume = 0.8;
++  const handler = {
++    data: { enabledAutoVolume: true, autoVolumeMode: mode, autoVolume: 15 },
++    hasActiveSource: () => true,
++    getVideoVolume: () => volume,
++    setVideoVolume: (value: number) => {
++      volume = value;
++    },
++  };
++  return {
++    handler,
++    get: () => volume,
++    userSet: (value: number) => {
++      volume = value;
++    },
++  };
++}
++
++describe("fork original-volume limit", () => {
++  test("hold clamps increases but permits lower user volume", () => {
++    const f = fixture();
++    applyAutoVolumeLimit(f.handler);
++    f.userSet(0.6);
++    expect(enforceAutoVolumeCeiling(f.handler)).toBe(true);
++    expect(f.get()).toBeCloseTo(0.15);
++    f.userSet(0.05);
++    expect(enforceAutoVolumeCeiling(f.handler)).toBe(false);
++    expect(f.get()).toBeCloseTo(0.05);
++    stopAutoVolumeLimit(f.handler);
++    expect(f.get()).toBeCloseTo(0.8);
++  });
++  test("changing the ceiling applies immediately without overwriting baseline", () => {
++    const f = fixture();
++    applyAutoVolumeLimit(f.handler);
++    f.handler.data.autoVolume = 10;
++    applyAutoVolumeLimit(f.handler);
++    expect(f.get()).toBeCloseTo(0.1);
++    stopAutoVolumeLimit(f.handler);
++    expect(f.get()).toBeCloseTo(0.8);
++  });
++
++  test("once mode does not undo later manual changes on unrelated setup", () => {
++    const f = fixture("once");
++    applyAutoVolumeLimit(f.handler);
++    f.userSet(0.6);
++    applyAutoVolumeLimit(f.handler);
++    expect(enforceAutoVolumeCeiling(f.handler)).toBe(false);
++    expect(f.get()).toBeCloseTo(0.6);
++    stopAutoVolumeLimit(f.handler);
++    expect(f.get()).toBeCloseTo(0.8);
++  });
++
++  test("runtime honors once mode despite legacy adaptive preference and restores actual baseline", async () => {
++    (globalThis as any).DEBUG_MODE = false;
++    const runtime = await import(
++      "../src/videoHandler/modules/smartDuckingRuntime"
++    );
++    const f = fixture("once");
++    const handler = Object.assign(f.handler, {
++      audioPlayer: { player: { volume: 1 } },
++      volumeOnStart: 0.9,
++      isMuted: () => false,
++      setVideoMuted: () => {},
++    }) as any;
++    handler.data.enabledSmartDucking = true;
++    try {
++      runtime.setupAudioSettings.call(handler);
++      expect(f.get()).toBeCloseTo(0.15);
++      runtime.stopSmartVolumeDucking(handler, { restoreVolume: 0.9 });
++      expect(f.get()).toBeCloseTo(0.8);
++    } finally {
++      runtime.stopSmartVolumeDucking(handler);
++    }
++  });
++
++  test("later stop does not overwrite user volume after reduction was disabled", async () => {
++    (globalThis as any).DEBUG_MODE = false;
++    const runtime = await import(
++      "../src/videoHandler/modules/smartDuckingRuntime"
++    );
++    const f = fixture("hold");
++    const handler = Object.assign(f.handler, {
++      audioPlayer: { player: { volume: 1 } },
++      volumeOnStart: 0.9,
++    }) as any;
++    runtime.setupAudioSettings.call(handler);
++    handler.data.enabledAutoVolume = false;
++    runtime.setupAudioSettings.call(handler);
++    expect(f.get()).toBeCloseTo(0.8);
++    f.userSet(0.5);
++    runtime.stopSmartVolumeDucking(handler, { restoreVolume: 0.9 });
++    expect(f.get()).toBeCloseTo(0.5);
++  });
++
++  test("YouTube observer sync links from the enforced ceiling rather than attempted volume", async () => {
++    (globalThis as any).DEBUG_MODE = false;
++    const { syncAudioTranslationVolumeFromVideo } = await import(
++      "../src/videoHandler/modules/events"
++    );
++    const f = fixture("hold");
++    let synced = -1;
++    const handler = Object.assign(f.handler, {
++      site: { host: "youtube" },
++      audioPlayer: { player: { src: "local-test" } },
++      syncVideoVolumeSlider: () => {},
++      syncVolumeWrapper: (_type: string, value: number) => {
++        synced = value;
++      },
++    }) as any;
++    Object.assign(handler.data, { syncVolume: true, volumeLinkMode: "offset" });
++    applyAutoVolumeLimit(handler);
++    f.userSet(0.6);
++    syncAudioTranslationVolumeFromVideo(handler, 60);
++    expect(f.get()).toBeCloseTo(0.15);
++    expect(synced).toBe(15);
++    stopAutoVolumeLimit(handler);
++  });
++
++  test("invalid or fractional saved limits normalize to safe whole percentages", () => {
++    const f = fixture();
++    f.handler.data.autoVolume = Number.NaN;
++    applyAutoVolumeLimit(f.handler);
++    expect(f.get()).toBeCloseTo(0.15);
++    f.handler.data.autoVolume = 14.5;
++    f.userSet(0.8);
++    applyAutoVolumeLimit(f.handler);
++    expect(f.get()).toBeCloseTo(0.15);
++    stopAutoVolumeLimit(f.handler);
++  });
++
++  test("manual once-mode changes do not leak into upstream adaptive restoration", async () => {
++    (globalThis as any).DEBUG_MODE = false;
++    const runtime = await import(
++      "../src/videoHandler/modules/smartDuckingRuntime"
++    );
++    const f = fixture("once");
++    const handler = Object.assign(f.handler, {
++      audioPlayer: { player: { volume: 1 } },
++    }) as any;
++    runtime.setupAudioSettings.call(handler);
++    f.userSet(0.6);
++    runtime.applyManualVideoVolumeOverride.call(handler, 0.6);
++    expect(handler.smartVolumeDuckingBaseline).toBeUndefined();
++    runtime.stopSmartVolumeDucking(handler);
++    expect(f.get()).toBeCloseTo(0.8);
++  });
++
++  test("replacing the video restores its baseline and captures the new element baseline", async () => {
++    (globalThis as any).DEBUG_MODE = false;
++    const previousWindow = globalThis.window;
++    const previousKeyboardInit = globalThis.__votKeyboardNavInitialized;
++    globalThis.__votKeyboardNavInitialized = true;
++    Object.defineProperty(globalThis, "window", {
++      configurable: true,
++      value: globalThis,
++    });
++    let VideoHandler: typeof import("../src/VideoHandler").VideoHandler;
++    try {
++      ({ VideoHandler } = await import("../src/VideoHandler"));
++    } finally {
++      globalThis.__votKeyboardNavInitialized = previousKeyboardInit;
++      Object.defineProperty(globalThis, "window", {
++        configurable: true,
++        value: previousWindow,
++      });
++    }
++    const oldVideo = { volume: 0.8 } as HTMLVideoElement;
++    const newVideo = { volume: 0.6 } as HTMLVideoElement;
++    const handler = Object.create(VideoHandler.prototype) as any;
++    handler.data = {
++      enabledAutoVolume: true,
++      autoVolumeMode: "once",
++      autoVolume: 15,
++    };
++    handler.video = oldVideo;
++    handler.audioPlayer = {
++      replaceVideo: async (video: HTMLVideoElement) => {
++        handler.video = video;
++      },
++    };
++    handler.abortController = new AbortController();
++    handler.releaseExtraEvents = () => {};
++    handler.resetSubtitlesWidget = () => {};
++    handler.initExtraEvents = () => {};
++    handler.hasActiveSource = () => true;
++    handler.getVideoVolume = () => handler.video.volume;
++    handler.setVideoVolume = (volume: number) => {
++      handler.video.volume = volume;
++    };
++
++    applyAutoVolumeLimit(handler);
++    expect(oldVideo.volume).toBeCloseTo(0.15);
++    await handler.replaceVideo(newVideo);
++    applyAutoVolumeLimit(handler);
++    expect(oldVideo.volume).toBeCloseTo(0.8);
++    expect(newVideo.volume).toBeCloseTo(0.15);
++    stopAutoVolumeLimit(handler);
++    expect(newVideo.volume).toBeCloseTo(0.6);
++  });
++
++  test("disabling reduction restores the level saved before reduction", () => {
++    const f = fixture();
++    applyAutoVolumeLimit(f.handler);
++    expect(f.get()).toBeCloseTo(0.15);
++    f.handler.data.enabledAutoVolume = false;
++    applyAutoVolumeLimit(f.handler);
++    expect(f.get()).toBeCloseTo(0.8);
++  });
++});
+diff --git a/tests/browser-volume-quick-checks.js b/tests/browser-volume-quick-checks.js
+new file mode 100644
+index 0000000..010ed5c
+--- /dev/null
++++ b/tests/browser-volume-quick-checks.js
+@@ -0,0 +1,148 @@
++(async () => {
++  for (let i = 0; i < 50 && !window.fixture; i++)
++    await new Promise((r) => setTimeout(r, 100));
++  if (!window.fixture)
++    throw new Error(window.fixtureError || "Fixture not ready");
++  const f = window.fixture,
++    results = [];
++  const pause = () => new Promise((r) => setTimeout(r, 120));
++  const near = (a, b) => Math.abs(a - b) < 0.001;
++  const check = (name, pass, details) => results.push({ name, pass, details });
++  const buttons = f.overlay.volumeQuickControls.buttons;
++  check(
++    "three compact toggles directly below subtitles",
++    buttons.size === 3 &&
++      f.overlay.subtitlesSelect.container.nextElementSibling ===
++        f.overlay.volumeQuickControls.container &&
++      [...buttons.values()].every(
++        (b) =>
++          Math.abs(
++            b.getBoundingClientRect().top -
++              buttons.get("enabledAutoVolume").getBoundingClientRect().top,
++          ) < 1,
++      ),
++  );
++  buttons.get("enabledAutoVolume").click();
++  await pause();
++  check(
++    "quick reduction: 80% to 15%, full setting and persistence",
++    near(f.video.volume, 0.15) &&
++      f.settings.autoSetVolumeCheckbox.checked &&
++      (await f.votStorage.get("enabledAutoVolume")) === true,
++    { video: f.video.volume },
++  );
++  buttons.get("enabledAutoVolume").click();
++  await pause();
++  check(
++    "turning reduction off restores 80%",
++    near(f.video.volume, 0.8) && !f.settings.autoSetVolumeCheckbox.checked,
++    { video: f.video.volume },
++  );
++  f.settings.autoVolumeModeSelect.events.selectItem.dispatch("hold");
++  await pause();
++  buttons.get("enabledAutoVolume").click();
++  await pause();
++  f.video.volume = 0.6;
++  await pause();
++  check("hold caps native original volume at 15%", near(f.video.volume, 0.15));
++  f.video.volume = 0.05;
++  await pause();
++  check("hold permits lowering original below cap", near(f.video.volume, 0.05));
++  buttons.get("syncVolume").click();
++  await pause();
++  check(
++    "quick link enables fixed offset and persists",
++    f.data.syncVolume &&
++      f.data.volumeLinkMode === "offset" &&
++      (await f.votStorage.get("volumeLinkMode")) === "offset",
++  );
++  f.video.volume = 0.6;
++  await pause();
++  check(
++    "linked audio uses actual clamped original +10 points",
++    near(f.video.volume, 0.15) && near(f.audio.volume, 0.25),
++    { video: f.video.volume, audio: f.audio.volume },
++  );
++  f.overlay.videoVolumeSlider.events.input.dispatch(60, false);
++  await pause();
++  check(
++    "VOT slider at existing ceiling links actual rather than attempted volume",
++    near(f.video.volume, 0.15) &&
++      near(f.audio.volume, 0.25) &&
++      f.overlay.videoVolumeSlider.value === 15,
++  );
++  check(
++    "extended boost blocked while linked",
++    buttons.get("audioBooster").disabled &&
++      f.settings.audioBoosterCheckbox.disabled,
++  );
++  f.video.muted = true;
++  await pause();
++  check("mute silences linked audio", near(f.audio.volume, 0));
++  f.video.muted = false;
++  await pause();
++  check("unmute restores linked audio", near(f.audio.volume, 0.25));
++  f.settings.autoSetVolumeSlider.value = 10;
++  await pause();
++  check(
++    "new ceiling immediately updates original and linked audio",
++    near(f.video.volume, 0.1) && near(f.audio.volume, 0.2),
++    { video: f.video.volume, audio: f.audio.volume },
++  );
++  buttons.get("enabledAutoVolume").click();
++  await pause();
++  check(
++    "restoration updates linked audio from 80% baseline",
++    near(f.video.volume, 0.8) && near(f.audio.volume, 0.9),
++  );
++  buttons.get("syncVolume").click();
++  await pause();
++  buttons.get("audioBooster").click();
++  await pause();
++  check(
++    "boost toggles full setting and increases slider range",
++    f.data.audioBooster &&
++      f.settings.audioBoosterCheckbox.checked &&
++      f.overlay.translationVolumeSlider.max > 100,
++  );
++  buttons.get("audioBooster").click();
++  await pause();
++  f.settings.autoVolumeModeSelect.events.selectItem.dispatch("once");
++  await pause();
++  buttons.get("enabledAutoVolume").click();
++  await pause();
++  f.video.volume = 0.6;
++  await pause();
++  f.handler.setupAudioSettings();
++  await pause();
++  check(
++    "once allows later manual volume despite setup refresh",
++    near(f.video.volume, 0.6),
++  );
++  buttons.get("enabledAutoVolume").click();
++  await pause();
++  check("once also restores baseline on disable", near(f.video.volume, 0.8));
++  buttons.get("enabledAutoVolume").click();
++  await pause();
++  const reducedBeforeStop = f.video.volume;
++  // Native media elements stand in for Chaimu; supply its cleanup contract only.
++  f.handler.stopTranslatePromise = null;
++  f.handler.actionsGeneration = 0;
++  f.handler.votClient = { provider: { fetchOpts: {} } };
++  f.audio.removeVideoEvents = () => {};
++  f.audio.clear = async () => f.audio.removeAttribute("src");
++  await f.handler.stopTranslate();
++  await pause();
++  check(
++    "real stopTranslate restores original volume and clears audio",
++    near(f.video.volume, 0.8) && !f.handler.hasActiveSource(),
++    { reduced: reducedBeforeStop, restored: f.video.volume },
++  );
++  check(
++    "no uncaught browser errors",
++    window.fixtureErrors.length === 0,
++    window.fixtureErrors,
++  );
++  window.qaResults = results;
++  return results;
++})();
+diff --git a/tests/browser-volume-quick.html b/tests/browser-volume-quick.html
+new file mode 100644
+index 0000000..f40d40e
+--- /dev/null
++++ b/tests/browser-volume-quick.html
+@@ -0,0 +1,5 @@
++<!doctype html>
++<html lang="ru"><meta charset="utf-8"><title>VOT quick volume controls test</title>
++<body><h1>VOT quick volume controls</h1><p>Real VOT overlay/settings and local audio; no translation API.</p>
++<div id="player" style="position:relative;width:640px;height:640px;background:#1b1c20"><video controls style="width:100%;height:100%"><track kind="captions" label="Silent fixture" srclang="en" src="data:text/vtt,WEBVTT%0A%0A"></video></div>
++<script>globalThis.GM_info={script:{version:"1.11.17.2",author:"Toil, xtalia",name:"VOT fixture"},scriptHandler:"Fixture",version:"1.0"};globalThis.fixtureErrors=[];addEventListener('error',e=>fixtureErrors.push(String(e.error||e.message)));addEventListener('unhandledrejection',e=>fixtureErrors.push(String(e.reason)));</script><script type="module" src="./browser-volume-quick.ts"></script></body></html>
+diff --git a/tests/browser-volume-quick.ts b/tests/browser-volume-quick.ts
+new file mode 100644
+index 0000000..6c78963
+--- /dev/null
++++ b/tests/browser-volume-quick.ts
+@@ -0,0 +1,116 @@
++import "../src/styles/main.scss";
++import { VOTVideoManager } from "../src/core/videoManager";
++import ru from "../src/localization/locales/ru.json";
++import { localizationProvider } from "../src/localization/localizationProvider";
++import { UIManager } from "../src/ui/manager";
++import { votStorage } from "../src/utils/storage";
++import { VideoHandler } from "../src/VideoHandler";
++import { enforceAutoVolumeCeiling } from "../src/videoHandler/autoVolumeLimit";
++import { syncAudioTranslationVolumeFromVideo } from "../src/videoHandler/modules/events";
++
++async function main() {
++  localizationProvider.setLocaleFromJsonString(JSON.stringify(ru));
++  const data = await votStorage.getValues({
++    syncVolume: false,
++    volumeLinkMode: "delta" as const,
++    translationVolumeOffset: 10,
++    enabledAutoVolume: false,
++    autoVolume: 15,
++    autoVolumeMode: "once" as const,
++    enabledSmartDucking: false,
++    showVideoSlider: true,
++    defaultVolume: 100,
++    audioBooster: false,
++    localeLangOverride: "ru",
++    account: {},
++  });
++  const container = document.querySelector("#player") as HTMLElement;
++  const video = container.querySelector("video") as HTMLVideoElement;
++  video.volume = 0.8;
++  const audio = document.createElement("audio");
++  const wav = new ArrayBuffer(46);
++  const view = new DataView(wav);
++  const text = (at: number, value: string) =>
++    [...value].forEach((c, i) => {
++      view.setUint8(at + i, c.charCodeAt(0));
++    });
++  text(0, "RIFF");
++  view.setUint32(4, 38, true);
++  text(8, "WAVEfmt ");
++  view.setUint32(16, 16, true);
++  view.setUint16(20, 1, true);
++  view.setUint16(22, 1, true);
++  view.setUint32(24, 8000, true);
++  view.setUint32(28, 16000, true);
++  view.setUint16(32, 2, true);
++  view.setUint16(34, 16, true);
++  text(36, "data");
++  view.setUint32(40, 2, true);
++  audio.src = URL.createObjectURL(new Blob([wav], { type: "audio/wav" }));
++  const handler = Object.create(VideoHandler.prototype) as VideoHandler;
++  Object.assign(handler, {
++    video,
++    container,
++    data,
++    site: { host: "custom" },
++    audioPlayer: { player: audio },
++    volumeLinkState: {
++      initialized: false,
++      lastVideoPercent: 80,
++      lastTranslationPercent: 100,
++    },
++    internalVideoVolumeSetHistory: [],
++    internalVideoVolumeSetHistoryLimit: 48,
++    internalVideoVolumeSuppressionMs: 250,
++  });
++  handler.videoManager = new VOTVideoManager(handler);
++  handler.getVideoVolume = () => handler.videoManager.getVideoVolume();
++  handler.isMuted = () => video.muted;
++  handler.syncVideoVolumeSlider = () =>
++    handler.videoManager.syncVideoVolumeSlider();
++  const manager = new UIManager({
++    data,
++    videoHandler: handler,
++    mount: {
++      root: container,
++      portalContainer: document.body,
++      subtitlesMountContainer: container,
++    },
++    intervalIdleChecker: { markActivity: () => {} } as any,
++  });
++  handler.uiManager = manager;
++  manager.initUI().initUIEvents();
++  if (!manager.isInitialized())
++    throw new Error("UI manager did not initialize");
++  const overlay = manager.votOverlayView;
++  if (!overlay.isInitialized()) throw new Error("Overlay did not initialize");
++  const videoSlider = overlay.videoVolumeSlider;
++  overlay.votButton.status = "success";
++  overlay.votButton.opacity = 1;
++  videoSlider.hidden = false;
++  overlay.translationVolumeSlider.hidden = false;
++  overlay.votMenu.hidden = false;
++  video.addEventListener("volumechange", () => {
++    enforceAutoVolumeCeiling(handler);
++    handler.syncVideoVolumeSlider();
++    syncAudioTranslationVolumeFromVideo(handler, videoSlider.value);
++  });
++  handler.setupAudioSettings();
++  handler.refreshVolumeLink();
++  Object.assign(window, {
++    fixture: {
++      data,
++      video,
++      audio,
++      handler,
++      manager,
++      overlay,
++      settings: manager.votSettingsView,
++      votStorage,
++    },
++  });
++}
++void main().catch((error) => {
++  Object.assign(window, { fixtureError: String(error) });
++  console.error(error);
++});
+diff --git a/tests/fork-metadata.test.ts b/tests/fork-metadata.test.ts
+index 8ead1a2..16185cd 100644
+--- a/tests/fork-metadata.test.ts
++++ b/tests/fork-metadata.test.ts
+@@ -9,5 +9,5 @@ test("fork update and localization URLs stay on xtalia's fork", () => {
+   expect(repositoryUrl).toBe(
+     "https://github.com/xtalia/voice-over-translation",
+   );
+-  expect(headers.version).toBe("1.11.17.1");
++  expect(headers.version).toBe("1.11.17.2");
+ });
+diff --git a/tests/volume-link-offset.test.ts b/tests/volume-link-offset.test.ts
+index 8320fd5..560e0d1 100644
+--- a/tests/volume-link-offset.test.ts
++++ b/tests/volume-link-offset.test.ts
+@@ -154,6 +154,35 @@ describe("fixed translation volume offset", () => {
+     expect(synced).toBe(0);
+   });
+ 
++  test("handler clamps hold-mode volume writes before they reach the player", async () => {
++    const { VideoHandler } = await import("../src/VideoHandler");
++    const { applyAutoVolumeLimit, stopAutoVolumeLimit } = await import(
++      "../src/videoHandler/autoVolumeLimit"
++    );
++    const handler = Object.create(VideoHandler.prototype);
++    let volume = 0.8;
++    handler.data = {
++      enabledAutoVolume: true,
++      autoVolumeMode: "hold",
++      autoVolume: 15,
++    };
++    handler.hasActiveSource = () => true;
++    handler.getVideoVolume = () => volume;
++    handler.videoManager = {
++      setVideoVolume: (next: number) => {
++        volume = next;
++      },
++    };
++    handler.internalVideoVolumeSetHistory = [];
++    handler.internalVideoVolumeSetHistoryLimit = 48;
++    handler.internalVideoVolumeSuppressionMs = 250;
++    applyAutoVolumeLimit(handler);
++    handler.setVideoVolume(0.6);
++    expect(volume).toBeCloseTo(0.15);
++    stopAutoVolumeLimit(handler);
++    expect(volume).toBeCloseTo(0.8);
++  });
++
+   test("Select disabled setter actually blocks opening a disabled control", async () => {
+     const { default: Select } = await import("../src/ui/components/select");
+     const control = Object.create(Select.prototype);
+diff --git a/tests/volume-quick-state.test.ts b/tests/volume-quick-state.test.ts
+new file mode 100644
+index 0000000..d0087ae
+--- /dev/null
++++ b/tests/volume-quick-state.test.ts
+@@ -0,0 +1,21 @@
++import { expect, test } from "bun:test";
++import { getVolumeQuickStates } from "../src/ui/volumeQuickState";
++
++test("quick states show live values and disable boost while volume is linked", () => {
++  const states = getVolumeQuickStates(
++    {
++      enabledAutoVolume: true,
++      autoVolume: 15,
++      syncVolume: true,
++      volumeLinkMode: "offset",
++      translationVolumeOffset: 17,
++      audioBooster: true,
++    },
++    true,
++  );
++  expect(states.map((s) => [s.key, s.active, s.disabled, s.detail])).toEqual([
++    ["enabledAutoVolume", true, false, "15%"],
++    ["syncVolume", true, false, "+17"],
++    ["audioBooster", true, true, ""],
++  ]);
++});

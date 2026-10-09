@@ -50,6 +50,11 @@ import {
 } from "./utils/volume";
 import VOTLocalizedError from "./VOTLocalizedError";
 import {
+  applyAutoVolumeLimit,
+  clampAutoVolumeRequest,
+  stopAutoVolumeLimit,
+} from "./videoHandler/autoVolumeLimit";
+import {
   getAutoHideDelay as getAutoHideDelayImpl,
   initExtraEvents as initExtraEventsImpl,
   isOverlayInteractiveNode as isOverlayInteractiveNodeImpl,
@@ -934,7 +939,8 @@ export class VideoHandler {
       suppressSyncMs?: number;
     } = {},
   ): this {
-    const snapped = snapVolume01(volume);
+    // [VOT-FORK:auto-volume-limit] Clamp VOT slider/programmatic writes before playback changes.
+    const snapped = clampAutoVolumeRequest(this, snapVolume01(volume));
     const suppressSyncMs =
       typeof options.suppressSyncMs === "number" &&
       Number.isFinite(options.suppressSyncMs)
@@ -1498,11 +1504,14 @@ export class VideoHandler {
     if (this.video === video) return;
 
     debug.log("[VideoHandler] replaceVideo", video);
+    // [VOT-FORK:auto-volume-limit] Restore the old element before capturing the replacement's own baseline.
+    stopAutoVolumeLimit(this);
     await this.audioPlayer.replaceVideo(video);
     this.abortController.abort();
     this.releaseExtraEvents();
 
     this.video = video;
+    applyAutoVolumeLimit(this);
     this.abortController = new AbortController();
     this.fullscreenHelper?.updateVideo(video);
     this.resetSubtitlesWidget();

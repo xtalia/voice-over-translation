@@ -16,6 +16,7 @@ import { GM_fetch } from "../../utils/gm";
 import { isIframe } from "../../utils/iframeConnector";
 import { clampPercentInt } from "../../utils/volume";
 import type { VideoHandler } from "../../VideoHandler";
+import { enforceAutoVolumeCeiling } from "../autoVolumeLimit";
 import { handlePlaybackResumedTranslationRefresh } from "./translation";
 
 type ScopedAddListener = (
@@ -109,6 +110,11 @@ export function syncAudioTranslationVolumeFromVideo(
     skipYouTubeLikeHosts?: boolean;
   } = {},
 ): void {
+  // [VOT-FORK:auto-volume-limit] YouTube observers and native events share the same ceiling.
+  if (enforceAutoVolumeCeiling(self)) {
+    self.syncVideoVolumeSlider();
+    videoPercent = clampPercentInt(self.getVideoVolume() * 100);
+  }
   // [VOT-FORK:volume-offset] Native mute/YouTube events must reach the fixed-offset path.
   const fixedOffset = self.data?.volumeLinkMode === "offset";
   if (
@@ -537,6 +543,8 @@ function bindVideoLifecycleEvents(ctx: ExtraEventsContext): void {
   });
   if (!isMuteSyncDisabledHost(self.site.host)) {
     add(self.video, "volumechange", () => {
+      // [VOT-FORK:auto-volume-limit] Link from the actual clamped original, never the attempted volume.
+      enforceAutoVolumeCeiling(self);
       self.syncVideoVolumeSlider();
       const activeOverlayView = self.uiManager.votOverlayView;
       if (!activeOverlayView?.isInitialized()) return;
