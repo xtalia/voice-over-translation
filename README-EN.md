@@ -4,9 +4,9 @@
 
 An unofficial modification of [ilyhalight/voice-over-translation](https://github.com/ilyhalight/voice-over-translation) for convenient original/translation volume controls. I am a regular VOT user adapting it to my viewing habits, not the original project's author.
 
-**Base:** upstream **1.12.6**, commit [`23335c9a4e489ae2befcdc6dd2052a7d6b405ecb`](https://github.com/ilyhalight/voice-over-translation/commit/23335c9a4e489ae2befcdc6dd2052a7d6b405ecb). Local fork version: **1.12.6.1**; porting and verification progress is tracked in [TASKS.md](TASKS.md).
+**Base:** upstream **1.12.6**, commit [`23335c9a4e489ae2befcdc6dd2052a7d6b405ecb`](https://github.com/ilyhalight/voice-over-translation/commit/23335c9a4e489ae2befcdc6dd2052a7d6b405ecb). Fork version: **1.12.6.1**; porting and verification progress is tracked in [TASKS.md](TASKS.md).
 
-> This local version is not yet published to `master`. The link below installs the published branch contents, not necessarily the new build described here. A local build is not a publication.
+> The installation link below serves the verified **1.12.6.1** build from this fork’s `master` branch.
 
 ## What changes ✨
 

@@ -3,11 +3,11 @@
 ## База и история
 
 - Upstream: https://github.com/ilyhalight/voice-over-translation — **1.12.6**, точный SHA **`23335c9a4e489ae2befcdc6dd2052a7d6b405ecb`**.
-- Форк: https://github.com/xtalia/voice-over-translation, рабочая ветка `feat/volume-settings-v2`, локальная версия **1.12.6.1**.
+- Форк: https://github.com/xtalia/voice-over-translation, рабочая ветка `feat/volume-settings-v2`, версия **1.12.6.1**.
 - Предыдущая реализация: `feat/volume-quick-controls`, `160dd21`, версия **1.11.17.2**, старая upstream-база `af99cad99e0365d4e5590608d98c56a91cc373b4`.
 - Старые `patches/translation-volume-offset.patch` и `patches/volume-quick-controls.patch` — исторические снимки старого UI, не патчи для текущего upstream.
 - Актуальный source-only снимок переноса: **`patches/volume-settings-v2.patch`**, относительно SHA выше. Сгенерирован и проверен основным агентом: `git apply --check`, реальное применение к чистой базе и сравнение всех 40 файлов без расхождений. Документация и `tests/fork-docs.test.ts` исключены.
-- Публикация не разрешена: локальная пересборка не меняет `master` и raw-ссылку установки.
+- Версия **1.12.6.1** опубликована в `master` с разрешения владельца. Обе raw-сборки прочитаны после push и совпали с локальными проверенными артефактами. История прежнего форка сохранена без force-push.
 
 ## Карта переноса
 

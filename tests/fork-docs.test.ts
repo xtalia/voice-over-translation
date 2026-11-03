@@ -34,9 +34,11 @@ test("both concise READMEs identify the base, credits and fork install target", 
   }
 });
 
-test("README publication notes distinguish local work from master", () => {
-  expect(read("README.md")).toContain("ещё не опубликована в `master`");
-  expect(read("README-EN.md")).toContain("not yet published to `master`");
+test("published READMEs no longer claim that the production build is local-only", () => {
+  expect(read("README.md")).not.toContain("ещё не опубликована в `master`");
+  expect(read("README-EN.md")).not.toContain("not yet published to `master`");
+  expect(read("README.md")).toContain("Версия форка");
+  expect(read("README-EN.md")).toContain("Fork version");
 });
 
 test("maintenance docs name the current source patch and exact upstream base", () => {
