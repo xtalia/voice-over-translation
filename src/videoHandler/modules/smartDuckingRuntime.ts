@@ -8,6 +8,7 @@ import { browserInfo } from "../../utils/browserInfo";
 import debug from "../../utils/debug";
 import { snapVolume01 } from "../../utils/volume";
 import type { VideoHandler } from "../../VideoHandler";
+import { applyAutoVolumeLimit, stopAutoVolumeLimit } from "../autoVolumeLimit";
 import { safeSetPlayerVolume } from "../translationVolume";
 import {
   computeSmartDuckingStep,
@@ -301,6 +302,7 @@ export function stopSmartVolumeDucking(
   options: StopSmartVolumeDuckingOptions = {},
 ): void {
   const { restoreVolume } = options;
+  const restoredLimit = stopAutoVolumeLimit(handler);
 
   if (handler.smartVolumeDuckingInterval !== undefined) {
     clearTimeout(handler.smartVolumeDuckingInterval);
@@ -313,8 +315,10 @@ export function stopSmartVolumeDucking(
       : (handler.smartVolumeDuckingBaseline ?? handler.volumeOnStart);
 
   if (
+    !restoredLimit &&
     typeof baseline === "number" &&
-    (typeof restoreVolume === "number" || handler.smartVolumeIsDucked)
+    (handler.smartVolumeIsDucked ||
+      typeof handler.smartVolumeDuckingBaseline === "number")
   ) {
     try {
       handler.setVideoVolume(baseline);
@@ -519,6 +523,20 @@ export function setupAudioSettings(this: VideoHandler) {
     safeSetPlayerVolume(this.audioPlayer.player, this.data.defaultVolume / 100);
   }
 
+  // [VOT-FORK:auto-volume-limit] Explicit modes override the legacy adaptive flag.
+  if (
+    this.data?.enabledAutoVolume &&
+    (this.data.autoVolumeMode === "once" || this.data.autoVolumeMode === "hold")
+  ) {
+    if (
+      this.smartVolumeDuckingInterval !== undefined ||
+      this.smartVolumeIsDucked
+    ) {
+      stopSmartVolumeDucking(this);
+    }
+    applyAutoVolumeLimit(this);
+    return;
+  }
   const autoVolumeMode = getAutoVolumeMode(this);
 
   if (autoVolumeMode === "off") {
@@ -528,6 +546,7 @@ export function setupAudioSettings(this: VideoHandler) {
     return;
   }
 
+  stopAutoVolumeLimit(this);
   if (!this.hasActiveSource()) {
     return;
   }
@@ -597,6 +616,11 @@ export function applyManualVideoVolumeOverride(
     return;
   }
 
+  if (
+    this.data.autoVolumeMode === "once" ||
+    this.data.autoVolumeMode === "hold"
+  )
+    return;
   const nextVolume = snapVolume01(volume01);
   this.smartVolumeDuckingBaseline = nextVolume;
   this.smartVolumeLastApplied = nextVolume;

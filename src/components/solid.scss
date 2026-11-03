@@ -26,6 +26,7 @@
 @use "Dialog/Dialog.scss";
 
 @use "Settings/SettingsSection.scss";
+@use "Settings/SettingsTranslationSection.scss";
 @use "Settings/SettingsFooter.scss";
 
 @use "Textfield/Textfield.scss";
@@ -35,6 +36,7 @@
 @use "SegmentedButton/PreviewSegmentedButtonOverlay.scss";
 @use "SegmentedButton/VoicePopover.scss";
 @use "SegmentedButton/SegmentedButtonMenu.scss";
+@use "SegmentedButton/VolumeQuickControls.scss";
 @use "SegmentedButton/SegmentedButtonMenuOverlay.scss";
 
 @use "SubtitlesWidget/SubtitlesWidget.scss";

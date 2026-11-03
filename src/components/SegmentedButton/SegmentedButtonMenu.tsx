@@ -1,9 +1,8 @@
-import { createSignal, type JSX, mergeProps, Show } from "solid-js";
-
 import { VideoService } from "@vot.js/ext/types/service";
 import { getVideoID } from "@vot.js/ext/utils/videoData";
 import { availableLangs, availableTTS } from "@vot.js/shared/consts";
 import type { RequestLang, ResponseLang } from "@vot.js/shared/types/data";
+import { createSignal, type JSX, mergeProps, Show } from "solid-js";
 import { effect } from "solid-js/web";
 import { clamp } from "#utils/number.ts";
 import { AudioDownloader } from "../../audioDownloader";
@@ -13,6 +12,7 @@ import type { Status } from "../../types/components/votButton";
 import debug from "../../utils/debug";
 import { GM_fetch } from "../../utils/gm";
 import { downloadBlob } from "../../utils/utils";
+import { isFixedVolumeLink } from "../../videoHandler/volumePreferences";
 import { IconButton } from "../Button/IconButton";
 import { ProgressIconButton } from "../Button/ProgressIconButton";
 import {
@@ -29,6 +29,10 @@ import { DownloadIcon } from "../Icons/DownloadIcon";
 import { GearIcon } from "../Icons/GearIcon";
 import { SubtitlesIcon } from "../Icons/SubtitlesIcon";
 import { Menu } from "../Utils/Menu";
+import {
+  VolumeQuickControls,
+  type VolumeQuickControlsProps,
+} from "./VolumeQuickControls";
 
 export type MenuHeaderContentControls = {
   setTranslationProgress: (progress: number) => void;
@@ -237,7 +241,8 @@ export type SegmentedButtonMenuProps = {
   onTranslationVolumeInput?: (volume: number) => void;
   onSubtitlesOpen?: () => void;
   onSubtitlesSelect?: (value: string) => void;
-} & Partial<LanguagePairSelectProps> &
+} & VolumeQuickControlsProps &
+  Partial<LanguagePairSelectProps> &
   Partial<MenuHeaderContentProps>;
 export function SegmentedButtonMenu(
   props: SegmentedButtonMenuProps,
@@ -354,6 +359,10 @@ export function SegmentedButtonMenu(
       >
         {t("VOTSubtitles")}
       </Select>
+      <VolumeQuickControls
+        isAudioContextSupported={finalProps.isAudioContextSupported}
+        onVolumePreferenceChange={finalProps.onVolumePreferenceChange}
+      />
       <Show
         when={finalProps.buttonStatus === "success" && settings.showVideoSlider}
       >
@@ -375,13 +384,18 @@ export function SegmentedButtonMenu(
         }
       >
         <SliderWrapper>
-          <SliderLabel value={translationVolumeText()}>
+          <SliderLabel
+            value={translationVolumeText()}
+            disabled={isFixedVolumeLink(settings)}
+          >
             {t("VOTVolumeTranslation")}
           </SliderLabel>
           <Slider
             max={maxTranslationVolume()}
             value={translationVolume()}
+            disabled={isFixedVolumeLink(settings)}
             onInput={(value) => {
+              if (isFixedVolumeLink(settings)) return;
               setTranslationVolume(value);
               setSettings("defaultVolume", value);
               finalProps.onTranslationVolumeInput?.(value);

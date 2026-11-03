@@ -7,8 +7,8 @@
 // @name:ru        [VOT] - Закадровый перевод видео
 // @name:zh        [VOT] - 配音翻译
 // @namespace      vot
-// @version        1.12.6
-// @author         Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng
+// @version        1.12.6.1
+// @author         Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng; xtalia (fork maintainer); Hermes Agent (Nous Research), using OpenAI models (AI assistance)
 // @description    Watch videos in other languages with voice-over translation and subtitles in any browser
 // @description:de Sieh dir Videos in anderen Sprachen mit Voice-over-Übersetzung und Untertiteln in jedem Browser an
 // @description:es Ve videos en otros idiomas con voice-over y subtítulos en cualquier navegador
@@ -17,12 +17,12 @@
 // @description:ru Смотрите видео на другом языке с закадровым переводом и субтитрами в любом браузере
 // @description:zh 在任何浏览器中观看其他语言的视频，享受配音翻译和字幕
 // @license        MIT
-// @icon           https://raw.githubusercontent.com/ilyhalight/voice-over-translation/dev/src/public/icons/icon-128.png
-// @homepageURL    https://github.com/ilyhalight/voice-over-translation
-// @source         https://github.com/ilyhalight/voice-over-translation.git
-// @supportURL     https://github.com/ilyhalight/voice-over-translation/issues
-// @downloadURL    https://github.com/ilyhalight/voice-over-translation/releases/latest/download/vot.user.js
-// @updateURL      https://github.com/ilyhalight/voice-over-translation/releases/latest/download/vot.user.js
+// @icon           https://raw.githubusercontent.com/xtalia/voice-over-translation/master/src/public/icons/icon-128.png
+// @homepageURL    https://github.com/xtalia/voice-over-translation
+// @source         https://github.com/xtalia/voice-over-translation.git
+// @supportURL     https://github.com/xtalia/voice-over-translation/issues
+// @downloadURL    https://raw.githubusercontent.com/xtalia/voice-over-translation/master/dist/vot.user.js
+// @updateURL      https://raw.githubusercontent.com/xtalia/voice-over-translation/master/dist/vot.user.js
 // @match          *://*.youtube.com/*
 // @match          *://*.youtube-nocookie.com/*
 // @match          *://*.youtubekids.com/*
@@ -278,7 +278,7 @@
 // @grant          GM.xmlHttpRequest
 // @grant          window.focus
 // ==/UserScript==
-(function(){try{var g=globalThis,k=Symbol.for("vot.debugIds"),s=(new Error().stack||"").replace(/(extension:\/\/)[^\/\s]+/g,"$1extension");if(s){g[k]||Object.defineProperty(g,k,{value:{}});g[k][s]={d:"ed6273ae-2d1a-4aa5-a94a-8f931168bfcf",l:281}}}catch(e){}})();
+(function(){try{var g=globalThis,k=Symbol.for("vot.debugIds"),s=(new Error().stack||"").replace(/(extension:\/\/)[^\/\s]+/g,"$1extension");if(s){g[k]||Object.defineProperty(g,k,{value:{}});g[k][s]={d:"595666a7-f348-4e47-9cc5-e00f12af8564",l:281}}}catch(e){}})();
 
 var vot = (function(exports) {
 	Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
@@ -301,7 +301,7 @@ var vot = (function(exports) {
 		if (!no_symbols) __defProp(target, Symbol.toStringTag, { value: "Module" });
 		return target;
 	};
-	// ../vot.js/packages/core/dist/types/service.js
+	// node_modules/@vot.js/core/dist/types/service.js
 	var VideoService$1;
 	(function(VideoService) {
 		VideoService["custom"] = "custom";
@@ -403,7 +403,7 @@ var vot = (function(exports) {
 		VideoService["vidly"] = "vidly";
 		VideoService["bluesky"] = "bluesky";
 	})(VideoService$1 || (VideoService$1 = {}));
-	// ../vot.js/packages/core/dist/utils/videoData.js
+	// node_modules/@vot.js/core/dist/utils/videoData.js
 	var VideoDataError = class extends Error {
 		constructor(message) {
 			super(message);
@@ -414,7 +414,7 @@ var vot = (function(exports) {
 	var isCustomLink = (url) => {
 		return !!/\.(m3u8|m4(a|v)|mpd)/.exec(url);
 	};
-	// ../vot.js/packages/shared/dist/data/alternativeUrls.js
+	// node_modules/@vot.js/shared/dist/data/alternativeUrls.js
 	var sitesInvidious = [
 		"yewtu.be",
 		"inv.nadeko.net",
@@ -449,7 +449,7 @@ var vot = (function(exports) {
 		"peervideo.club"
 	];
 	var sitesCoursehunterLike = ["coursehunter.net", "coursetrain.net"];
-	// ../vot.js/packages/shared/dist/utils/kinopoisk.js
+	// node_modules/@vot.js/shared/dist/utils/kinopoisk.js
 	var KinopoiskError = class extends Error {
 		constructor(message) {
 			super(message);
@@ -563,7 +563,7 @@ var vot = (function(exports) {
 		const { trailerId } = getKinopoiskVideoRef(videoId);
 		return toKinopoiskVideoData(videoId, getKinopoiskTrailer(await loadState(videoId), trailerId), duration);
 	}
-	// ../vot.js/packages/ext/dist/types/service.js
+	// node_modules/@vot.js/ext/dist/types/service.js
 	var ExtVideoService;
 	(function(ExtVideoService) {
 		ExtVideoService["udemy"] = "udemy";
@@ -584,7 +584,7 @@ var vot = (function(exports) {
 		...VideoService$1,
 		...ExtVideoService
 	});
-	// ../vot.js/packages/ext/dist/data/sites.js
+	// node_modules/@vot.js/ext/dist/data/sites.js
 	var sharedSelectors = {
 		bilibiliPlayer: ".bpx-player-video-wrap, div.player-mobile-box.player-mobile-autoplay",
 		flowplayer: ".fp-player, div.flowplayer",
@@ -1440,7 +1440,7 @@ var vot = (function(exports) {
 			rawResult: true
 		}
 	];
-	// ../vot.js/packages/shared/dist/data/config.js
+	// node_modules/@vot.js/shared/dist/data/config.js
 	var config_default$1 = {
 		host: "api.browser.yandex.ru",
 		hostWorker: "vot-worker.toil.cc",
@@ -1454,7 +1454,7 @@ var vot = (function(exports) {
 		loggerLevel: 1,
 		version: "3.2.2"
 	};
-	// ../vot.js/packages/shared/dist/types/logger.js
+	// node_modules/@vot.js/shared/dist/types/logger.js
 	var LoggerLevel;
 	(function(LoggerLevel) {
 		LoggerLevel[LoggerLevel["DEBUG"] = 0] = "DEBUG";
@@ -1463,7 +1463,7 @@ var vot = (function(exports) {
 		LoggerLevel[LoggerLevel["ERROR"] = 3] = "ERROR";
 		LoggerLevel[LoggerLevel["SILENCE"] = 4] = "SILENCE";
 	})(LoggerLevel || (LoggerLevel = {}));
-	// ../vot.js/packages/shared/dist/utils/logger.js
+	// node_modules/@vot.js/shared/dist/utils/logger.js
 	var prefix = `[vot.js v${config_default$1.version}]`;
 	function canLog(level) {
 		return config_default$1.loggerLevel <= level;
@@ -1491,7 +1491,7 @@ var vot = (function(exports) {
 		warn,
 		error
 	};
-	// ../vot.js/packages/shared/dist/utils/utils.js
+	// node_modules/@vot.js/shared/dist/utils/utils.js
 	var iso6392to6391 = {
 		afr: "af",
 		aka: "ak",
@@ -1631,7 +1631,7 @@ var vot = (function(exports) {
 		if (!(url instanceof URL)) return `${generalUrl}&url=${encodeURIComponent(btoa(url))}`;
 		return `${generalUrl}&url=${encodeURIComponent(btoa(url.href))}&origin=${url.origin}&referer=${url.origin}`;
 	}
-	// ../vot.js/packages/ext/dist/helpers/base.js
+	// node_modules/@vot.js/ext/dist/helpers/base.js
 	var VideoHelperError = class extends Error {
 		constructor(message) {
 			super(message);
@@ -1674,7 +1674,7 @@ var vot = (function(exports) {
 			};
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/appledeveloper.js
+	// node_modules/@vot.js/ext/dist/helpers/appledeveloper.js
 	var AppleDeveloperHelper = class extends BaseHelper {
 		API_ORIGIN = "https://developer.apple.com";
 		async getVideoData(videoId) {
@@ -1691,7 +1691,7 @@ var vot = (function(exports) {
 			return /videos\/play\/([^/]+)\/([\d]+)/.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/archive.js
+	// node_modules/@vot.js/ext/dist/helpers/archive.js
 	var ArchiveHelper = class extends BaseHelper {
 		async getVideoData(videoId) {
 			const baseData = this.returnBaseData(videoId);
@@ -1706,7 +1706,7 @@ var vot = (function(exports) {
 			return /(?:details|embed)\/(.+)/.exec(url.pathname)?.[1]?.replace(/\/$/, "") || void 0;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/artstation.js
+	// node_modules/@vot.js/ext/dist/helpers/artstation.js
 	var ArtstationHelper = class extends BaseHelper {
 		API_ORIGIN = "https://www.artstation.com/api/v2/learning";
 		getCSRFToken() {
@@ -1757,13 +1757,13 @@ var vot = (function(exports) {
 			return /courses\/(\w{3,5})\/([^/]+)\/chapters\/(\w{3,5})/.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/bannedvideo.js
+	// node_modules/@vot.js/ext/dist/helpers/bannedvideo.js
 	var BannedVideoHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /\/(?:embed\/|v\/)([a-zA-Z0-9]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/bilibili.js
+	// node_modules/@vot.js/ext/dist/helpers/bilibili.js
 	var getPlayer$2 = () => {
 		return window.player;
 	};
@@ -1868,13 +1868,13 @@ var vot = (function(exports) {
 			}
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/bitchute.js
+	// node_modules/@vot.js/ext/dist/helpers/bitchute.js
 	var BitchuteHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /(video|embed)\/([^/]+)/.exec(url.pathname)?.[2];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/bitview.js
+	// node_modules/@vot.js/ext/dist/helpers/bitview.js
 	var BitviewHelper = class extends BaseHelper {
 		async getVideoData(videoId) {
 			try {
@@ -1890,7 +1890,7 @@ var vot = (function(exports) {
 			return url.searchParams.get("v");
 		}
 	};
-	// ../vot.js/packages/ext/dist/utils/dom.js
+	// node_modules/@vot.js/ext/dist/utils/dom.js
 	function querySelectorDeep(selector, root = document) {
 		const match = root.querySelector(selector);
 		if (match) return match;
@@ -1903,7 +1903,7 @@ var vot = (function(exports) {
 	function getVideoSrc(videoEl) {
 		return videoEl?.src || videoEl?.currentSrc || videoEl?.querySelector("source[src]")?.src;
 	}
-	// ../vot.js/packages/ext/dist/players/plyr.js
+	// node_modules/@vot.js/ext/dist/players/plyr.js
 	var PlyrHelper = class {
 		SUBTITLE_SOURCE = "plyr";
 		SUBTITLE_FORMAT = "vtt";
@@ -1978,7 +1978,7 @@ var vot = (function(exports) {
 			return subtitles;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/bunkr.js
+	// node_modules/@vot.js/ext/dist/helpers/bunkr.js
 	var BunkrHelper = class extends BaseHelper {
 		async getVideoData(videoId) {
 			return new PlyrHelper().getVideoData(videoId);
@@ -1987,19 +1987,19 @@ var vot = (function(exports) {
 			return /\/(?:f|v)\/([^/]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/bunnystream.js
+	// node_modules/@vot.js/ext/dist/helpers/bunnystream.js
 	var BunnyStreamHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.pathname + url.search;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/cloudflarestream.js
+	// node_modules/@vot.js/ext/dist/helpers/cloudflarestream.js
 	var CloudflareStreamHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.pathname + url.search;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/coursehunterLike.js
+	// node_modules/@vot.js/ext/dist/helpers/coursehunterLike.js
 	var CoursehunterLikeHelper = class extends BaseHelper {
 		API_ORIGIN = this.origin ?? "https://coursehunter.net";
 		async getCourseId() {
@@ -2047,7 +2047,7 @@ var vot = (function(exports) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/shared/dist/data/consts.js
+	// node_modules/@vot.js/shared/dist/data/consts.js
 	var availableLangs = [
 		"auto",
 		"ru",
@@ -2071,7 +2071,7 @@ var vot = (function(exports) {
 		"vtt",
 		"json"
 	];
-	// ../vot.js/packages/ext/dist/players/videojs.js
+	// node_modules/@vot.js/ext/dist/players/videojs.js
 	var VIDEOJS_SELECTOR = "video.vjs-tech, video[id$='_html5_api'], video[src], video";
 	function isPreferredMedia(source) {
 		const type = source.type?.toLowerCase().split(";")[0].trim();
@@ -2154,7 +2154,7 @@ var vot = (function(exports) {
 			});
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/coursera.js
+	// node_modules/@vot.js/ext/dist/helpers/coursera.js
 	var CourseraHelper = class CourseraHelper extends VideoJSHelper {
 		API_ORIGIN = "https://www.coursera.org/api";
 		SUBTITLE_SOURCE = "coursera";
@@ -2242,7 +2242,7 @@ var vot = (function(exports) {
 			return CourseraHelper.LEARN_ITEM_RE.exec(url.pathname)?.[0] ?? CourseraHelper.PREVIEW_LECTURE_RE.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/dailymotion.js
+	// node_modules/@vot.js/ext/dist/helpers/dailymotion.js
 	var DailymotionHelper = class extends BaseHelper {
 		getVideoIdFromUrl(url) {
 			const videoIdFromQuery = url.searchParams.get("video");
@@ -2273,7 +2273,7 @@ var vot = (function(exports) {
 			return url.hostname === "dai.ly" ? url.pathname.slice(1) : /video\/([^/]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/datacamp.js
+	// node_modules/@vot.js/ext/dist/helpers/datacamp.js
 	var DataCampHelper = class extends VideoJSHelper {
 		SUBTITLE_SOURCE = "datacamp";
 		getVideoUrlFromInput(input) {
@@ -2328,7 +2328,7 @@ var vot = (function(exports) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/deeplearningai.js
+	// node_modules/@vot.js/ext/dist/helpers/deeplearningai.js
 	var DeeplearningAIHelper = class extends BaseHelper {
 		async getVideoData(_videoId) {
 			if (!this.video) return;
@@ -2340,7 +2340,7 @@ var vot = (function(exports) {
 			return /courses\/(([^/]+)\/lesson\/([^/]+)\/([^/]+))/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/douyin.js
+	// node_modules/@vot.js/ext/dist/helpers/douyin.js
 	var DouyinHelper = class DouyinHelper extends BaseHelper {
 		static getPlayer() {
 			if (typeof player === "undefined") return;
@@ -2366,7 +2366,7 @@ var vot = (function(exports) {
 			return DouyinHelper.getPlayer()?.config.vid;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/vimeo.js
+	// node_modules/@vot.js/ext/dist/helpers/vimeo.js
 	var VimeoHelper = class extends BaseHelper {
 		API_KEY = "";
 		DEFAULT_SITE_ORIGIN = "https://vimeo.com";
@@ -2546,7 +2546,7 @@ var vot = (function(exports) {
 			return /([^/]+\/)?[^/]+$/.exec(normalizedPathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/dropout.js
+	// node_modules/@vot.js/ext/dist/helpers/dropout.js
 	var CONFIG_URL_RE = /^https:\/\/player\.vimeo\.com\/video\/[a-z0-9_-]+\/config/i;
 	var CONFIG_WAIT_TIMEOUT = 1e4;
 	var CONFIG_WAIT_INTERVAL = 500;
@@ -2692,13 +2692,13 @@ var vot = (function(exports) {
 			return /videos\/([^/?#]+)/.exec(url.pathname)?.[1] ?? url.pathname;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/dzen.js
+	// node_modules/@vot.js/ext/dist/helpers/dzen.js
 	var DzenHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /video\/watch\/([^/]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/edx.js
+	// node_modules/@vot.js/ext/dist/helpers/edx.js
 	var VIDEO_BLOCK_SELECTOR = ".xblock[data-block-type=\"video\"]";
 	function parseMp4Url(source) {
 		try {
@@ -2750,13 +2750,13 @@ var vot = (function(exports) {
 			} : { url };
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/egghead.js
+	// node_modules/@vot.js/ext/dist/helpers/egghead.js
 	var EggheadHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.pathname.slice(1);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/epicgames.js
+	// node_modules/@vot.js/ext/dist/helpers/epicgames.js
 	var EpicGamesHelper = class extends BaseHelper {
 		API_ORIGIN = "https://dev.epicgames.com/community/api/learning";
 		async getPostInfo(videoId) {
@@ -2825,7 +2825,7 @@ var vot = (function(exports) {
 			});
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/eporner.js
+	// node_modules/@vot.js/ext/dist/helpers/eporner.js
 	var getPlayerHash = () => {
 		if (typeof EP === "undefined") return;
 		return EP?.video?.player?.hash;
@@ -2884,7 +2884,7 @@ var vot = (function(exports) {
 			return /\/(?:video-|embed\/)([a-zA-Z0-9]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/facebook.js
+	// node_modules/@vot.js/ext/dist/helpers/facebook.js
 	function extractAudioUrl(text) {
 		const stack = [];
 		for (const match of text.matchAll(/"(?:\\.|[^"\\])*"|\{|\}/g)) if (match[0] === "{") stack.push(match.index);
@@ -2913,7 +2913,7 @@ var vot = (function(exports) {
 			return url.pathname.slice(1);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/googledrive.js
+	// node_modules/@vot.js/ext/dist/helpers/googledrive.js
 	var GoogleDriveHelper = class extends BaseHelper {
 		getPlayerData() {
 			return document.querySelector("#movie_player")?.getVideoData?.() ?? void 0;
@@ -2922,7 +2922,7 @@ var vot = (function(exports) {
 			return this.getPlayerData()?.video_id;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/ign.js
+	// node_modules/@vot.js/ext/dist/helpers/ign.js
 	var IgnHelper = class extends BaseHelper {
 		getVideoDataBySource(videoId) {
 			const url = document.querySelector(".icms.video > source[type=\"video/mp4\"][data-quality=\"360\"]")?.src;
@@ -2955,13 +2955,13 @@ var vot = (function(exports) {
 			return /([^/]+)\/([\d]+)\/video\/([^/]+)/.exec(url.pathname)?.[0] ?? /\/videos\/([^/]+)/.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/imdb.js
+	// node_modules/@vot.js/ext/dist/helpers/imdb.js
 	var IMDbHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /video\/([^/]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/kinopoisk.js
+	// node_modules/@vot.js/ext/dist/helpers/kinopoisk.js
 	function parseKinopoiskWidgetDocument(doc) {
 		const raw = doc.querySelector("script[data-state]")?.textContent;
 		return raw ? decodeKinopoiskState(raw) : void 0;
@@ -3010,7 +3010,7 @@ var vot = (function(exports) {
 			return iframe ? getKinopoiskVideoId(new URL(iframe.src, url)) : void 0;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/joidatabase.js
+	// node_modules/@vot.js/ext/dist/helpers/joidatabase.js
 	var JOIDatabaseHelper = class extends BaseHelper {
 		async getVideoData(videoId) {
 			const baseData = this.returnBaseData(videoId);
@@ -3033,7 +3033,7 @@ var vot = (function(exports) {
 			return /\/(?:watch|embed)\/([0-9a-f]+)\/?$/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/jove.js
+	// node_modules/@vot.js/ext/dist/helpers/jove.js
 	var JoveHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			const match = /^\/(?:[a-z]{2}\/)?v\/(\d+)\/([^/?#]+)/i.exec(url.pathname);
@@ -3093,7 +3093,7 @@ var vot = (function(exports) {
 			};
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/kick.js
+	// node_modules/@vot.js/ext/dist/helpers/kick.js
 	var KickHelper = class extends BaseHelper {
 		API_ORIGIN = "https://kick.com/api";
 		async getClipInfo(clipId) {
@@ -3130,7 +3130,7 @@ var vot = (function(exports) {
 			return /([^/]+)\/((videos|clips)\/([^/]+))/.exec(url.pathname)?.[2];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/kickstarter.js
+	// node_modules/@vot.js/ext/dist/helpers/kickstarter.js
 	var KickstarterHelper = class extends BaseHelper {
 		async getVideoData(videoId) {
 			try {
@@ -3162,7 +3162,7 @@ var vot = (function(exports) {
 			return url.pathname.slice(1);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/kodik.js
+	// node_modules/@vot.js/ext/dist/helpers/kodik.js
 	var KodikHelper = class extends BaseHelper {
 		API_ORIGIN = window.location.origin;
 		getSecureData(videoPath) {
@@ -3258,7 +3258,7 @@ var vot = (function(exports) {
 			return /\/(uv|video|seria|episode|season|serial)\/([^/]+)\/([^/]+)\/([\d]+)p/.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/linkedin.js
+	// node_modules/@vot.js/ext/dist/helpers/linkedin.js
 	var LinkedinHelper = class extends VideoJSHelper {
 		SUBTITLE_SOURCE = "linkedin";
 		async getVideoData(videoId) {
@@ -3275,8 +3275,8 @@ var vot = (function(exports) {
 			return /\/learning\/(([^/]+)\/([^/]+))/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/node_modules/@bufbuild/protobuf/dist/esm/wire/varint.js
-	function varint64read$1() {
+	// node_modules/@bufbuild/protobuf/dist/esm/wire/varint.js
+	function varint64read() {
 		const buf = this.buf;
 		let pos = this.pos;
 		let lo = 0;
@@ -3315,8 +3315,8 @@ var vot = (function(exports) {
 		}
 		throw new Error("invalid varint");
 	}
-	var TWO_PWR_32_DBL$1 = 4294967296;
-	function int64FromString$1(dec) {
+	var TWO_PWR_32_DBL = 4294967296;
+	function int64FromString(dec) {
 		const minus = dec[0] === "-";
 		if (minus) dec = dec.slice(1);
 		const base = 1e6;
@@ -3326,27 +3326,27 @@ var vot = (function(exports) {
 			const digit1e6 = Number(dec.slice(begin, end));
 			highBits *= base;
 			lowBits = lowBits * base + digit1e6;
-			if (lowBits >= TWO_PWR_32_DBL$1) {
-				highBits = highBits + (lowBits / TWO_PWR_32_DBL$1 | 0);
-				lowBits = lowBits % TWO_PWR_32_DBL$1;
+			if (lowBits >= TWO_PWR_32_DBL) {
+				highBits = highBits + (lowBits / TWO_PWR_32_DBL | 0);
+				lowBits = lowBits % TWO_PWR_32_DBL;
 			}
 		}
 		add1e6digit(-24, -18);
 		add1e6digit(-18, -12);
 		add1e6digit(-12, -6);
 		add1e6digit(-6);
-		return minus ? negate$1(lowBits, highBits) : newBits$1(lowBits, highBits);
+		return minus ? negate(lowBits, highBits) : newBits(lowBits, highBits);
 	}
-	function int64ToString$1(lo, hi) {
-		let bits = newBits$1(lo, hi);
+	function int64ToString(lo, hi) {
+		let bits = newBits(lo, hi);
 		const negative = bits.hi & 2147483648;
-		if (negative) bits = negate$1(bits.lo, bits.hi);
-		const result = uInt64ToString$1(bits.lo, bits.hi);
+		if (negative) bits = negate(bits.lo, bits.hi);
+		const result = uInt64ToString(bits.lo, bits.hi);
 		return negative ? "-" + result : result;
 	}
-	function uInt64ToString$1(lo, hi) {
-		({lo, hi} = toUnsigned$1(lo, hi));
-		if (hi <= 2097151) return String(TWO_PWR_32_DBL$1 * hi + lo);
+	function uInt64ToString(lo, hi) {
+		({lo, hi} = toUnsigned(lo, hi));
+		if (hi <= 2097151) return String(TWO_PWR_32_DBL * hi + lo);
 		const low = lo & 16777215;
 		const mid = (lo >>> 24 | hi << 8) & 16777215;
 		const high = hi >> 16 & 65535;
@@ -3362,31 +3362,31 @@ var vot = (function(exports) {
 			digitC += Math.floor(digitB / base);
 			digitB %= base;
 		}
-		return digitC.toString() + decimalFrom1e7WithLeadingZeros$1(digitB) + decimalFrom1e7WithLeadingZeros$1(digitA);
+		return digitC.toString() + decimalFrom1e7WithLeadingZeros(digitB) + decimalFrom1e7WithLeadingZeros(digitA);
 	}
-	function toUnsigned$1(lo, hi) {
+	function toUnsigned(lo, hi) {
 		return {
 			lo: lo >>> 0,
 			hi: hi >>> 0
 		};
 	}
-	function newBits$1(lo, hi) {
+	function newBits(lo, hi) {
 		return {
 			lo: lo | 0,
 			hi: hi | 0
 		};
 	}
-	function negate$1(lowBits, highBits) {
+	function negate(lowBits, highBits) {
 		highBits = ~highBits;
 		if (lowBits) lowBits = ~lowBits + 1;
 		else highBits += 1;
-		return newBits$1(lowBits, highBits);
+		return newBits(lowBits, highBits);
 	}
-	var decimalFrom1e7WithLeadingZeros$1 = (digit1e7) => {
+	var decimalFrom1e7WithLeadingZeros = (digit1e7) => {
 		const partial = String(digit1e7);
 		return "0000000".slice(partial.length) + partial;
 	};
-	function varint32read$1() {
+	function varint32read() {
 		let b = this.buf[this.pos++];
 		if ((b & 128) === 0) {
 			this.assertBounds();
@@ -3418,9 +3418,9 @@ var vot = (function(exports) {
 		this.assertBounds();
 		return result >>> 0;
 	}
-	// ../vot.js/node_modules/@bufbuild/protobuf/dist/esm/proto-int64.js
-	var protoInt64$1 = makeInt64Support$1();
-	function makeInt64Support$1() {
+	// node_modules/@bufbuild/protobuf/dist/esm/proto-int64.js
+	var protoInt64 = makeInt64Support();
+	function makeInt64Support() {
 		const dv = new DataView(new ArrayBuffer(8));
 		if (typeof BigInt === "function" && typeof dv.getBigInt64 === "function" && typeof dv.getBigUint64 === "function" && typeof dv.setBigInt64 === "function" && typeof dv.setBigUint64 === "function" && (!!globalThis.Deno || !!globalThis.Bun || typeof process != "object" || typeof process.env != "object" || process.env.BUF_BIGINT_DISABLE !== "1")) {
 			const MIN = BigInt("-9223372036854775808");
@@ -3471,46 +3471,46 @@ var vot = (function(exports) {
 			supported: false,
 			parse(value) {
 				if (typeof value != "string") value = value.toString();
-				assertInt64String$1(value);
+				assertInt64String(value);
 				return value;
 			},
 			uParse(value) {
 				if (typeof value != "string") value = value.toString();
-				assertUInt64String$1(value);
+				assertUInt64String(value);
 				return value;
 			},
 			enc(value) {
 				if (typeof value != "string") value = value.toString();
-				assertInt64String$1(value);
-				return int64FromString$1(value);
+				assertInt64String(value);
+				return int64FromString(value);
 			},
 			uEnc(value) {
 				if (typeof value != "string") value = value.toString();
-				assertUInt64String$1(value);
-				return int64FromString$1(value);
+				assertUInt64String(value);
+				return int64FromString(value);
 			},
 			dec(lo, hi) {
-				return int64ToString$1(lo, hi);
+				return int64ToString(lo, hi);
 			},
 			uDec(lo, hi) {
-				return uInt64ToString$1(lo, hi);
+				return uInt64ToString(lo, hi);
 			}
 		};
 	}
-	function assertInt64String$1(value) {
+	function assertInt64String(value) {
 		if (!/^-?[0-9]+$/.test(value)) throw new Error("invalid int64: " + value);
 	}
-	function assertUInt64String$1(value) {
+	function assertUInt64String(value) {
 		if (!/^[0-9]+$/.test(value)) throw new Error("invalid uint64: " + value);
 	}
-	// ../vot.js/node_modules/@bufbuild/protobuf/dist/esm/wire/text-encoding.js
-	var te$2;
-	function configureTextEncoding$1(textEncoding) {
+	// node_modules/@bufbuild/protobuf/dist/esm/wire/text-encoding.js
+	var te$1;
+	function configureTextEncoding(textEncoding) {
 		var _a;
-		te$2 = Object.assign(Object.assign({}, textEncoding), { encodeUtf8Into: (_a = textEncoding.encodeUtf8Into) !== null && _a !== void 0 ? _a : emulateEncodeInto$1(textEncoding.encodeUtf8.bind(textEncoding)) });
+		te$1 = Object.assign(Object.assign({}, textEncoding), { encodeUtf8Into: (_a = textEncoding.encodeUtf8Into) !== null && _a !== void 0 ? _a : emulateEncodeInto(textEncoding.encodeUtf8.bind(textEncoding)) });
 	}
-	function getTextEncoding$1() {
-		if (!te$2) {
+	function getTextEncoding() {
+		if (!te$1) {
 			const globals = globalThis;
 			if (!globals.TextEncoder || !globals.TextDecoder) throw new Error("encoding API missing: install TextEncoder and TextDecoder on globalThis");
 			const textEncoder = new globals.TextEncoder();
@@ -3540,19 +3540,19 @@ var vot = (function(exports) {
 			if (nativeStringIsWellFormed) config.checkUtf8 = (text) => {
 				return nativeStringIsWellFormed.call(text);
 			};
-			configureTextEncoding$1(config);
+			configureTextEncoding(config);
 		}
-		return te$2;
+		return te$1;
 	}
-	function emulateEncodeInto$1(encodeUtf8) {
+	function emulateEncodeInto(encodeUtf8) {
 		return (text, dest) => {
 			const bytes = encodeUtf8(text);
 			dest.set(bytes);
 			return { written: bytes.byteLength };
 		};
 	}
-	// ../vot.js/node_modules/@bufbuild/protobuf/dist/esm/wire/binary-encoding.js
-	var WireType$1;
+	// node_modules/@bufbuild/protobuf/dist/esm/wire/binary-encoding.js
+	var WireType;
 	(function(WireType) {
 		WireType[WireType["Varint"] = 0] = "Varint";
 		WireType[WireType["Bit64"] = 1] = "Bit64";
@@ -3560,19 +3560,19 @@ var vot = (function(exports) {
 		WireType[WireType["StartGroup"] = 3] = "StartGroup";
 		WireType[WireType["EndGroup"] = 4] = "EndGroup";
 		WireType[WireType["Bit32"] = 5] = "Bit32";
-	})(WireType$1 || (WireType$1 = {}));
-	var BinaryWriter$1 = class {
+	})(WireType || (WireType = {}));
+	var BinaryWriter = class {
 		constructor(encodeUtf8) {
 			this.stackPos = [];
-			this.encodeUtf8Into = encodeUtf8 ? emulateEncodeInto$1(encodeUtf8) : getTextEncoding$1().encodeUtf8Into;
-			this.buffer = EMPTY_BUFFER$1;
-			this.viewCache = EMPTY_VIEW$1;
+			this.encodeUtf8Into = encodeUtf8 ? emulateEncodeInto(encodeUtf8) : getTextEncoding().encodeUtf8Into;
+			this.buffer = EMPTY_BUFFER;
+			this.viewCache = EMPTY_VIEW;
 			this.pos = 0;
 		}
 		ensureCapacity(size) {
 			const required = this.pos + size;
 			if (required > this.buffer.length) {
-				let newLen = this.buffer.length || INITIAL_SIZE$1;
+				let newLen = this.buffer.length || INITIAL_SIZE;
 				while (newLen < required) newLen *= 2;
 				const newBuf = new Uint8Array(newLen);
 				if (this.pos > 0) newBuf.set(this.buffer);
@@ -3595,18 +3595,18 @@ var vot = (function(exports) {
 		}
 		fork() {
 			this.stackPos.push(this.pos);
-			this.ensureCapacity(DEFAULT_LEN_PREFIX_SIZE$1);
+			this.ensureCapacity(DEFAULT_LEN_PREFIX_SIZE);
 			this.buffer[this.pos++] = 0;
 			return this;
 		}
 		join() {
 			const forkPos = this.stackPos.pop();
 			if (forkPos === void 0) throw new Error("invalid state, fork stack empty");
-			const len = this.pos - forkPos - DEFAULT_LEN_PREFIX_SIZE$1;
-			const lenPrefixSize = varint32Size$1(len);
-			if (lenPrefixSize > DEFAULT_LEN_PREFIX_SIZE$1) {
-				this.ensureCapacity(lenPrefixSize - DEFAULT_LEN_PREFIX_SIZE$1);
-				this.buffer.copyWithin(forkPos + lenPrefixSize, forkPos + DEFAULT_LEN_PREFIX_SIZE$1, this.pos);
+			const len = this.pos - forkPos - DEFAULT_LEN_PREFIX_SIZE;
+			const lenPrefixSize = varint32Size(len);
+			if (lenPrefixSize > DEFAULT_LEN_PREFIX_SIZE) {
+				this.ensureCapacity(lenPrefixSize - DEFAULT_LEN_PREFIX_SIZE);
+				this.buffer.copyWithin(forkPos + lenPrefixSize, forkPos + DEFAULT_LEN_PREFIX_SIZE, this.pos);
 			}
 			this.pos = forkPos;
 			this.uint32(len);
@@ -3623,7 +3623,7 @@ var vot = (function(exports) {
 			return this;
 		}
 		uint32(value) {
-			assertUInt32$1(value);
+			assertUInt32(value);
 			this.ensureCapacity(5);
 			if (value < 128) {
 				this.buffer[this.pos++] = value;
@@ -3637,7 +3637,7 @@ var vot = (function(exports) {
 			return this;
 		}
 		int32(value) {
-			assertInt32$1(value);
+			assertInt32(value);
 			if (value >= 0) return this.uint32(value);
 			this.ensureCapacity(10);
 			for (let i = 0; i < 9; i++) {
@@ -3659,7 +3659,7 @@ var vot = (function(exports) {
 		string(value) {
 			if (typeof value !== "string") value = String(value);
 			const len = value.length;
-			if (len <= ASCII_MAX_LENGTH$1) {
+			if (len <= ASCII_MAX_LENGTH) {
 				this.ensureCapacity(len + 1);
 				const ascii = this.buffer;
 				let pos = this.pos;
@@ -3676,18 +3676,18 @@ var vot = (function(exports) {
 				}
 			}
 			this.ensureCapacity(len * 3 + 5);
-			const lenPrefixSizeGuess = varint32Size$1(len);
+			const lenPrefixSizeGuess = varint32Size(len);
 			const buf = this.buffer;
 			const start = this.pos;
 			const { written } = this.encodeUtf8Into(value, buf.subarray(start + lenPrefixSizeGuess));
-			const lenPrefixSize = varint32Size$1(written);
+			const lenPrefixSize = varint32Size(written);
 			if (lenPrefixSize != lenPrefixSizeGuess) buf.copyWithin(start + lenPrefixSize, start + lenPrefixSizeGuess, start + lenPrefixSizeGuess + written);
 			this.uint32(written);
 			this.pos += written;
 			return this;
 		}
 		float(value) {
-			assertFloat32$1(value);
+			assertFloat32(value);
 			this.ensureCapacity(4);
 			this.view().setFloat32(this.pos, value, true);
 			this.pos += 4;
@@ -3700,25 +3700,25 @@ var vot = (function(exports) {
 			return this;
 		}
 		fixed32(value) {
-			assertUInt32$1(value);
+			assertUInt32(value);
 			this.ensureCapacity(4);
 			this.view().setUint32(this.pos, value, true);
 			this.pos += 4;
 			return this;
 		}
 		sfixed32(value) {
-			assertInt32$1(value);
+			assertInt32(value);
 			this.ensureCapacity(4);
 			this.view().setInt32(this.pos, value, true);
 			this.pos += 4;
 			return this;
 		}
 		sint32(value) {
-			assertInt32$1(value);
+			assertInt32(value);
 			return this.uint32((value << 1 ^ value >> 31) >>> 0);
 		}
 		sfixed64(value) {
-			const tc = protoInt64$1.enc(value);
+			const tc = protoInt64.enc(value);
 			this.ensureCapacity(8);
 			const view = this.view();
 			view.setInt32(this.pos, tc.lo, true);
@@ -3727,7 +3727,7 @@ var vot = (function(exports) {
 			return this;
 		}
 		fixed64(value) {
-			const tc = protoInt64$1.uEnc(value);
+			const tc = protoInt64.uEnc(value);
 			this.ensureCapacity(8);
 			const view = this.view();
 			view.setInt32(this.pos, tc.lo, true);
@@ -3736,15 +3736,15 @@ var vot = (function(exports) {
 			return this;
 		}
 		int64(value) {
-			const tc = protoInt64$1.enc(value);
+			const tc = protoInt64.enc(value);
 			return this.writeVarint64(tc.lo, tc.hi);
 		}
 		sint64(value) {
-			const tc = protoInt64$1.enc(value), sign = tc.hi >> 31, lo = tc.lo << 1 ^ sign, hi = (tc.hi << 1 | tc.lo >>> 31) ^ sign;
+			const tc = protoInt64.enc(value), sign = tc.hi >> 31, lo = tc.lo << 1 ^ sign, hi = (tc.hi << 1 | tc.lo >>> 31) ^ sign;
 			return this.writeVarint64(lo, hi);
 		}
 		uint64(value) {
-			const tc = protoInt64$1.uEnc(value);
+			const tc = protoInt64.uEnc(value);
 			return this.writeVarint64(tc.lo, tc.hi);
 		}
 		writeVarint64(lo, hi) {
@@ -3781,25 +3781,25 @@ var vot = (function(exports) {
 			return this;
 		}
 	};
-	var INITIAL_SIZE$1 = 128;
-	var DEFAULT_LEN_PREFIX_SIZE$1 = 1;
-	var EMPTY_BUFFER$1 = new Uint8Array(0);
-	var EMPTY_VIEW$1 = new DataView(EMPTY_BUFFER$1.buffer);
-	var ASCII_MAX_LENGTH$1 = 32;
-	function varint32Size$1(value) {
+	var INITIAL_SIZE = 128;
+	var DEFAULT_LEN_PREFIX_SIZE = 1;
+	var EMPTY_BUFFER = new Uint8Array(0);
+	var EMPTY_VIEW = new DataView(EMPTY_BUFFER.buffer);
+	var ASCII_MAX_LENGTH = 32;
+	function varint32Size(value) {
 		if (value < 128) return 1;
 		if (value < 16384) return 2;
 		if (value < 2097152) return 3;
 		if (value < 268435456) return 4;
 		return 5;
 	}
-	var BinaryReader$1 = class {
-		constructor(buf, decodeUtf8 = getTextEncoding$1().decodeUtf8) {
+	var BinaryReader = class {
+		constructor(buf, decodeUtf8 = getTextEncoding().decodeUtf8) {
 			this.decodeUtf8 = decodeUtf8;
 			this.varint64Lo = 0;
 			this.varint64Hi = 0;
-			this.varint64 = varint64read$1;
-			this.uint32 = varint32read$1;
+			this.varint64 = varint64read;
+			this.uint32 = varint32read;
 			this.buf = buf;
 			this.len = buf.length;
 			this.pos = 0;
@@ -3818,22 +3818,22 @@ var vot = (function(exports) {
 		skip(wireType, fieldNo, recursionLimit = 100) {
 			let start = this.pos;
 			switch (wireType) {
-				case WireType$1.Varint:
+				case WireType.Varint:
 					while (this.buf[this.pos++] & 128);
 					break;
-				case WireType$1.Bit64: this.pos += 4;
-				case WireType$1.Bit32:
+				case WireType.Bit64: this.pos += 4;
+				case WireType.Bit32:
 					this.pos += 4;
 					break;
-				case WireType$1.LengthDelimited:
+				case WireType.LengthDelimited:
 					let len = this.uint32();
 					this.pos += len;
 					break;
-				case WireType$1.StartGroup:
+				case WireType.StartGroup:
 					if (recursionLimit <= 0) throw new Error("maximum recursion depth reached");
 					for (;;) {
 						const [fn, wt] = this.tag();
-						if (wt === WireType$1.EndGroup) {
+						if (wt === WireType.EndGroup) {
 							if (fieldNo !== void 0 && fn !== fieldNo) throw new Error("invalid end group tag");
 							break;
 						}
@@ -3857,11 +3857,11 @@ var vot = (function(exports) {
 		}
 		int64() {
 			this.varint64();
-			return protoInt64$1.dec(this.varint64Lo, this.varint64Hi);
+			return protoInt64.dec(this.varint64Lo, this.varint64Hi);
 		}
 		uint64() {
 			this.varint64();
-			return protoInt64$1.uDec(this.varint64Lo, this.varint64Hi);
+			return protoInt64.uDec(this.varint64Lo, this.varint64Hi);
 		}
 		sint64() {
 			this.varint64();
@@ -3870,7 +3870,7 @@ var vot = (function(exports) {
 			let s = -(lo & 1);
 			lo = (lo >>> 1 | (hi & 1) << 31) ^ s;
 			hi = hi >>> 1 ^ s;
-			return protoInt64$1.dec(lo, hi);
+			return protoInt64.dec(lo, hi);
 		}
 		bool() {
 			const b = this.buf[this.pos];
@@ -3888,10 +3888,10 @@ var vot = (function(exports) {
 			return this.view.getInt32((this.pos += 4) - 4, true);
 		}
 		fixed64() {
-			return protoInt64$1.uDec(this.sfixed32(), this.sfixed32());
+			return protoInt64.uDec(this.sfixed32(), this.sfixed32());
 		}
 		sfixed64() {
-			return protoInt64$1.dec(this.sfixed32(), this.sfixed32());
+			return protoInt64.dec(this.sfixed32(), this.sfixed32());
 		}
 		float() {
 			return this.view.getFloat32((this.pos += 4) - 4, true);
@@ -3908,7 +3908,7 @@ var vot = (function(exports) {
 		string(strict) {
 			const bytes = this.bytes();
 			const len = bytes.length;
-			if (len <= ASCII_MAX_LENGTH$1) {
+			if (len <= ASCII_MAX_LENGTH) {
 				const codes = new Array(len);
 				for (let i = 0; i < len; i++) {
 					const byte = bytes[i];
@@ -3920,17 +3920,17 @@ var vot = (function(exports) {
 			return this.decodeUtf8(bytes, strict);
 		}
 	};
-	function assertInt32$1(arg) {
+	function assertInt32(arg) {
 		if (typeof arg == "string") arg = Number(arg);
 		else if (typeof arg != "number") throw new Error("invalid int32: " + typeof arg);
 		if (!Number.isInteger(arg) || arg > 2147483647 || arg < -2147483648) throw new Error("invalid int32: " + arg);
 	}
-	function assertUInt32$1(arg) {
+	function assertUInt32(arg) {
 		if (typeof arg == "string") arg = Number(arg);
 		else if (typeof arg != "number") throw new Error("invalid uint32: " + typeof arg);
 		if (!Number.isInteger(arg) || arg > 4294967295 || arg < 0) throw new Error("invalid uint32: " + arg);
 	}
-	function assertFloat32$1(arg) {
+	function assertFloat32(arg) {
 		if (typeof arg == "string") {
 			const o = arg;
 			arg = Number(arg);
@@ -3938,7 +3938,7 @@ var vot = (function(exports) {
 		} else if (typeof arg != "number") throw new Error("invalid float32: " + typeof arg);
 		if (!Number.isFinite(Math.fround(arg)) && Number.isFinite(arg)) throw new Error("invalid float32: " + arg);
 	}
-	// ../vot.js/packages/shared/dist/protos/yandex.js
+	// node_modules/@vot.js/shared/dist/protos/yandex.js
 	var StreamInterval;
 	(function(StreamInterval) {
 		StreamInterval[StreamInterval["NO_CONNECTION"] = 0] = "NO_CONNECTION";
@@ -3973,13 +3973,13 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoTranslationHelpObject = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.target !== "") writer.uint32(10).string(message.target);
 			if (message.targetUrl !== "") writer.uint32(18).string(message.targetUrl);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoTranslationHelpObject();
 			while (reader.pos < end) {
@@ -4042,7 +4042,7 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoTranslationRequest = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.url !== "") writer.uint32(26).string(message.url);
 			if (message.deviceId !== void 0) writer.uint32(34).string(message.deviceId);
 			if (message.firstRequest !== false) writer.uint32(40).bool(message.firstRequest);
@@ -4062,7 +4062,7 @@ var vot = (function(exports) {
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoTranslationRequest();
 			while (reader.pos < end) {
@@ -4219,7 +4219,7 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoTranslationResponse = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.url !== void 0) writer.uint32(10).string(message.url);
 			if (message.duration !== void 0) writer.uint32(17).double(message.duration);
 			if (message.status !== 0) writer.uint32(32).int32(message.status);
@@ -4235,7 +4235,7 @@ var vot = (function(exports) {
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoTranslationResponse();
 			while (reader.pos < end) {
@@ -4357,7 +4357,7 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoTranslationCacheItem = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.status !== 0) writer.uint32(8).int32(message.status);
 			if (message.remainingTime !== void 0) writer.uint32(16).int32(message.remainingTime);
 			if (message.message !== void 0) writer.uint32(26).string(message.message);
@@ -4368,7 +4368,7 @@ var vot = (function(exports) {
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoTranslationCacheItem();
 			while (reader.pos < end) {
@@ -4446,7 +4446,7 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoTranslationCacheRequest = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.url !== "") writer.uint32(10).string(message.url);
 			if (message.duration !== 0) writer.uint32(17).double(message.duration);
 			if (message.language !== "") writer.uint32(26).string(message.language);
@@ -4454,7 +4454,7 @@ var vot = (function(exports) {
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoTranslationCacheRequest();
 			while (reader.pos < end) {
@@ -4517,13 +4517,13 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoTranslationCacheResponse = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.default !== void 0) VideoTranslationCacheItem.encode(message.default, writer.uint32(10).fork()).join();
 			if (message.cloning !== void 0) VideoTranslationCacheItem.encode(message.cloning, writer.uint32(18).fork()).join();
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoTranslationCacheResponse();
 			while (reader.pos < end) {
@@ -4572,13 +4572,13 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoLangCacheRequest = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.url !== "") writer.uint32(10).string(message.url);
 			if (message.title !== "") writer.uint32(18).string(message.title);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoLangCacheRequest();
 			while (reader.pos < end) {
@@ -4628,14 +4628,14 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoLangCacheResponse = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.url !== "") writer.uint32(10).string(message.url);
 			if (message.status !== 0) writer.uint32(24).int32(message.status);
 			if (message.unknown1 !== 0) writer.uint32(40).int32(message.unknown1);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoLangCacheResponse();
 			while (reader.pos < end) {
@@ -4691,13 +4691,13 @@ var vot = (function(exports) {
 		};
 	}
 	var AudioBufferObject = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.audioFile.length !== 0) writer.uint32(18).bytes(message.audioFile);
 			if (message.fileId !== "") writer.uint32(10).string(message.fileId);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseAudioBufferObject();
 			while (reader.pos < end) {
@@ -4746,13 +4746,13 @@ var vot = (function(exports) {
 		};
 	}
 	var PartialAudioBufferObject = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.audioFile.length !== 0) writer.uint32(18).bytes(message.audioFile);
 			if (message.chunkId !== 0) writer.uint32(8).int32(message.chunkId);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBasePartialAudioBufferObject();
 			while (reader.pos < end) {
@@ -4803,7 +4803,7 @@ var vot = (function(exports) {
 		};
 	}
 	var ChunkAudioObject = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.audioBuffer !== void 0) PartialAudioBufferObject.encode(message.audioBuffer, writer.uint32(10).fork()).join();
 			if (message.audioPartsLength !== 0) writer.uint32(16).int32(message.audioPartsLength);
 			if (message.fileId !== "") writer.uint32(26).string(message.fileId);
@@ -4811,7 +4811,7 @@ var vot = (function(exports) {
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseChunkAudioObject();
 			while (reader.pos < end) {
@@ -4876,7 +4876,7 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoTranslationAudioRequest = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.translationId !== "") writer.uint32(10).string(message.translationId);
 			if (message.url !== "") writer.uint32(18).string(message.url);
 			if (message.partialAudioInfo !== void 0) ChunkAudioObject.encode(message.partialAudioInfo, writer.uint32(34).fork()).join();
@@ -4884,7 +4884,7 @@ var vot = (function(exports) {
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoTranslationAudioRequest();
 			while (reader.pos < end) {
@@ -4947,13 +4947,13 @@ var vot = (function(exports) {
 		};
 	}
 	var VideoTranslationAudioResponse = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.status !== 0) writer.uint32(8).int32(message.status);
 			for (const v of message.remainingChunks) writer.uint32(18).string(v);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseVideoTranslationAudioResponse();
 			while (reader.pos < end) {
@@ -5007,7 +5007,7 @@ var vot = (function(exports) {
 		};
 	}
 	var SubtitlesObject = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.language !== "") writer.uint32(10).string(message.language);
 			if (message.url !== "") writer.uint32(18).string(message.url);
 			if (message.hasTranslation !== false) writer.uint32(24).bool(message.hasTranslation);
@@ -5018,7 +5018,7 @@ var vot = (function(exports) {
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseSubtitlesObject();
 			while (reader.pos < end) {
@@ -5102,13 +5102,13 @@ var vot = (function(exports) {
 		};
 	}
 	var SubtitlesRequest = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.url !== "") writer.uint32(10).string(message.url);
 			if (message.language !== "") writer.uint32(18).string(message.language);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseSubtitlesRequest();
 			while (reader.pos < end) {
@@ -5157,13 +5157,13 @@ var vot = (function(exports) {
 		};
 	}
 	var SubtitlesResponse = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.waiting !== false) writer.uint32(8).bool(message.waiting);
 			for (const v of message.subtitles) SubtitlesObject.encode(v, writer.uint32(18).fork()).join();
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseSubtitlesResponse();
 			while (reader.pos < end) {
@@ -5212,13 +5212,13 @@ var vot = (function(exports) {
 		};
 	}
 	var StreamTranslationObject = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.url !== "") writer.uint32(10).string(message.url);
 			if (message.timestamp !== "") writer.uint32(18).string(message.timestamp);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseStreamTranslationObject();
 			while (reader.pos < end) {
@@ -5270,7 +5270,7 @@ var vot = (function(exports) {
 		};
 	}
 	var StreamTranslationRequest = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.url !== "") writer.uint32(10).string(message.url);
 			if (message.language !== "") writer.uint32(18).string(message.language);
 			if (message.responseLanguage !== "") writer.uint32(26).string(message.responseLanguage);
@@ -5279,7 +5279,7 @@ var vot = (function(exports) {
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseStreamTranslationRequest();
 			while (reader.pos < end) {
@@ -5350,14 +5350,14 @@ var vot = (function(exports) {
 		};
 	}
 	var StreamTranslationResponse = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.interval !== 0) writer.uint32(8).int32(message.interval);
 			if (message.translatedInfo !== void 0) StreamTranslationObject.encode(message.translatedInfo, writer.uint32(18).fork()).join();
 			if (message.pingId !== void 0) writer.uint32(24).int32(message.pingId);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseStreamTranslationResponse();
 			while (reader.pos < end) {
@@ -5410,12 +5410,12 @@ var vot = (function(exports) {
 		return { pingId: 0 };
 	}
 	var StreamPingRequest = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.pingId !== 0) writer.uint32(8).int32(message.pingId);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseStreamPingRequest();
 			while (reader.pos < end) {
@@ -5455,13 +5455,13 @@ var vot = (function(exports) {
 		};
 	}
 	var YandexSessionRequest = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.uuid !== "") writer.uint32(10).string(message.uuid);
 			if (message.module !== "") writer.uint32(18).string(message.module);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseYandexSessionRequest();
 			while (reader.pos < end) {
@@ -5510,13 +5510,13 @@ var vot = (function(exports) {
 		};
 	}
 	var YandexSessionResponse = {
-		encode(message, writer = new BinaryWriter$1()) {
+		encode(message, writer = new BinaryWriter()) {
 			if (message.secretKey !== "") writer.uint32(10).string(message.secretKey);
 			if (message.expires !== 0) writer.uint32(16).int32(message.expires);
 			return writer;
 		},
 		decode(input, length) {
-			const reader = input instanceof BinaryReader$1 ? input : new BinaryReader$1(input);
+			const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
 			const end = length === void 0 ? reader.len : reader.pos + length;
 			const message = createBaseYandexSessionResponse();
 			while (reader.pos < end) {
@@ -5580,13 +5580,13 @@ var vot = (function(exports) {
 	function isSet(value) {
 		return value !== null && value !== void 0;
 	}
-	// ../vot.js/packages/shared/dist/types/helpers/bannedvideo.js
+	// node_modules/@vot.js/shared/dist/types/helpers/bannedvideo.js
 	var TypeName;
 	(function(TypeName) {
 		TypeName["Channel"] = "Channel";
 		TypeName["Video"] = "Video";
 	})(TypeName || (TypeName = {}));
-	// ../vot.js/packages/ext/dist/helpers/loom.js
+	// node_modules/@vot.js/ext/dist/helpers/loom.js
 	var LoomHelper = class extends BaseHelper {
 		getClientVersion() {
 			if (typeof SENTRY_RELEASE === "undefined") return;
@@ -5629,7 +5629,7 @@ var vot = (function(exports) {
 			return /(embed|share)\/([^/]+)?/.exec(url.pathname)?.[2];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/mailru.js
+	// node_modules/@vot.js/ext/dist/helpers/mailru.js
 	var MailRuHelper = class extends BaseHelper {
 		API_ORIGIN = "https://my.mail.ru";
 		async getVideoMeta(videoId) {
@@ -5650,7 +5650,7 @@ var vot = (function(exports) {
 			return videoData.meta.url.replace("//my.mail.ru/", "");
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/mediafile.js
+	// node_modules/@vot.js/ext/dist/helpers/mediafile.js
 	var MediafileHelper = class extends BaseHelper {
 		DEFAULT_SITE_ORIGIN = "https://mediafile.cc";
 		SITE_ORIGIN = this.service?.url?.slice(0, -1) ?? this.DEFAULT_SITE_ORIGIN;
@@ -5670,7 +5670,7 @@ var vot = (function(exports) {
 			return url.pathname.replace(/^\/+/, "") || void 0;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/netacad.js
+	// node_modules/@vot.js/ext/dist/helpers/netacad.js
 	var NetacadHelper = class extends VideoJSHelper {
 		SUBTITLE_SOURCE = "netacad";
 		async getVideoData(videoId) {
@@ -5682,20 +5682,20 @@ var vot = (function(exports) {
 			return url.pathname + url.search;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/newgrounds.js
+	// node_modules/@vot.js/ext/dist/helpers/newgrounds.js
 	var NewgroundsHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /([^/]+)\/(view)\/([^/]+)/.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/niconico.js
+	// node_modules/@vot.js/ext/dist/helpers/niconico.js
 	var NicoNicoHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			if (url.hostname === "nico.ms") return url.pathname.replace(/^\//, "").split("/")[0] || void 0;
 			return /\/watch\/([^/?#]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/nine_gag.js
+	// node_modules/@vot.js/ext/dist/helpers/nine_gag.js
 	var NineGAGHelper = class extends BaseHelper {
 		async getVideoData(videoId) {
 			const data = this.returnBaseData(videoId);
@@ -5719,7 +5719,7 @@ var vot = (function(exports) {
 			return /gag\/([^/]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/players/jwplayer.js
+	// node_modules/@vot.js/ext/dist/players/jwplayer.js
 	function isVideoFile(source) {
 		const mimeType = source.mimeType || source.type;
 		const type = typeof mimeType === "string" ? mimeType.toLowerCase().split(";")[0].trim() : "";
@@ -5855,7 +5855,7 @@ var vot = (function(exports) {
 			return subtitles;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/noodlemagazine.js
+	// node_modules/@vot.js/ext/dist/helpers/noodlemagazine.js
 	var NoodleMagazineHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.pathname.slice(1);
@@ -5864,7 +5864,7 @@ var vot = (function(exports) {
 			return new JWPlayerHelper().getVideoData(videoId);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/odysee.js
+	// node_modules/@vot.js/ext/dist/helpers/odysee.js
 	var OdyseeHelper = class extends BaseHelper {
 		API_ORIGIN = "https://odysee.com";
 		async getVideoData(videoId) {
@@ -5874,19 +5874,19 @@ var vot = (function(exports) {
 			return url.pathname.slice(1);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/okru.js
+	// node_modules/@vot.js/ext/dist/helpers/okru.js
 	var OKRuHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /\/video\/(\d+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/olympicsreplay.js
+	// node_modules/@vot.js/ext/dist/helpers/olympicsreplay.js
 	var OlympicsReplayHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /\/([a-z]{2}\/(?:[a-z0-9-]+\/)?(?:replay|videos?|original-series\/episode)\/[\w-]+)\/?$/i.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/oraclelearn.js
+	// node_modules/@vot.js/ext/dist/helpers/oraclelearn.js
 	var OracleLearnHelper = class extends VideoJSHelper {
 		SUBTITLE_SOURCE = "oraclelearn";
 		async getVideoData(videoId) {
@@ -5914,7 +5914,7 @@ var vot = (function(exports) {
 			return /\/ou\/course\/(([^/]+)\/(\d+)\/(\d+))/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/patreon.js
+	// node_modules/@vot.js/ext/dist/helpers/patreon.js
 	var PatreonHelper = class extends BaseHelper {
 		API_ORIGIN = "https://www.patreon.com/api";
 		async getPosts(postId) {
@@ -5938,7 +5938,7 @@ var vot = (function(exports) {
 			return fullPostId.replace(/[^\d.]/g, "");
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/peertube.js
+	// node_modules/@vot.js/ext/dist/helpers/peertube.js
 	var PeertubeHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			const normalizedPathname = url.pathname.replace(/\/+$/, "");
@@ -5948,19 +5948,19 @@ var vot = (function(exports) {
 			if (shortVideoId) return `/videos/watch/${shortVideoId}`;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/picarto.js
+	// node_modules/@vot.js/ext/dist/helpers/picarto.js
 	var PicartoHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /\/((?:videopopout|[^/]+(?:\/profile)?\/videos)\/[^/?#&/]+)\/?$/.exec(url.pathname)?.[1] ?? /^\/([^/#?]+)\/?$/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/pornhub.js
+	// node_modules/@vot.js/ext/dist/helpers/pornhub.js
 	var PornhubHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.searchParams.get("viewkey") ?? /embed\/([^/]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/porntn.js
+	// node_modules/@vot.js/ext/dist/helpers/porntn.js
 	var PornTNHelper = class extends BaseHelper {
 		async getVideoData(videoId) {
 			try {
@@ -5986,7 +5986,7 @@ var vot = (function(exports) {
 			return /\/videos\/(([^/]+)\/([^/]+))/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/preservetube.js
+	// node_modules/@vot.js/ext/dist/helpers/preservetube.js
 	var PreserveTubeHelper = class extends BaseHelper {
 		async getVideoData(videoId) {
 			try {
@@ -6002,7 +6002,7 @@ var vot = (function(exports) {
 			return url.searchParams.get("v") ?? void 0;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/reddit.js
+	// node_modules/@vot.js/ext/dist/helpers/reddit.js
 	var RedditHelper = class extends BaseHelper {
 		API_ORIGIN = "https://www.reddit.com";
 		async getDashAudioUrl(dashUrl) {
@@ -6036,7 +6036,7 @@ var vot = (function(exports) {
 			return /\/r\/(([^/]+)\/([^/]+)\/([^/]+)\/([^/]+))/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/rtnews.js
+	// node_modules/@vot.js/ext/dist/helpers/rtnews.js
 	var RtNewsHelper = class extends BaseHelper {
 		async getVideoData(videoId) {
 			const videoEl = document.querySelector(".jw-video, .media__video_noscript");
@@ -6053,7 +6053,7 @@ var vot = (function(exports) {
 			return url.pathname.slice(1);
 		}
 	};
-	// ../vot.js/packages/ext/dist/players/flowplayer.js
+	// node_modules/@vot.js/ext/dist/players/flowplayer.js
 	var FlowplayerHelper = class {
 		SUBTITLE_SOURCE = "flowplayer";
 		SUBTITLE_FORMAT = "vtt";
@@ -6096,7 +6096,7 @@ var vot = (function(exports) {
 			return [];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/rule34video.js
+	// node_modules/@vot.js/ext/dist/helpers/rule34video.js
 	var Rule34VideoHelper = class extends BaseHelper {
 		resolveVideoIdViaPostMessage(url) {
 			return new Promise((resolve) => {
@@ -6145,19 +6145,19 @@ var vot = (function(exports) {
 			return tail ? `${id}/${tail.replace(/\/+$/, "")}/` : id;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/rumble.js
+	// node_modules/@vot.js/ext/dist/helpers/rumble.js
 	var RumbleHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.pathname.slice(1);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/rutube.js
+	// node_modules/@vot.js/ext/dist/helpers/rutube.js
 	var RutubeHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /(?:video|embed)\/([^/]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/sap.js
+	// node_modules/@vot.js/ext/dist/helpers/sap.js
 	var SapHelper = class extends BaseHelper {
 		API_ORIGIN = "https://learning.sap.com/";
 		async requestKaltura(kalturaDomain, partnerId, entryId) {
@@ -6249,7 +6249,7 @@ var vot = (function(exports) {
 			return /((courses|learning-journeys)\/([^/]+)(\/[^/]+)?)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/skilljar.js
+	// node_modules/@vot.js/ext/dist/helpers/skilljar.js
 	var SkilljarHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.pathname.slice(1);
@@ -6258,7 +6258,7 @@ var vot = (function(exports) {
 			return new JWPlayerHelper().getVideoData(videoId);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/spankbang.js
+	// node_modules/@vot.js/ext/dist/helpers/spankbang.js
 	var SpankBangHelper = class extends VideoJSHelper {
 		SUBTITLE_SOURCE = "spankbang";
 		TECH_EL_SELECTOR = "video.vjs-tech, video[id$=\"_html5_api\"], video[src]:not([id^=\"video_dropdown_\"]), video:not([id^=\"video_dropdown_\"])";
@@ -6282,7 +6282,7 @@ var vot = (function(exports) {
 			return /\/([\da-z]+\/(?:video|play|embed)(?:\/[^/]+)?)\/?$/i.exec(url.pathname)?.[1] ?? /\/([\da-z]+-[\da-z]+\/playlist\/[^/]+)\/?$/i.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/telegram.js
+	// node_modules/@vot.js/ext/dist/helpers/telegram.js
 	var TelegramHelper = class TelegramHelper extends BaseHelper {
 		static getMediaViewer() {
 			if (typeof appMediaViewer === "undefined") return;
@@ -6301,13 +6301,13 @@ var vot = (function(exports) {
 			return `${await mediaViewer.managers.appPeersManager.getPeerUsername(message.peerId)}/${postId}`;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/thisvid.js
+	// node_modules/@vot.js/ext/dist/helpers/thisvid.js
 	var ThisVidHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /(videos|embed)\/[^/]+/.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/tiktok.js
+	// node_modules/@vot.js/ext/dist/helpers/tiktok.js
 	var TikTokHelper = class TikTokHelper extends BaseHelper {
 		static PLAYER_CLASS = ".tiktok-web-player";
 		static getPlayer(video) {
@@ -6352,7 +6352,7 @@ var vot = (function(exports) {
 			return `${authorUsername}/video/${parsedVideoId}`;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/trovo.js
+	// node_modules/@vot.js/ext/dist/helpers/trovo.js
 	var TrovoHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			const vid = url.searchParams.get("vid");
@@ -6361,7 +6361,7 @@ var vot = (function(exports) {
 			return `${path}?vid=${vid}`;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/twitch.js
+	// node_modules/@vot.js/ext/dist/helpers/twitch.js
 	var TwitchHelper = class extends BaseHelper {
 		API_ORIGIN = "https://clips.twitch.tv";
 		async getClipLink(pathname, clipId) {
@@ -6403,7 +6403,7 @@ var vot = (function(exports) {
 			return document.querySelector(".persistent-player") ? pathname : void 0;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/twitter.js
+	// node_modules/@vot.js/ext/dist/helpers/twitter.js
 	var TwitterHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			const videoId = /status\/([^/]+)/.exec(url.pathname)?.[1];
@@ -6412,7 +6412,7 @@ var vot = (function(exports) {
 			return newLink ? /status\/([^/]+)/.exec(newLink)?.[1] : void 0;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/udemy.js
+	// node_modules/@vot.js/ext/dist/helpers/udemy.js
 	function isObject$1(value) {
 		return typeof value === "object" && value !== null;
 	}
@@ -6654,7 +6654,7 @@ var vot = (function(exports) {
 			return url.pathname.slice(1);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/vk.js
+	// node_modules/@vot.js/ext/dist/helpers/vk.js
 	var VKHelper = class VKHelper extends BaseHelper {
 		static getPlayer() {
 			if (typeof Videoview === "undefined") return;
@@ -6699,13 +6699,13 @@ var vot = (function(exports) {
 			if (paramOID && paramID) return `video-${Math.abs(parseInt(paramOID, 10))}_${paramID}`;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/watchpornto.js
+	// node_modules/@vot.js/ext/dist/helpers/watchpornto.js
 	var WatchPornToHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /(video|embed)\/(\d+)(\/[^/]+\/)?/.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/weibo.js
+	// node_modules/@vot.js/ext/dist/helpers/weibo.js
 	var weiboVideoIdRe = /^\d+:(?:[\da-f]{32}|\d{16,})$/i;
 	var weiboLayerIdRe = /^[A-Za-z0-9]+$/;
 	var weiboHostRe = /^(?:www\.)?weibo\.com$/;
@@ -6748,7 +6748,7 @@ var vot = (function(exports) {
 		getRandomValues = webCrypto.getRandomValues.bind(webCrypto);
 		randomUUID = typeof webCrypto.randomUUID === "function" ? webCrypto.randomUUID.bind(webCrypto) : void 0;
 	}));
-	// ../vot.js/packages/shared/dist/secure.js
+	// node_modules/@vot.js/shared/dist/secure.js
 	var { componentVersion, chromiumRevision } = config_default$1;
 	async function getCrypto() {
 		if (typeof window !== "undefined" && window.crypto) return window.crypto;
@@ -6806,7 +6806,7 @@ var vot = (function(exports) {
 		"sec-ch-ua-full-version-list": `"Chromium";v="152.0.7977.${chromiumRevision}", "Not?A_Brand";v="24.0.0.0", "YaBrowser";v="${componentVersion}", "Yowser";v="2.5"`,
 		"Sec-Fetch-Mode": "no-cors"
 	};
-	// ../vot.js/packages/ext/dist/helpers/weverse.js
+	// node_modules/@vot.js/ext/dist/helpers/weverse.js
 	var WeverseHelper = class extends BaseHelper {
 		API_ORIGIN = "https://global.apis.naver.com/weverse/wevweb";
 		API_APP_ID = "be4d79eb8fc7bd008ee82c8ec4ff6fd4";
@@ -6914,7 +6914,7 @@ var vot = (function(exports) {
 			return /([^/]+)\/(live|media)\/([^/]+)/.exec(url.pathname)?.[3];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/xhamster.js
+	// node_modules/@vot.js/ext/dist/helpers/xhamster.js
 	var XHamsterHelper = class extends BaseHelper {
 		SUBTITLE_SOURCE = "xhamster";
 		SUBTITLE_FORMAT = "vtt";
@@ -6941,13 +6941,13 @@ var vot = (function(exports) {
 			return /\/(videos\/[^/]+-[\dA-Za-z]+)\/?$/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/xvideos.js
+	// node_modules/@vot.js/ext/dist/helpers/xvideos.js
 	var XVideosHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /[^/]+\/[^/]+$/.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/yandexdisk.js
+	// node_modules/@vot.js/ext/dist/helpers/yandexdisk.js
 	var YandexDiskHelper = class extends BaseHelper {
 		API_ORIGIN = window.location.origin;
 		CLIENT_PREFIX = "/client/disk";
@@ -7103,13 +7103,13 @@ var vot = (function(exports) {
 			return /\/d\/([^/]+)/.exec(url.pathname) ? url.pathname : void 0;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/youku.js
+	// node_modules/@vot.js/ext/dist/helpers/youku.js
 	var YoukuHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /v_show\/id_[\w=]+/.exec(url.pathname)?.[0];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/youtube.js
+	// node_modules/@vot.js/ext/dist/helpers/youtube.js
 	var YoutubeHelper = class YoutubeHelper extends BaseHelper {
 		static isMobile() {
 			return /^m\.youtube\.com$/.test(window.location.hostname);
@@ -7259,7 +7259,7 @@ var vot = (function(exports) {
 			return YoutubeHelper.extractVideoId(url);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/zdf.js
+	// node_modules/@vot.js/ext/dist/helpers/zdf.js
 	var zdfPlayPathRe = /^\/play\/([^/?#]+)\/([^/?#]+)\/([^/?#]+)\/?$/i;
 	var ZDFHelper = class extends BaseHelper {
 		async getVideoId(url) {
@@ -7269,19 +7269,19 @@ var vot = (function(exports) {
 			return `${publicationForm}/${collectionCanonical}/${videoCanonical}`;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/wistia.js
+	// node_modules/@vot.js/ext/dist/helpers/wistia.js
 	var WistiaHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return /\/embed\/iframe\/([^/]+)/.exec(url.pathname)?.[1];
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/bfmtv.js
+	// node_modules/@vot.js/ext/dist/helpers/bfmtv.js
 	var BfmTvHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/videopress.js
+	// node_modules/@vot.js/ext/dist/helpers/videopress.js
 	var VideoPressHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			const source = getVideoSrc(this.video ?? querySelectorDeep("video"));
@@ -7301,55 +7301,55 @@ var vot = (function(exports) {
 			}
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/vidlii.js
+	// node_modules/@vot.js/ext/dist/helpers/vidlii.js
 	var VidliiHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/nytimes.js
+	// node_modules/@vot.js/ext/dist/helpers/nytimes.js
 	var NYTimesHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/wsj.js
+	// node_modules/@vot.js/ext/dist/helpers/wsj.js
 	var WSJHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/acfun.js
+	// node_modules/@vot.js/ext/dist/helpers/acfun.js
 	var AcFunHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/gettr.js
+	// node_modules/@vot.js/ext/dist/helpers/gettr.js
 	var GettrHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/huya.js
+	// node_modules/@vot.js/ext/dist/helpers/huya.js
 	var HuyaHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/medaltv.js
+	// node_modules/@vot.js/ext/dist/helpers/medaltv.js
 	var MedalTvHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/redgifs.js
+	// node_modules/@vot.js/ext/dist/helpers/redgifs.js
 	var RedgifsHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/navertv.js
+	// node_modules/@vot.js/ext/dist/helpers/navertv.js
 	var NaverTVHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			if (!/^\/shorts\/?$/.test(url.pathname)) return url.href;
@@ -7375,25 +7375,25 @@ var vot = (function(exports) {
 			return playback?.MPD?.flatMap((mpd) => mpd.Period ?? []).flatMap((period) => period.AdaptationSet ?? []).flatMap((set) => set.Representation ?? []).filter((video) => !video.SegmentTemplate).flatMap((video) => video.BaseURL ?? []).find((stream) => /^https?:\/\/.*\.mp4(?:[?#]|$)/i.test(stream));
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/chzzk.js
+	// node_modules/@vot.js/ext/dist/helpers/chzzk.js
 	var CHZZKHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/zhihu.js
+	// node_modules/@vot.js/ext/dist/helpers/zhihu.js
 	var ZhihuHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/snapchat.js
+	// node_modules/@vot.js/ext/dist/helpers/snapchat.js
 	var SnapchatSpotlightHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/beacon.js
+	// node_modules/@vot.js/ext/dist/helpers/beacon.js
 	var BeaconHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
@@ -7402,49 +7402,49 @@ var vot = (function(exports) {
 			return new JWPlayerHelper().getVideoData(videoId);
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/brightcove.js
+	// node_modules/@vot.js/ext/dist/helpers/brightcove.js
 	var BrightcoveHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/craftsy.js
+	// node_modules/@vot.js/ext/dist/helpers/craftsy.js
 	var CraftsyHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/jwplatform.js
+	// node_modules/@vot.js/ext/dist/helpers/jwplatform.js
 	var JWPlatformHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/nzherald.js
+	// node_modules/@vot.js/ext/dist/helpers/nzherald.js
 	var NZHeraldHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/onefootball.js
+	// node_modules/@vot.js/ext/dist/helpers/onefootball.js
 	var OneFootballHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/vidly.js
+	// node_modules/@vot.js/ext/dist/helpers/vidly.js
 	var VidlyHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/bluesky.js
+	// node_modules/@vot.js/ext/dist/helpers/bluesky.js
 	var BlueskyHelper = class extends BaseHelper {
 		async getVideoId(url) {
 			return url.href;
 		}
 	};
-	// ../vot.js/packages/ext/dist/helpers/index.js
+	// node_modules/@vot.js/ext/dist/helpers/index.js
 	var availableHelpers = {
 		[VideoService$1.bfmtv]: BfmTvHelper,
 		[VideoService$1.videopress]: VideoPressHelper,
@@ -7559,7 +7559,7 @@ var vot = (function(exports) {
 			return new availableHelpers[service](this.helpersData);
 		}
 	};
-	// ../vot.js/packages/ext/dist/utils/videoData.js
+	// node_modules/@vot.js/ext/dist/utils/videoData.js
 	function hasHelper(host) {
 		return host in availableHelpers;
 	}
@@ -9669,7 +9669,7 @@ var vot = (function(exports) {
 	var proxyWorkerHostMode1 = "vot-worker.vtrans.eu.cc";
 	var PROXY_WORKER_HOST = "vot-worker.eu.cc";
 	var MEDIA_PROXY_HOST = config_default$1.mediaProxy;
-	var repoPath = "ilyhalight/voice-over-translation";
+	var repoPath = "xtalia/voice-over-translation";
 	var contentUrl = `https://raw.githubusercontent.com/${repoPath}`;
 	var repositoryUrl = `https://github.com/${repoPath}`;
 	var PROXY_ONLY_COUNTRIES = [
@@ -10585,12 +10585,16 @@ var vot = (function(exports) {
 		"dontTranslateLanguages",
 		"dontTranslateByYTMusic",
 		"enabledAutoVolume",
+		"autoVolumeMode",
 		"enabledSmartDucking",
 		"autoVolume",
 		"smartDuckingStrength",
 		"buttonPos",
 		"showVideoSlider",
 		"syncVolume",
+		"translationVolumeOffset",
+		"muteTranslationWithOriginal",
+		"volumeLinkMode",
 		"downloadWithName",
 		"sendNotifyOnComplete",
 		"subtitlesMaxLength",
@@ -11219,7 +11223,7 @@ var vot = (function(exports) {
 	}
 	function getRuntimeInfo() {
 		return {
-			version: "1.12.6",
+			version: "1.12.6.1",
 			environment: "master",
 			env: getEnvironmentInfo$1(),
 			debugIds: readDebugIdRegistry()
@@ -11230,7 +11234,7 @@ var vot = (function(exports) {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/x-sentry-envelope",
-				"X-Sentry-Auth": buildAuthHeader("1.12.6")
+				"X-Sentry-Auth": buildAuthHeader("1.12.6.1")
 			},
 			body: buildEnvelope(event),
 			forceGmXhr: true,
@@ -11740,7 +11744,7 @@ var vot = (function(exports) {
 		return buildVersion || scriptVersion || "unknown";
 	}
 	function getRuntimeLocaleVersion() {
-		return resolveRuntimeLocaleVersion(String("1.12.6"), String(getGMInfo()?.script?.version || ""));
+		return resolveRuntimeLocaleVersion(String("1.12.6.1"), String(getGMInfo()?.script?.version || ""));
 	}
 	var LocalizationProvider = class {
 		lang;
@@ -12835,7 +12839,7 @@ var vot = (function(exports) {
 			this.observedRoots = new WeakSet();
 		}
 	};
-	// ../vot.js/packages/core/dist/providers/base.js
+	// node_modules/@vot.js/core/dist/providers/base.js
 	var BaseProvider = class {
 		host;
 		schema;
@@ -12913,7 +12917,7 @@ var vot = (function(exports) {
 			};
 		}
 	};
-	// ../vot.js/packages/core/dist/client.js
+	// node_modules/@vot.js/core/dist/client.js
 	var VOTJSError = class extends Error {
 		data;
 		constructor(message, data = void 0) {
@@ -12958,7 +12962,7 @@ var vot = (function(exports) {
 			this.provider.responseLang = lang;
 		}
 	};
-	// ../vot.js/packages/core/dist/protobuf.js
+	// node_modules/@vot.js/core/dist/protobuf.js
 	function encodeTranslationRequest(url, duration, requestLang, responseLang, translationHelp, { forceSourceLang = false, wasStream = false, videoTitle = "", bypassCache = false, useLivelyVoice = false, firstRequest = true } = {}) {
 		return VideoTranslationRequest.encode({
 			url,
@@ -13075,7 +13079,7 @@ var vot = (function(exports) {
 		encodeSessionRequest,
 		decodeSessionResponse
 	};
-	// ../vot.js/packages/core/dist/types/providers/yandex.js
+	// node_modules/@vot.js/core/dist/types/providers/yandex.js
 	var VideoTranslationStatus;
 	(function(VideoTranslationStatus) {
 		VideoTranslationStatus[VideoTranslationStatus["FAILED"] = 0] = "FAILED";
@@ -13102,7 +13106,7 @@ var vot = (function(exports) {
 		AudioDownloadType["WEB_MSE_PROXY"] = "web_mse_proxy";
 		AudioDownloadType["EMPTY_PLUG"] = "empty_plug";
 	})(AudioDownloadType || (AudioDownloadType = {}));
-	// ../vot.js/packages/core/dist/providers/yandex.js
+	// node_modules/@vot.js/core/dist/providers/yandex.js
 	var YandexProvider = class extends BaseProvider {
 		headers = {
 			"User-Agent": this.userAgent,
@@ -13311,7 +13315,7 @@ var vot = (function(exports) {
 			return YandexVOTProtobuf.decodeTranslationCacheResponse(res.data);
 		}
 	};
-	// ../vot.js/packages/core/dist/providers/votworker.js
+	// node_modules/@vot.js/core/dist/providers/votworker.js
 	var VOTNextWorkerProvider = class extends YandexProvider {
 		constructor(opts = {}) {
 			opts.host = opts.host ?? config_default$1.hostWorker;
@@ -13329,7 +13333,7 @@ var vot = (function(exports) {
 			}
 		}
 	};
-	// ../vot.js/packages/ext/dist/client.js
+	// node_modules/@vot.js/ext/dist/client.js
 	var VOTClient = class extends VOTClient$1 {
 		constructor(opts) {
 			super(opts);
@@ -15179,669 +15183,6 @@ var vot = (function(exports) {
 			audioFormatCapabilities: audio ? [audio] : [],
 			hdrModeBitmask: 3
 		};
-	}
-	// node_modules/@bufbuild/protobuf/dist/esm/wire/varint.js
-	function varint64read() {
-		const buf = this.buf;
-		let pos = this.pos;
-		let lo = 0;
-		let hi = 0;
-		for (let shift = 0; shift < 28; shift += 7) {
-			const b = buf[pos++];
-			lo |= (b & 127) << shift;
-			if ((b & 128) == 0) {
-				this.pos = pos;
-				this.assertBounds();
-				this.varint64Lo = lo;
-				this.varint64Hi = hi;
-				return;
-			}
-		}
-		const middleByte = buf[pos++];
-		lo |= (middleByte & 15) << 28;
-		hi = (middleByte & 112) >> 4;
-		if ((middleByte & 128) == 0) {
-			this.pos = pos;
-			this.assertBounds();
-			this.varint64Lo = lo;
-			this.varint64Hi = hi;
-			return;
-		}
-		for (let shift = 3; shift <= 31; shift += 7) {
-			const b = buf[pos++];
-			hi |= (b & 127) << shift;
-			if ((b & 128) == 0) {
-				this.pos = pos;
-				this.assertBounds();
-				this.varint64Lo = lo;
-				this.varint64Hi = hi;
-				return;
-			}
-		}
-		throw new Error("invalid varint");
-	}
-	var TWO_PWR_32_DBL = 4294967296;
-	function int64FromString(dec) {
-		const minus = dec[0] === "-";
-		if (minus) dec = dec.slice(1);
-		const base = 1e6;
-		let lowBits = 0;
-		let highBits = 0;
-		function add1e6digit(begin, end) {
-			const digit1e6 = Number(dec.slice(begin, end));
-			highBits *= base;
-			lowBits = lowBits * base + digit1e6;
-			if (lowBits >= TWO_PWR_32_DBL) {
-				highBits = highBits + (lowBits / TWO_PWR_32_DBL | 0);
-				lowBits = lowBits % TWO_PWR_32_DBL;
-			}
-		}
-		add1e6digit(-24, -18);
-		add1e6digit(-18, -12);
-		add1e6digit(-12, -6);
-		add1e6digit(-6);
-		return minus ? negate(lowBits, highBits) : newBits(lowBits, highBits);
-	}
-	function int64ToString(lo, hi) {
-		let bits = newBits(lo, hi);
-		const negative = bits.hi & 2147483648;
-		if (negative) bits = negate(bits.lo, bits.hi);
-		const result = uInt64ToString(bits.lo, bits.hi);
-		return negative ? "-" + result : result;
-	}
-	function uInt64ToString(lo, hi) {
-		({lo, hi} = toUnsigned(lo, hi));
-		if (hi <= 2097151) return String(TWO_PWR_32_DBL * hi + lo);
-		const low = lo & 16777215;
-		const mid = (lo >>> 24 | hi << 8) & 16777215;
-		const high = hi >> 16 & 65535;
-		let digitA = low + mid * 6777216 + high * 6710656;
-		let digitB = mid + high * 8147497;
-		let digitC = high * 2;
-		const base = 1e7;
-		if (digitA >= base) {
-			digitB += Math.floor(digitA / base);
-			digitA %= base;
-		}
-		if (digitB >= base) {
-			digitC += Math.floor(digitB / base);
-			digitB %= base;
-		}
-		return digitC.toString() + decimalFrom1e7WithLeadingZeros(digitB) + decimalFrom1e7WithLeadingZeros(digitA);
-	}
-	function toUnsigned(lo, hi) {
-		return {
-			lo: lo >>> 0,
-			hi: hi >>> 0
-		};
-	}
-	function newBits(lo, hi) {
-		return {
-			lo: lo | 0,
-			hi: hi | 0
-		};
-	}
-	function negate(lowBits, highBits) {
-		highBits = ~highBits;
-		if (lowBits) lowBits = ~lowBits + 1;
-		else highBits += 1;
-		return newBits(lowBits, highBits);
-	}
-	var decimalFrom1e7WithLeadingZeros = (digit1e7) => {
-		const partial = String(digit1e7);
-		return "0000000".slice(partial.length) + partial;
-	};
-	function varint32read() {
-		let b = this.buf[this.pos++];
-		if ((b & 128) === 0) {
-			this.assertBounds();
-			return b;
-		}
-		let result = b & 127;
-		b = this.buf[this.pos++];
-		result |= (b & 127) << 7;
-		if ((b & 128) === 0) {
-			this.assertBounds();
-			return result;
-		}
-		b = this.buf[this.pos++];
-		result |= (b & 127) << 14;
-		if ((b & 128) === 0) {
-			this.assertBounds();
-			return result;
-		}
-		b = this.buf[this.pos++];
-		result |= (b & 127) << 21;
-		if ((b & 128) === 0) {
-			this.assertBounds();
-			return result;
-		}
-		b = this.buf[this.pos++];
-		result |= (b & 15) << 28;
-		for (let readBytes = 5; (b & 128) !== 0 && readBytes < 10; readBytes++) b = this.buf[this.pos++];
-		if ((b & 128) !== 0) throw new Error("invalid varint");
-		this.assertBounds();
-		return result >>> 0;
-	}
-	// node_modules/@bufbuild/protobuf/dist/esm/proto-int64.js
-	var protoInt64 = makeInt64Support();
-	function makeInt64Support() {
-		const dv = new DataView(new ArrayBuffer(8));
-		if (typeof BigInt === "function" && typeof dv.getBigInt64 === "function" && typeof dv.getBigUint64 === "function" && typeof dv.setBigInt64 === "function" && typeof dv.setBigUint64 === "function" && (!!globalThis.Deno || !!globalThis.Bun || typeof process != "object" || typeof process.env != "object" || process.env.BUF_BIGINT_DISABLE !== "1")) {
-			const MIN = BigInt("-9223372036854775808");
-			const MAX = BigInt("9223372036854775807");
-			const UMIN = BigInt("0");
-			const UMAX = BigInt("18446744073709551615");
-			return {
-				zero: BigInt(0),
-				supported: true,
-				parse(value) {
-					const bi = typeof value == "bigint" ? value : BigInt(value);
-					if (bi > MAX || bi < MIN) throw new Error(`invalid int64: ${value}`);
-					return bi;
-				},
-				uParse(value) {
-					const bi = typeof value == "bigint" ? value : BigInt(value);
-					if (bi > UMAX || bi < UMIN) throw new Error(`invalid uint64: ${value}`);
-					return bi;
-				},
-				enc(value) {
-					dv.setBigInt64(0, this.parse(value), true);
-					return {
-						lo: dv.getInt32(0, true),
-						hi: dv.getInt32(4, true)
-					};
-				},
-				uEnc(value) {
-					dv.setBigInt64(0, this.uParse(value), true);
-					return {
-						lo: dv.getInt32(0, true),
-						hi: dv.getInt32(4, true)
-					};
-				},
-				dec(lo, hi) {
-					dv.setInt32(0, lo, true);
-					dv.setInt32(4, hi, true);
-					return dv.getBigInt64(0, true);
-				},
-				uDec(lo, hi) {
-					dv.setInt32(0, lo, true);
-					dv.setInt32(4, hi, true);
-					return dv.getBigUint64(0, true);
-				}
-			};
-		}
-		return {
-			zero: "0",
-			supported: false,
-			parse(value) {
-				if (typeof value != "string") value = value.toString();
-				assertInt64String(value);
-				return value;
-			},
-			uParse(value) {
-				if (typeof value != "string") value = value.toString();
-				assertUInt64String(value);
-				return value;
-			},
-			enc(value) {
-				if (typeof value != "string") value = value.toString();
-				assertInt64String(value);
-				return int64FromString(value);
-			},
-			uEnc(value) {
-				if (typeof value != "string") value = value.toString();
-				assertUInt64String(value);
-				return int64FromString(value);
-			},
-			dec(lo, hi) {
-				return int64ToString(lo, hi);
-			},
-			uDec(lo, hi) {
-				return uInt64ToString(lo, hi);
-			}
-		};
-	}
-	function assertInt64String(value) {
-		if (!/^-?[0-9]+$/.test(value)) throw new Error("invalid int64: " + value);
-	}
-	function assertUInt64String(value) {
-		if (!/^[0-9]+$/.test(value)) throw new Error("invalid uint64: " + value);
-	}
-	// node_modules/@bufbuild/protobuf/dist/esm/wire/text-encoding.js
-	var te$1;
-	function configureTextEncoding(textEncoding) {
-		var _a;
-		te$1 = Object.assign(Object.assign({}, textEncoding), { encodeUtf8Into: (_a = textEncoding.encodeUtf8Into) !== null && _a !== void 0 ? _a : emulateEncodeInto(textEncoding.encodeUtf8.bind(textEncoding)) });
-	}
-	function getTextEncoding() {
-		if (!te$1) {
-			const globals = globalThis;
-			if (!globals.TextEncoder || !globals.TextDecoder) throw new Error("encoding API missing: install TextEncoder and TextDecoder on globalThis");
-			const textEncoder = new globals.TextEncoder();
-			const textDecoder = new globals.TextDecoder();
-			let textDecoderStrict;
-			const config = {
-				encodeUtf8(text) {
-					return textEncoder.encode(text);
-				},
-				decodeUtf8(bytes, strict) {
-					if (strict) {
-						if (!textDecoderStrict) textDecoderStrict = new globals.TextDecoder("utf-8", { fatal: true });
-						return textDecoderStrict.decode(bytes);
-					}
-					return textDecoder.decode(bytes);
-				},
-				checkUtf8(text) {
-					try {
-						return true;
-					} catch (_) {
-						return false;
-					}
-				}
-			};
-			if (textEncoder.encodeInto) config.encodeUtf8Into = textEncoder.encodeInto.bind(textEncoder);
-			const nativeStringIsWellFormed = String.prototype.isWellFormed;
-			if (nativeStringIsWellFormed) config.checkUtf8 = (text) => {
-				return nativeStringIsWellFormed.call(text);
-			};
-			configureTextEncoding(config);
-		}
-		return te$1;
-	}
-	function emulateEncodeInto(encodeUtf8) {
-		return (text, dest) => {
-			const bytes = encodeUtf8(text);
-			dest.set(bytes);
-			return { written: bytes.byteLength };
-		};
-	}
-	// node_modules/@bufbuild/protobuf/dist/esm/wire/binary-encoding.js
-	var WireType;
-	(function(WireType) {
-		WireType[WireType["Varint"] = 0] = "Varint";
-		WireType[WireType["Bit64"] = 1] = "Bit64";
-		WireType[WireType["LengthDelimited"] = 2] = "LengthDelimited";
-		WireType[WireType["StartGroup"] = 3] = "StartGroup";
-		WireType[WireType["EndGroup"] = 4] = "EndGroup";
-		WireType[WireType["Bit32"] = 5] = "Bit32";
-	})(WireType || (WireType = {}));
-	var BinaryWriter = class {
-		constructor(encodeUtf8) {
-			this.stackPos = [];
-			this.encodeUtf8Into = encodeUtf8 ? emulateEncodeInto(encodeUtf8) : getTextEncoding().encodeUtf8Into;
-			this.buffer = EMPTY_BUFFER;
-			this.viewCache = EMPTY_VIEW;
-			this.pos = 0;
-		}
-		ensureCapacity(size) {
-			const required = this.pos + size;
-			if (required > this.buffer.length) {
-				let newLen = this.buffer.length || INITIAL_SIZE;
-				while (newLen < required) newLen *= 2;
-				const newBuf = new Uint8Array(newLen);
-				if (this.pos > 0) newBuf.set(this.buffer);
-				this.buffer = newBuf;
-			}
-		}
-		view() {
-			const bytes = this.buffer;
-			const view = this.viewCache;
-			if (view.byteLength === bytes.byteLength) return view;
-			const newView = new DataView(bytes.buffer);
-			this.viewCache = newView;
-			return newView;
-		}
-		finish() {
-			const result = this.buffer.slice(0, this.pos);
-			this.pos = 0;
-			this.stackPos = [];
-			return result;
-		}
-		fork() {
-			this.stackPos.push(this.pos);
-			this.ensureCapacity(DEFAULT_LEN_PREFIX_SIZE);
-			this.buffer[this.pos++] = 0;
-			return this;
-		}
-		join() {
-			const forkPos = this.stackPos.pop();
-			if (forkPos === void 0) throw new Error("invalid state, fork stack empty");
-			const len = this.pos - forkPos - DEFAULT_LEN_PREFIX_SIZE;
-			const lenPrefixSize = varint32Size(len);
-			if (lenPrefixSize > DEFAULT_LEN_PREFIX_SIZE) {
-				this.ensureCapacity(lenPrefixSize - DEFAULT_LEN_PREFIX_SIZE);
-				this.buffer.copyWithin(forkPos + lenPrefixSize, forkPos + DEFAULT_LEN_PREFIX_SIZE, this.pos);
-			}
-			this.pos = forkPos;
-			this.uint32(len);
-			this.pos += len;
-			return this;
-		}
-		tag(fieldNo, type) {
-			return this.uint32((fieldNo << 3 | type) >>> 0);
-		}
-		raw(chunk) {
-			this.ensureCapacity(chunk.length);
-			this.buffer.set(chunk, this.pos);
-			this.pos += chunk.length;
-			return this;
-		}
-		uint32(value) {
-			assertUInt32(value);
-			this.ensureCapacity(5);
-			if (value < 128) {
-				this.buffer[this.pos++] = value;
-				return this;
-			}
-			while (value > 127) {
-				this.buffer[this.pos++] = value & 127 | 128;
-				value >>>= 7;
-			}
-			this.buffer[this.pos++] = value;
-			return this;
-		}
-		int32(value) {
-			assertInt32(value);
-			if (value >= 0) return this.uint32(value);
-			this.ensureCapacity(10);
-			for (let i = 0; i < 9; i++) {
-				this.buffer[this.pos++] = value & 127 | 128;
-				value >>= 7;
-			}
-			this.buffer[this.pos++] = 1;
-			return this;
-		}
-		bool(value) {
-			this.ensureCapacity(1);
-			this.buffer[this.pos++] = value ? 1 : 0;
-			return this;
-		}
-		bytes(value) {
-			this.uint32(value.byteLength);
-			return this.raw(value);
-		}
-		string(value) {
-			if (typeof value !== "string") value = String(value);
-			const len = value.length;
-			if (len <= ASCII_MAX_LENGTH) {
-				this.ensureCapacity(len + 1);
-				const ascii = this.buffer;
-				let pos = this.pos;
-				ascii[pos++] = len;
-				let i = 0;
-				for (; i < len; i++) {
-					const code = value.charCodeAt(i);
-					if (code > 127) break;
-					ascii[pos++] = code;
-				}
-				if (i == len) {
-					this.pos = pos;
-					return this;
-				}
-			}
-			this.ensureCapacity(len * 3 + 5);
-			const lenPrefixSizeGuess = varint32Size(len);
-			const buf = this.buffer;
-			const start = this.pos;
-			const { written } = this.encodeUtf8Into(value, buf.subarray(start + lenPrefixSizeGuess));
-			const lenPrefixSize = varint32Size(written);
-			if (lenPrefixSize != lenPrefixSizeGuess) buf.copyWithin(start + lenPrefixSize, start + lenPrefixSizeGuess, start + lenPrefixSizeGuess + written);
-			this.uint32(written);
-			this.pos += written;
-			return this;
-		}
-		float(value) {
-			assertFloat32(value);
-			this.ensureCapacity(4);
-			this.view().setFloat32(this.pos, value, true);
-			this.pos += 4;
-			return this;
-		}
-		double(value) {
-			this.ensureCapacity(8);
-			this.view().setFloat64(this.pos, value, true);
-			this.pos += 8;
-			return this;
-		}
-		fixed32(value) {
-			assertUInt32(value);
-			this.ensureCapacity(4);
-			this.view().setUint32(this.pos, value, true);
-			this.pos += 4;
-			return this;
-		}
-		sfixed32(value) {
-			assertInt32(value);
-			this.ensureCapacity(4);
-			this.view().setInt32(this.pos, value, true);
-			this.pos += 4;
-			return this;
-		}
-		sint32(value) {
-			assertInt32(value);
-			return this.uint32((value << 1 ^ value >> 31) >>> 0);
-		}
-		sfixed64(value) {
-			const tc = protoInt64.enc(value);
-			this.ensureCapacity(8);
-			const view = this.view();
-			view.setInt32(this.pos, tc.lo, true);
-			view.setInt32(this.pos + 4, tc.hi, true);
-			this.pos += 8;
-			return this;
-		}
-		fixed64(value) {
-			const tc = protoInt64.uEnc(value);
-			this.ensureCapacity(8);
-			const view = this.view();
-			view.setInt32(this.pos, tc.lo, true);
-			view.setInt32(this.pos + 4, tc.hi, true);
-			this.pos += 8;
-			return this;
-		}
-		int64(value) {
-			const tc = protoInt64.enc(value);
-			return this.writeVarint64(tc.lo, tc.hi);
-		}
-		sint64(value) {
-			const tc = protoInt64.enc(value), sign = tc.hi >> 31, lo = tc.lo << 1 ^ sign, hi = (tc.hi << 1 | tc.lo >>> 31) ^ sign;
-			return this.writeVarint64(lo, hi);
-		}
-		uint64(value) {
-			const tc = protoInt64.uEnc(value);
-			return this.writeVarint64(tc.lo, tc.hi);
-		}
-		writeVarint64(lo, hi) {
-			this.ensureCapacity(10);
-			const buf = this.buffer;
-			let pos = this.pos;
-			for (let i = 0; i < 28; i = i + 7) {
-				const shift = lo >>> i;
-				const hasNext = !(shift >>> 7 == 0 && hi == 0);
-				buf[pos++] = (hasNext ? shift | 128 : shift) & 255;
-				if (!hasNext) {
-					this.pos = pos;
-					return this;
-				}
-			}
-			const splitBits = lo >>> 28 & 15 | (hi & 7) << 4;
-			const hasMoreBits = !(hi >> 3 == 0);
-			buf[pos++] = (hasMoreBits ? splitBits | 128 : splitBits) & 255;
-			if (!hasMoreBits) {
-				this.pos = pos;
-				return this;
-			}
-			for (let i = 3; i < 31; i = i + 7) {
-				const shift = hi >>> i;
-				const hasNext = !(shift >>> 7 == 0);
-				buf[pos++] = (hasNext ? shift | 128 : shift) & 255;
-				if (!hasNext) {
-					this.pos = pos;
-					return this;
-				}
-			}
-			buf[pos++] = hi >>> 31 & 1;
-			this.pos = pos;
-			return this;
-		}
-	};
-	var INITIAL_SIZE = 128;
-	var DEFAULT_LEN_PREFIX_SIZE = 1;
-	var EMPTY_BUFFER = new Uint8Array(0);
-	var EMPTY_VIEW = new DataView(EMPTY_BUFFER.buffer);
-	var ASCII_MAX_LENGTH = 32;
-	function varint32Size(value) {
-		if (value < 128) return 1;
-		if (value < 16384) return 2;
-		if (value < 2097152) return 3;
-		if (value < 268435456) return 4;
-		return 5;
-	}
-	var BinaryReader = class {
-		constructor(buf, decodeUtf8 = getTextEncoding().decodeUtf8) {
-			this.decodeUtf8 = decodeUtf8;
-			this.varint64Lo = 0;
-			this.varint64Hi = 0;
-			this.varint64 = varint64read;
-			this.uint32 = varint32read;
-			this.buf = buf;
-			this.len = buf.length;
-			this.pos = 0;
-			this.view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
-		}
-		tag() {
-			const start = this.pos;
-			const tag = this.uint32();
-			const bytesRead = this.pos - start;
-			if (bytesRead > 5 || bytesRead == 5 && this.buf[this.pos - 1] > 15) throw new Error("illegal tag: varint overflows uint32");
-			const fieldNo = tag >>> 3;
-			const wireType = tag & 7;
-			if (fieldNo <= 0 || wireType > 5) throw new Error("illegal tag: field no " + fieldNo + " wire type " + wireType);
-			return [fieldNo, wireType];
-		}
-		skip(wireType, fieldNo, recursionLimit = 100) {
-			let start = this.pos;
-			switch (wireType) {
-				case WireType.Varint:
-					while (this.buf[this.pos++] & 128);
-					break;
-				case WireType.Bit64: this.pos += 4;
-				case WireType.Bit32:
-					this.pos += 4;
-					break;
-				case WireType.LengthDelimited:
-					let len = this.uint32();
-					this.pos += len;
-					break;
-				case WireType.StartGroup:
-					if (recursionLimit <= 0) throw new Error("maximum recursion depth reached");
-					for (;;) {
-						const [fn, wt] = this.tag();
-						if (wt === WireType.EndGroup) {
-							if (fieldNo !== void 0 && fn !== fieldNo) throw new Error("invalid end group tag");
-							break;
-						}
-						this.skip(wt, fn, recursionLimit - 1);
-					}
-					break;
-				default: throw new Error("cant skip wire type " + wireType);
-			}
-			this.assertBounds();
-			return this.buf.subarray(start, this.pos);
-		}
-		assertBounds() {
-			if (this.pos > this.len) throw new RangeError("premature EOF");
-		}
-		int32() {
-			return this.uint32() | 0;
-		}
-		sint32() {
-			let zze = this.uint32();
-			return zze >>> 1 ^ -(zze & 1);
-		}
-		int64() {
-			this.varint64();
-			return protoInt64.dec(this.varint64Lo, this.varint64Hi);
-		}
-		uint64() {
-			this.varint64();
-			return protoInt64.uDec(this.varint64Lo, this.varint64Hi);
-		}
-		sint64() {
-			this.varint64();
-			let lo = this.varint64Lo;
-			let hi = this.varint64Hi;
-			let s = -(lo & 1);
-			lo = (lo >>> 1 | (hi & 1) << 31) ^ s;
-			hi = hi >>> 1 ^ s;
-			return protoInt64.dec(lo, hi);
-		}
-		bool() {
-			const b = this.buf[this.pos];
-			if (b < 128) {
-				this.pos++;
-				return b !== 0;
-			}
-			this.varint64();
-			return this.varint64Lo !== 0 || this.varint64Hi !== 0;
-		}
-		fixed32() {
-			return this.view.getUint32((this.pos += 4) - 4, true);
-		}
-		sfixed32() {
-			return this.view.getInt32((this.pos += 4) - 4, true);
-		}
-		fixed64() {
-			return protoInt64.uDec(this.sfixed32(), this.sfixed32());
-		}
-		sfixed64() {
-			return protoInt64.dec(this.sfixed32(), this.sfixed32());
-		}
-		float() {
-			return this.view.getFloat32((this.pos += 4) - 4, true);
-		}
-		double() {
-			return this.view.getFloat64((this.pos += 8) - 8, true);
-		}
-		bytes() {
-			let len = this.uint32(), start = this.pos;
-			this.pos += len;
-			this.assertBounds();
-			return this.buf.subarray(start, start + len);
-		}
-		string(strict) {
-			const bytes = this.bytes();
-			const len = bytes.length;
-			if (len <= ASCII_MAX_LENGTH) {
-				const codes = new Array(len);
-				for (let i = 0; i < len; i++) {
-					const byte = bytes[i];
-					if (byte > 127) return this.decodeUtf8(bytes, strict);
-					codes[i] = byte;
-				}
-				return String.fromCharCode.apply(String, codes);
-			}
-			return this.decodeUtf8(bytes, strict);
-		}
-	};
-	function assertInt32(arg) {
-		if (typeof arg == "string") arg = Number(arg);
-		else if (typeof arg != "number") throw new Error("invalid int32: " + typeof arg);
-		if (!Number.isInteger(arg) || arg > 2147483647 || arg < -2147483648) throw new Error("invalid int32: " + arg);
-	}
-	function assertUInt32(arg) {
-		if (typeof arg == "string") arg = Number(arg);
-		else if (typeof arg != "number") throw new Error("invalid uint32: " + typeof arg);
-		if (!Number.isInteger(arg) || arg > 4294967295 || arg < 0) throw new Error("invalid uint32: " + arg);
-	}
-	function assertFloat32(arg) {
-		if (typeof arg == "string") {
-			const o = arg;
-			arg = Number(arg);
-			if (Number.isNaN(arg) && o !== "NaN") throw new Error("invalid float32: " + o);
-		} else if (typeof arg != "number") throw new Error("invalid float32: " + typeof arg);
-		if (!Number.isFinite(Math.fround(arg)) && Number.isFinite(arg)) throw new Error("invalid float32: " + arg);
 	}
 	// node_modules/googlevideo/dist/protos/generated/misc/common.js
 	var SeekSource = {
@@ -26134,7 +25475,7 @@ var vot = (function(exports) {
 				r = sn(e, t, n);
 				break;
 			case 86106:
-				e.leadingDecorators.decorators.length && e.report(172), r = en(e, t, n);
+				e.leadingDecorators.decorators.length && e.report(172), r = en$1(e, t, n);
 				break;
 			default: r = xt(e, t, n, void 0, {}, 4);
 		}
@@ -26634,7 +25975,7 @@ var vot = (function(exports) {
 	function $t(e, t, n) {
 		return M(t, e.getToken()) || e.report(120), (e.getToken() & 537079808) == 537079808 && e.report(121), n?.addBlockName(t, e.tokenValue, 8, e.tokenStart, e.currentLocation), K(e, t);
 	}
-	function en(e, t, n) {
+	function en$1(e, t, n) {
 		let r = e.tokenStart;
 		E(e, t);
 		let i, a = !1, o = null, { tokenStart: s } = e, c = [];
@@ -35216,11 +34557,14 @@ var vot = (function(exports) {
 			dontTranslateByYTMusic: false,
 			enabledAutoVolume: true,
 			autoVolume: 15,
+			autoVolumeMode: "adaptive",
 			enabledSmartDucking: true,
 			smartDuckingStrength: 80,
 			showVideoSlider: true,
 			audioBooster: false,
 			syncVolume: false,
+			translationVolumeOffset: 0,
+			muteTranslationWithOriginal: true,
 			downloadWithName: isSupportGMXhr,
 			sendNotifyOnComplete: false,
 			useAudioDownload: isSupportGMXhr,
@@ -37928,7 +37272,7 @@ var vot = (function(exports) {
 		};
 	}
 	// src/ui/shadowMount.ts
-	var shadowScopedCssText = scopeCssForShadowRoots(":root{--vot-font-family:\"Roboto\", \"Segoe UI\", system-ui, sans-serif;--vot-primary-rgb:139, 180, 245;--vot-onprimary-rgb:32, 33, 36;--vot-surface-rgb:32, 33, 36;--vot-secondary-rgb:43, 44, 48;--vot-onsurface-rgb:227, 227, 227;--vot-danger-rgb:255, 99, 99;--vot-error-rgb:242, 139, 130;--vot-subtitles-color:rgb(var(--vot-onsurface-rgb,227, 227, 227));--vot-subtitles-passed-color:rgb(var(--vot-primary-rgb,139, 180, 245));--vot-space-1:4px;--vot-space-2:8px;--vot-space-3:12px;--vot-space-4:16px;--vot-space-5:20px;--vot-space-6:24px;--vot-radius-xs:6px;--vot-radius-s:10px;--vot-radius-m:14px;--vot-radius-l:18px;--vot-border-color:rgba(var(--vot-onsurface-rgb,227, 227, 227), .14);--vot-border-color-hover:rgba(var(--vot-onsurface-rgb,227, 227, 227), .22);--vot-shadow-1:0 1px 2px #0000002e, 0 8px 24px #00000024;--vot-shadow-2:0 2px 4px #00000038, 0 12px 32px #00000038;--vot-duration-fast:.12s;--vot-duration-medium:.2s;--vot-duration-slow:.32s;--vot-easing-standard:cubic-bezier(.2, 0, 0, 1);--vot-focus-ring-color:rgba(var(--vot-primary-rgb,139, 180, 245), .9);--vot-focus-ring:0 0 0 2px var(--vot-focus-ring-color);--vot-focus-ring-offset:0 0 0 4px rgba(var(--vot-surface-rgb,32, 33, 36), .9)}vot-block,vot-block *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}vot-block[hidden]:not(.vot-menu),vot-block [hidden]:not(.vot-menu){display:none!important}vot-block{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizelegibility;-moz-text-size-adjust:100%;text-size-adjust:100%;display:block;--vot-font-family:\"Roboto\", \"Segoe UI\", system-ui, sans-serif!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;visibility:visible!important;font-weight:400!important}vot-block *{font-weight:inherit!important}.vot-portal-local,.vot-subtitles-widget{isolation:isolate}vot-block:focus,vot-block :focus{box-shadow:none!important;outline:none!important}html.vot-keyboard-nav vot-block:focus-visible,html.vot-keyboard-nav vot-block :focus-visible{box-shadow:var(--vot-focus-ring), var(--vot-focus-ring-offset)!important}@supports not selector(:focus-visible){html.vot-keyboard-nav vot-block:focus,html.vot-keyboard-nav vot-block :focus{box-shadow:var(--vot-focus-ring), var(--vot-focus-ring-offset)!important}}@media (prefers-reduced-motion:reduce){.vot-portal-local *,.vot-portal *,.vot-subtitles-widget *{scroll-behavior:auto!important;transition-duration:.001ms!important;animation-duration:.001ms!important;animation-iteration-count:1!important}}.vot-portal{display:contents}.vot-portal-local{z-index:2147483647;position:fixed;top:0;left:0}.vot-segmented-button,.vot-menu{pointer-events:auto}.vot-about-item{justify-content:space-between;align-items:center;gap:.5em;font-size:.8em;display:flex}.vot-about-item__label{text-transform:lowercase;color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68)}.vot-about-item__link{background-color:rgba(var(--vot-primary-rgb,33, 150, 243), .12);color:rgb(var(--vot-primary-rgb,33, 150, 243));font:inherit;cursor:pointer;border-radius:8px;align-items:center;padding:.125em .625em;font-weight:500;transition:background-color .15s;display:inline-flex}@media (hover:hover){.vot-about-item__link:hover{background-color:rgba(var(--vot-primary-rgb,33, 150, 243), .2)}}.vot-about-item__link:active{background-color:rgba(var(--vot-primary-rgb,33, 150, 243), .24)}.vot-about-item__value{text-align:end;color:rgba(var(--vot-primary-rgb,33, 150, 243), .9)}@media screen and (width>=450px){.vot-about-item__value[data-has-link=true]{flex-direction:row-reverse;align-items:center;gap:.25em;display:flex}}.vot-about-item__value_detail{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68)}.vot-about-item__value_detail[data-state=error]{color:rgba(var(--vot-error-rgb,255, 0, 0), .9)}.vot-about-item__value_detail[data-state=loading]{align-items:center;gap:.25em;display:flex}.vot-about-item__value_detail[data-state=loading] svg{font-size:1.25em}.vot-about-section{--vot-about-sep-color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12);flex-direction:column;gap:.5em;display:flex}.vot-about-section>.vot-about-item:not(:last-child){border-bottom:1px solid var(--vot-about-sep-color);padding-bottom:1em}.vot-account-info{--vot-account-label-color:rgba(var(--vot-onsurface-rgb,13, 1, 31), .68);--vot-account-username-color:rgb(var(--vot-primary-rgb,139, 180, 245));flex-direction:column;gap:1em;font-weight:600;display:flex}.vot-account-info__block{align-items:center;gap:.5em;display:flex}.vot-account-info__avatar{border-radius:50%;min-width:36px;max-width:36px;min-height:36px;max-height:36px;overflow:hidden}.vot-account-info__avatar--failed{background:var(--vot-account-label-color)}.vot-account-info__avatar--failed>.vot-account-info__avatar-img{display:none}.vot-account-info__avatar-img{object-fit:cover;width:36px;height:36px}.vot-account-info__content{flex-direction:column;line-height:1.125em;display:flex}.vot-account-info__label{color:var(--vot-account-label-color);font-size:.75em}.vot-account-info__username{color:var(--vot-account-username-color);font-weight:600}.vot-account-info__refresh{margin-left:auto}.vot-account-login{flex-direction:column;gap:1em;display:flex}.vot-account-login__btn{cursor:pointer;color:#0d011f;border-radius:var(--vot-space-5);background:#fff;align-items:center;gap:1em;min-width:194px;height:56px;padding:14px 16px;font-size:1em;line-height:1.25em;transition:background .25s;display:flex}.vot-account-login__btn:hover{background:#f1eeeb}.vot-account-login__btn-icon{background-image:url(\"data:image/svg+xml,%3Csvg width='44' height='44' viewBox='0 0 44 44' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='44' height='44' fill='%23FC3F1D'/%3E%3Cpath d='M22.9515 24.2897C24.2907 27.223 24.737 28.2433 24.737 31.7665V36.4375H19.9544V28.5621L10.9313 8.9375H15.9211L22.9515 24.2897ZM28.8501 8.9375L22.9994 22.2332H27.8617L33.7284 8.9375H28.8501Z' fill='white'/%3E%3C/svg%3E%0A\");background-position:50%;background-repeat:no-repeat;background-size:contain;border-radius:50%;flex-shrink:0;width:26px;height:26px;position:relative}.vot-account-login__btn-text{font-weight:600}.vot-account-login__btn[aria-disabled=true]{cursor:not-allowed;user-select:none;opacity:.5}.vot-account-login__token{align-items:center;gap:1em;width:100%;display:flex}.vot-account-login__token .vot-textfield{width:100%}.vot-account-logout{--vot-theme-rgb:var(--vot-danger-rgb,244, 67, 54);width:100%;display:flex}.vot-account-logout .vot-text-button{width:100%;font-weight:600!important}.vot-account-logout__content{align-items:center;gap:.5em;width:100%;font-size:1.125em;display:flex}.vot-account-logout__content svg{width:1.25em;height:1.25em}.vot-account-menu{flex-direction:column;gap:.5em;display:flex}.vot-icon-button{--vot-helper-onsurface:rgba(var(--vot-onsurface-rgb,0, 0, 0), .87);box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:36px;height:36px;font-size:14px;line-height:36px;display:inline-block;position:relative;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;border-radius:50%!important;margin:0!important;padding:0!important;font-weight:500!important}.vot-icon-button[hidden]{display:none!important}.vot-icon-button{width:36px;fill:var(--vot-helper-onsurface);color:var(--vot-helper-onsurface);background-color:#0000;border:none!important}.vot-icon-button:before,.vot-icon-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-icon-button:before{background-color:var(--vot-helper-onsurface);transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-icon-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-icon-button:hover:before{opacity:.04}.vot-icon-button:active:after{opacity:.32;background-size:100% 100%;transition:background-size}.vot-icon-button[disabled=true],.vot-icon-button[aria-disabled=true]{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);fill:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);cursor:initial;background-color:#0000}.vot-icon-button[disabled=true]:before,.vot-icon-button[disabled=true]:after,.vot-icon-button[aria-disabled=true]:before,.vot-icon-button[aria-disabled=true]:after{opacity:0}.vot-icon-button svg{fill:inherit;stroke:inherit;width:24px;height:36px}.vot-text-button{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:64px;height:36px;font-size:14px;line-height:36px;display:inline-block;position:relative;border-radius:var(--vot-radius-s)!important;padding:0 var(--vot-space-2)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;margin:0!important;font-weight:500!important}.vot-text-button[hidden]{display:none!important}.vot-text-button{color:rgb(var(--vot-helper-theme));background-color:#0000;border:none!important}.vot-text-button:before,.vot-text-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-text-button:before{background-color:rgb(var(--vot-helper-theme));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-text-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-text-button:hover:before{opacity:.04}.vot-text-button:active:after{opacity:.16;background-size:100% 100%;transition:background-size}.vot-text-button[disabled=true],.vot-text-button[aria-disabled=true]{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);cursor:initial;background-color:#0000}.vot-text-button[disabled=true]:before,.vot-text-button[disabled=true]:after,.vot-text-button[aria-disabled=true]:before,.vot-text-button[aria-disabled=true]:after{opacity:0}.vot-button{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));--vot-helper-ontheme:var(--vot-ontheme-rgb,var(--vot-onprimary-rgb,255, 255, 255));box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:64px;height:36px;font-size:14px;line-height:36px;display:inline-block;position:relative;border-radius:var(--vot-radius-s)!important;padding:0 var(--vot-space-4)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;font-weight:500!important}.vot-button[hidden]{display:none!important}.vot-button{color:rgb(var(--vot-helper-ontheme));background-color:rgb(var(--vot-helper-theme));box-shadow:var(--vot-shadow-1);transition:box-shadow var(--vot-duration-medium) var(--vot-easing-standard);border:none!important}.vot-button:before,.vot-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-button:before{background-color:rgb(var(--vot-helper-ontheme));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-button:hover:before{opacity:.08}.vot-button:active:after{opacity:.32;background-size:100% 100%;transition:background-size}.vot-button:hover,.vot-button:active{box-shadow:var(--vot-shadow-2)}.vot-button[disabled=true]{background-color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12);color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);box-shadow:none;cursor:initial}.vot-button[disabled=true]:before,.vot-button[disabled=true]:after{opacity:0}.vot-outlined-button{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:64px;height:36px;font-size:14px;line-height:34px;display:inline-block;position:relative;border-radius:var(--vot-radius-s)!important;padding:0 var(--vot-space-4)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;margin:0!important;font-weight:500!important}.vot-outlined-button[hidden]{display:none!important}.vot-outlined-button{color:rgb(var(--vot-helper-theme));background-color:#0000;border:solid 1px var(--vot-border-color)!important}.vot-outlined-button:before,.vot-outlined-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-outlined-button:before{background-color:rgb(var(--vot-helper-theme));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-outlined-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-outlined-button:hover:before{opacity:.04}.vot-outlined-button:active:after{opacity:.16;background-size:100% 100%;transition:background-size}.vot-outlined-button[disabled=true],.vot-outlined-button[aria-disabled=true]{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);cursor:initial;background-color:#0000}.vot-outlined-button[disabled=true]:before,.vot-outlined-button[disabled=true]:after,.vot-outlined-button[aria-disabled=true]:before,.vot-outlined-button[aria-disabled=true]:after{opacity:0}.vot-details{color:rgba(var(--vot-onsurface-rgb), .87);text-align:start;cursor:pointer;user-select:none;transition:background var(--vot-duration-medium) var(--vot-easing-standard);justify-content:space-between;align-items:center;font-size:16px;line-height:1.5;display:flex;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;border-radius:.5em!important;margin:-.5em!important;padding:.5em!important}.vot-details-arrow-icon{width:20px;height:32px;fill:rgba(var(--vot-onsurface-rgb), .87);justify-content:center;align-items:center;font-size:24px;display:flex;transform:scale(1.25)rotate(-90deg)}.vot-details:not([aria-disabled=true]):hover{background:rgba(var(--vot-onsurface-rgb,0, 0, 0), .06)}.vot-details[aria-disabled=true]{cursor:not-allowed;opacity:.38}.vot-hotkey{justify-content:flex-start;align-items:center;gap:var(--vot-space-3,12px);flex-wrap:wrap;display:flex}.vot-hotkey-label{overflow-wrap:anywhere;flex:1}.vot-hotkey-button{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:32px;height:fit-content;font-size:15px;line-height:1.5;display:inline-block;position:relative;border-radius:var(--vot-radius-s)!important;padding:0 var(--vot-space-2)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;margin:0!important;font-weight:400!important}.vot-hotkey-button[hidden]{display:none!important}.vot-hotkey-button{background-color:#0000;width:fit-content;border:solid 1px var(--vot-border-color)!important}.vot-hotkey-button:before,.vot-hotkey-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-hotkey-button:before{background-color:rgb(var(--vot-helper-theme));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-hotkey-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-hotkey-button:hover:before{opacity:.04}.vot-hotkey-button:active:after{opacity:.16;background-size:100% 100%;transition:background-size}.vot-hotkey-button[data-status=active]{color:rgb(var(--vot-helper-theme))}.vot-hotkey-button[data-status=active]:before{opacity:.04}.vot-hotkey-button[disabled=true]{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);cursor:initial;background-color:#0000}.vot-hotkey-button[disabled=true]:before,.vot-hotkey-button[disabled=true]:after{opacity:0}.vot-progress-icon{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));fill:none;stroke:rgb(var(--vot-helper-theme));stroke-width:2px;stroke-linecap:round;transform-origin:50%;transform:rotate(-90deg)}.vot-progress-icon_base{--vot-helper-theme:var(--vot-secondary-rgb,43, 44, 48)}.vot-select{user-select:none;justify-content:end;align-items:center;display:flex;position:relative}.vot-select-label{flex:1}.vot-select-label__description{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68);letter-spacing:.25px;font-size:14px;font-weight:400;line-height:20px}.vot-select-outer{cursor:pointer;border:1px solid var(--vot-border-color);width:120px;max-width:120px;color:rgba(var(--vot-onsurface-rgb), .87);transition:border-color var(--vot-duration-medium) var(--vot-easing-standard);border-radius:.75em;align-items:center;padding:.5em;display:flex}.vot-select-outer__title{text-overflow:ellipsis;white-space:nowrap;flex:1;align-content:center;height:24px;margin-top:-2px;font-size:.8em;overflow:hidden}.vot-select-outer__arrow{fill:currentColor;transition:transform var(--vot-duration-medium) var(--vot-easing-standard);font-size:1.5em;display:flex}.vot-select-outer[aria-disabled=true]{cursor:not-allowed;opacity:.38}.vot-select-outer:not([aria-disabled=true]):hover{border-color:var(--vot-border-color-hover)}.vot-select-outer[aria-expanded=true] .vot-select-outer__arrow{transform:rotate(180deg)}.vot-select-inner{--vot-select-inner-primary-rgb:var(--vot-primary-rgb,33, 150, 243);z-index:2147483647;user-select:none;background:rgb(var(--vot-secondary-rgb,43, 44, 48));color:rgba(var(--vot-onsurface-rgb), .87);max-width:min(300px,100%);max-height:min(85vh, 350px, var(--vot-floating-available-height,100vh));pointer-events:auto;border-radius:.75em;flex-direction:column;padding:.5em;font-size:16px;display:flex;position:fixed;overflow:hidden}.vot-select-inner.vot-select-inner__static-width{width:100%}.vot-select-inner .vot-textfield{margin-bottom:.5em}.vot-select-inner__no-options{color:rgba(var(--vot-onsurface-rgb), .38);text-align:center;padding:.5em .75em}.vot-select-inner__no-options[data-searching=true]{color:rgba(var(--vot-onsurface-rgb), .68);padding:0;font-size:1.75em}.vot-select-inner__options{overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(var(--vot-onsurface-rgb), .38) transparent;min-height:0;margin-right:-8px;padding-right:8px;overflow-y:auto}.vot-select-inner__option{cursor:pointer;transition:background var(--vot-duration-medium) var(--vot-easing-standard);border-radius:.5em;padding:.5em .75em}.vot-select-inner__option[aria-disabled=true]{cursor:not-allowed;opacity:.38}.vot-select-inner__option:not([aria-disabled=true]):hover{background:rgba(var(--vot-onsurface-rgb), .14)}.vot-select-inner__option[aria-selected=true]{color:rgb(var(--vot-select-inner-primary-rgb));background:rgba(var(--vot-select-inner-primary-rgb), .2)}.vot-select-inner__option[aria-selected=true]:not([aria-disabled=true]):hover{background:rgba(var(--vot-select-inner-primary-rgb), .1)}.vot-switch{--vot-switch-outline:rgba(var(--vot-onsurface-rgb,0, 0, 0), .6);--vot-switch-primary:rgb(var(--vot-primary-rgb,33, 150, 243));--vot-switch-onprimary:rgb(var(--vot-onprimary-rgb,32, 33, 36));--vot-switch-track:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12);--vot-switch-duration:var(--vot-duration-medium,.2s);--vot-switch-label-offset:24px;box-sizing:border-box;color:rgb(var(--vot-onsurface-rgb,0, 0, 0));cursor:pointer;align-items:center;gap:var(--vot-space-4,16px);width:100%;padding-block:var(--vot-space-2,8px);touch-action:manipulation;vertical-align:middle;display:inline-flex;position:relative;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important}.vot-switch[data-disabled=true]{cursor:not-allowed;user-select:none}.vot-switch_sub{padding-left:var(--vot-switch-label-offset)!important}.vot-switch-control{cursor:inherit;opacity:0;z-index:2;width:100%;height:100%;margin:0;position:absolute;inset:0}.vot-switch-control:focus-visible~.vot-switch-track{outline:2px solid var(--vot-focus-ring-color,rgba(var(--vot-primary-rgb,33, 150, 243), .9));outline-offset:2px}.vot-switch-control:hover:not(:disabled)~.vot-switch-track .vot-switch-handle{box-shadow:0 0 0 12px rgba(var(--vot-onsurface-rgb,0, 0, 0), .08)}.vot-switch-control:active:not(:disabled)~.vot-switch-track .vot-switch-handle{box-shadow:0 0 0 12px rgba(var(--vot-onsurface-rgb,0, 0, 0), .12)}.vot-switch-control:hover:not(:disabled)~.vot-switch-track[data-checked=true] .vot-switch-handle{box-shadow:0 0 0 8px rgba(var(--vot-primary-rgb,33, 150, 243), .08)}.vot-switch-control:active:not(:disabled)~.vot-switch-track[data-checked=true] .vot-switch-handle{box-shadow:0 0 0 8px rgba(var(--vot-primary-rgb,33, 150, 243), .12)}.vot-switch-control:disabled{cursor:not-allowed}.vot-switch-control:disabled~.vot-switch-track{background:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12);border-color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12)}.vot-switch-control:disabled~.vot-switch-track .vot-switch-handle{background:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38)}.vot-switch-control:disabled~.vot-switch-track[data-checked=true] .vot-switch-handle{background:rgb(var(--vot-surface-rgb,32, 33, 36))}.vot-switch-text{flex-direction:column;flex:auto;min-width:0;display:flex}.vot-switch-heading{letter-spacing:.5px;font-size:16px;font-weight:400;line-height:24px}.vot-switch-description{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68);letter-spacing:.25px;font-size:14px;font-weight:400;line-height:20px}.vot-switch[data-disabled=true] .vot-switch-heading,.vot-switch[data-disabled=true] .vot-switch-description{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38)}.vot-switch-track{background:var(--vot-switch-track);border:2px solid var(--vot-switch-outline);box-sizing:border-box;pointer-events:none;height:32px;transition-duration:var(--vot-switch-duration);transition-property:background-color,border-color;transition-timing-function:var(--vot-easing-standard);border-radius:16px;flex:none;align-items:center;width:52px;display:flex;position:relative}.vot-switch-track[data-checked=true]{background:var(--vot-switch-primary);border-color:var(--vot-switch-primary)}.vot-switch-track[data-checked=true] .vot-switch-handle{background:var(--vot-switch-onprimary);width:24px;height:24px;transform:translate(16px,-50%)}.vot-switch-handle{background:var(--vot-switch-outline);height:16px;transition-duration:var(--vot-switch-duration);transition-property:background-color,box-shadow,height,transform,width;transition-timing-function:var(--vot-easing-standard);inset-inline-start:6px;border-radius:50%;width:16px;position:absolute;top:50%;transform:translateY(-50%);box-shadow:0 0 #0000}@media (prefers-reduced-motion:reduce){.vot-switch-track,.vot-switch-handle{transition-duration:.01ms}}.vot-slider{--vot-slider-track-bg:rgba(var(--vot-onsurface-rgb,227, 227, 227), .15);--vot-slider-track-progress-bg:rgb(var(--vot-primary-rgb,33, 150, 243));--vot-slider-size:1em;--vot-slider-border-radius:.5em;--vot-slider-handle-bg:rgb(var(--vot-primary-rgb,139, 180, 245));--vot-slider-handle-size:44px;--vot-slider-transition:var(--vot-duration-medium) var(--vot-easing-standard);height:var(--vot-slider-handle-size);align-items:center;display:flex;position:relative}.vot-slider[aria-disabled=true]{user-select:none;opacity:.5}.vot-slider[aria-disabled=true] .vot-slider__control{cursor:not-allowed}.vot-slider__control{opacity:0;appearance:none;cursor:pointer;width:100%;height:100%;position:absolute}.vot-slider__track{background:var(--vot-slider-track-bg);width:100%;height:var(--vot-slider-size);border-radius:var(--vot-slider-border-radius);pointer-events:none}.vot-slider__track-progress{background:var(--vot-slider-track-progress-bg);width:calc(100% * var(--vot-progress,0));transition:width var(--vot-slider-transition);border-top-right-radius:0;border-bottom-right-radius:0;position:absolute}.vot-slider__handle{left:calc(100% * var(--vot-progress,0));width:4px;height:var(--vot-slider-handle-size);background:var(--vot-slider-handle-bg);outline:4px solid var(--vot-slider-track-bg);pointer-events:none;will-change:transform;transition:transform var(--vot-slider-transition), left var(--vot-slider-transition);transform:translateX(calc(-100% * var(--vot-progress,0)));border-radius:4px;position:absolute}.vot-slider[data-dragging] .vot-slider__track-progress,.vot-slider[data-dragging] .vot-slider__handle{transition:none}.vot-slider-label{flex-wrap:nowrap;align-items:baseline;gap:.75em;display:flex}.vot-slider-label__text{text-align:left;flex:auto}.vot-slider-label__text-desc{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68);letter-spacing:.25px;font-size:14px;font-weight:400;line-height:20px}.vot-slider-label__value{text-align:right;font-variant-numeric:tabular-nums;flex:none;font-weight:600!important}.vot-slider-label[aria-disabled=true]{opacity:.5;user-select:none;color:rgba(var(--vot-onsurface-rgb,227, 227, 227), .5)}.vot-slider-wrapper{flex-direction:column;gap:.25em;display:flex}.vot-dialog{--vot-helper-surface-rgb:var(--vot-surface-rgb,255, 255, 255);--vot-helper-surface:rgb(var(--vot-helper-surface-rgb));--vot-helper-onsurface-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-onsurface:rgba(var(--vot-helper-onsurface-rgb), .87);--vot-dialog-viewport-margin:16px;--vot-dialog-max-height:75vh;max-width:initial;max-height:initial;width:min(var(--vot-dialog-width,512px), 100%);border:1px solid var(--vot-border-color);border-radius:var(--vot-radius-l);background-color:var(--vot-helper-surface);height:fit-content;color:var(--vot-helper-onsurface);box-shadow:var(--vot-shadow-2);user-select:none;visibility:visible;opacity:1;transform-origin:50%;transition:opacity var(--vot-duration-medium) var(--vot-easing-standard), transform var(--vot-duration-medium) var(--vot-easing-standard);font-size:16px;line-height:1.5;display:block;position:fixed;inset-block:0;inset-inline:0;overflow:auto hidden;transform:scale(1);font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;margin:auto!important;padding:0!important}.vot-dialog[data-vertical-align=top]{inset-block-start:var(--vot-dialog-viewport-margin);inset-block-end:auto;margin:0 auto!important}.vot-dialog-container{visibility:visible;z-index:2147483647;position:absolute}.vot-dialog-container *{box-sizing:border-box!important}.vot-dialog-backdrop{opacity:1;background-color:#0009;transition:opacity .3s;position:fixed;inset:0}.vot-dialog-content-wrapper{max-height:var(--vot-dialog-max-height,75vh);flex-direction:column;display:flex;overflow:auto}.vot-dialog-header-container{flex-shrink:0;align-items:flex-start;min-height:31px;display:flex}.vot-dialog-header-container:empty{padding:0 0 20px}.vot-dialog-header-container>.vot-icon-button{margin-inline-end:var(--vot-space-1)!important;margin-top:var(--vot-space-1)!important}.vot-dialog-title-container{font-size:inherit;outline:0;flex:1;display:flex;font-weight:inherit!important;margin:0!important}.vot-dialog-title{flex:1;font-size:115.385%;line-height:1;padding:var(--vot-space-5) var(--vot-space-5) var(--vot-space-4)!important;font-weight:700!important}.vot-dialog-body-container{box-sizing:border-box;gap:var(--vot-space-4);overscroll-behavior:contain;flex-direction:column;min-height:1.375rem;display:flex;overflow:auto;padding:0 var(--vot-space-5)!important;scrollbar-color:rgba(var(--vot-helper-onsurface-rgb), .1) var(--vot-helper-surface)!important}.vot-dialog-body-container::-webkit-scrollbar{background:var(--vot-helper-surface)!important;width:12px!important;height:12px!important}.vot-dialog-body-container::-webkit-scrollbar-track{background:var(--vot-helper-surface)!important;width:12px!important;height:12px!important}.vot-dialog-body-container::-webkit-scrollbar-thumb{border-radius:1ex;background:rgba(var(--vot-helper-onsurface-rgb), .1)!important;border:5px solid var(--vot-helper-surface)!important}.vot-dialog-body-container::-webkit-scrollbar-thumb:hover{border-width:3px!important}.vot-dialog-body-container::-webkit-scrollbar-corner{background:var(--vot-helper-surface)!important}.vot-dialog-body-container:last-child{padding-block-end:var(--vot-space-5)!important}.vot-dialog-footer-container{justify-content:flex-end;gap:var(--vot-space-2);flex-wrap:wrap;flex-shrink:0;display:flex;padding:var(--vot-space-4)!important}@media (width<=480px){.vot-dialog-footer-container{flex-direction:column;align-items:stretch}.vot-dialog-footer-container>:is(.vot-button,.vot-outlined-button,.vot-text-button){white-space:normal;text-overflow:clip;text-align:center;justify-content:center;align-items:center;width:100%;height:auto;min-height:36px;padding:8px 16px;line-height:1.2;display:flex;overflow:visible}}.vot-settings-section{border:1px solid var(--vot-border-color);border-radius:var(--vot-radius-l);padding:var(--vot-space-2);background:rgba(var(--vot-helper-onsurface-rgb), .03);flex-direction:column;display:flex}.vot-settings-section>*{margin:0!important}.vot-settings-section>*+*{margin-top:var(--vot-space-2)!important}.vot-settings-section__header{border-radius:var(--vot-radius-m);margin:0!important;padding:.45em .5em!important}.vot-settings-section__header .vot-details-arrow-icon{transition:transform var(--vot-duration-medium) var(--vot-easing-standard)}.vot-settings-section__header[data-open=true] .vot-details-arrow-icon{transform:scale(1.25)rotate(0)}.vot-settings-section__content{--vot-settings-control-width:200px;--vot-settings-row-gap:var(--vot-space-2);gap:var(--vot-settings-row-gap);padding:0 var(--vot-space-1) var(--vot-space-1);flex-direction:column;display:flex}.vot-settings-section__content>*{margin:0!important}.vot-settings-section__content>.vot-switch,.vot-settings-section__content>.vot-hotkey,.vot-settings-section__content>.vot-select,.vot-settings-section__content>.vot-slider-wrapper{padding:var(--vot-space-1);box-sizing:border-box;width:100%!important}.vot-settings-footer{gap:var(--vot-space-2);display:flex}.vot-textfield{display:inline-block;--vot-helper-theme:rgb(var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243)))!important;--vot-helper-safari1:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38)!important;--vot-helper-safari2:rgba(var(--vot-onsurface-rgb,0, 0, 0), .6)!important;--vot-helper-safari3:rgba(var(--vot-onsurface-rgb,0, 0, 0), .87)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;text-align:start!important;padding-top:6px!important;font-size:16px!important;line-height:1.5!important;position:relative!important}.vot-textfield>:is(input,textarea){box-sizing:border-box!important;border-style:solid!important;border-width:1px!important;border-color:transparent var(--vot-helper-safari2) var(--vot-helper-safari2)!important;width:100%!important;height:inherit!important;color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .87)!important;-webkit-text-fill-color:currentColor!important;font-family:inherit!important;font-size:inherit!important;line-height:inherit!important;caret-color:var(--vot-helper-theme)!important;background-color:#0000!important;border-radius:4px!important;margin:0!important;padding:15px 13px!important;transition:border .2s,box-shadow .2s!important;box-shadow:inset 1px 0 #0000,inset -1px 0 #0000,inset 0 -1px #0000!important}.vot-textfield>:is(input,textarea):not(:focus):not(:is(.vot-show-placeholder,.vot-show-placeholer))::placeholder{color:#0000!important}.vot-textfield>:is(input,textarea):not(:focus):placeholder-shown{border-top-color:var(--vot-helper-safari2)!important}.vot-textfield>:is(input,textarea)+.vot-textfield__label{font-family:inherit;width:100%!important;max-height:100%!important;color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .6)!important;cursor:text!important;pointer-events:none!important;font-size:75%!important;line-height:15px!important;transition:color .2s,font-size .2s,line-height .2s!important;display:flex!important;position:absolute!important;top:0!important;left:0!important}.vot-textfield>:is(input,textarea):not(:focus):placeholder-shown+.vot-textfield__label{font-size:inherit!important;line-height:68px!important}.vot-textfield>input+.vot-textfield__label:before,.vot-textfield>input+.vot-textfield__label:after,.vot-textfield>textarea+.vot-textfield__label:before,.vot-textfield>textarea+.vot-textfield__label:after{content:\"\"!important;box-sizing:border-box!important;border-top:solid 1px var(--vot-helper-safari2)!important;pointer-events:none!important;min-width:10px!important;height:8px!important;margin-top:6px!important;transition:border .2s,box-shadow .2s!important;display:block!important;box-shadow:inset 0 1px #0000!important}.vot-textfield>input+.vot-textfield__label:before,.vot-textfield>textarea+.vot-textfield__label:before{border-left:1px solid #0000!important;border-radius:4px 0!important;margin-right:4px!important}.vot-textfield>input+.vot-textfield__label:after,.vot-textfield>textarea+.vot-textfield__label:after{border-right:1px solid #0000!important;border-radius:0 4px!important;flex-grow:1!important;margin-left:4px!important}.vot-textfield>input:is(.vot-show-placeholder,.vot-show-placeholer)+.vot-textfield__label:before,.vot-textfield>textarea:is(.vot-show-placeholder,.vot-show-placeholer)+.vot-textfield__label:before{margin-right:0!important}.vot-textfield>input:is(.vot-show-placeholder,.vot-show-placeholer)+.vot-textfield__label:after,.vot-textfield>textarea:is(.vot-show-placeholder,.vot-show-placeholer)+.vot-textfield__label:after{margin-left:0!important}.vot-textfield>input:not(:focus):placeholder-shown+.vot-textfield__label:before,.vot-textfield>input:not(:focus):placeholder-shown+.vot-textfield__label:after,.vot-textfield>textarea:not(:focus):placeholder-shown+.vot-textfield__label:before,.vot-textfield>textarea:not(:focus):placeholder-shown+.vot-textfield__label:after{border-top-color:#0000!important}.vot-textfield>textarea{resize:none!important}.vot-textfield:hover>input:not(:disabled),.vot-textfield:hover>textarea:not(:disabled){border-color:transparent var(--vot-helper-safari3) var(--vot-helper-safari3)!important}.vot-textfield:hover>input:not(:disabled)+.vot-textfield__label:before,.vot-textfield:hover>input:not(:disabled)+.vot-textfield__label:after,.vot-textfield:hover>textarea:not(:disabled)+.vot-textfield__label:before,.vot-textfield:hover>textarea:not(:disabled)+.vot-textfield__label:after{border-top-color:var(--vot-helper-safari3)!important}.vot-textfield:hover>input:not(:disabled):not(:focus):placeholder-shown,.vot-textfield:hover>textarea:not(:disabled):not(:focus):placeholder-shown{border-color:var(--vot-helper-safari3)!important}.vot-textfield>input:focus,.vot-textfield>textarea:focus{border-color:transparent var(--vot-helper-theme) var(--vot-helper-theme)!important;box-shadow:inset 1px 0 var(--vot-helper-theme), inset -1px 0 var(--vot-helper-theme), inset 0 -1px var(--vot-helper-theme)!important;outline:none!important}.vot-textfield>input:focus+.vot-textfield__label,.vot-textfield>textarea:focus+.vot-textfield__label{color:var(--vot-helper-theme)!important}.vot-textfield>input:focus+.vot-textfield__label:before,.vot-textfield>input:focus+.vot-textfield__label:after,.vot-textfield>textarea:focus+.vot-textfield__label:before,.vot-textfield>textarea:focus+.vot-textfield__label:after{border-top-color:var(--vot-helper-theme)!important;box-shadow:inset 0 1px var(--vot-helper-theme)!important}.vot-textfield>input:disabled,.vot-textfield>input:disabled+.vot-textfield__label,.vot-textfield>textarea:disabled,.vot-textfield>textarea:disabled+.vot-textfield__label{border-color:transparent var(--vot-helper-safari1) var(--vot-helper-safari1)!important;color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38)!important;pointer-events:none!important}.vot-textfield>input:disabled+.vot-textfield__label:before,.vot-textfield>input:disabled+.vot-textfield__label:after,.vot-textfield>textarea:disabled+.vot-textfield__label:before,.vot-textfield>textarea:disabled+.vot-textfield__label:after,.vot-textfield>input:disabled:placeholder-shown,.vot-textfield>input:disabled:placeholder-shown+.vot-textfield__label,.vot-textfield>textarea:disabled:placeholder-shown,.vot-textfield>textarea:disabled:placeholder-shown+.vot-textfield__label{border-top-color:var(--vot-helper-safari1)!important}.vot-textfield>input:disabled:placeholder-shown+.vot-textfield__label:before,.vot-textfield>input:disabled:placeholder-shown+.vot-textfield__label:after,.vot-textfield>textarea:disabled:placeholder-shown+.vot-textfield__label:before,.vot-textfield>textarea:disabled:placeholder-shown+.vot-textfield__label:after{border-top-color:#0000!important}@media not all and (resolution>=.001dpcm){@supports ((-webkit-appearance:none)){.vot-textfield>input,.vot-textfield>input+.vot-textfield__label,.vot-textfield>textarea,.vot-textfield>textarea+.vot-textfield__label,.vot-textfield>input+.vot-textfield__label:before,.vot-textfield>input+.vot-textfield__label:after,.vot-textfield>textarea+.vot-textfield__label:before,.vot-textfield>textarea+.vot-textfield__label:after{transition-duration:.1s!important}}}.vot-segmented-button{--vot-helper-theme-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-theme:rgba(var(--vot-helper-theme-rgb), .87);cursor:default;user-select:none;background:rgb(var(--vot-surface-rgb,255, 255, 255));max-width:100%;height:36px;color:var(--vot-helper-theme);fill:var(--vot-helper-theme);align-items:center;font-size:16px;display:flex;overflow:hidden;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;border:1px solid var(--vot-border-color)!important;border-radius:var(--vot-radius-s)!important;box-shadow:var(--vot-shadow-1)!important}.vot-segmented-button[data-direction=column]{flex-direction:column;height:fit-content}.vot-segmented-button[data-direction=column] .vot-segment,.vot-segmented-button[data-direction=column] .vot-segment-only-icon{padding:var(--vot-space-2)!important}.vot-segmented-button[data-direction=column] .vot-separator{width:50%;height:1px}.vot-segmented-button[data-status=error] .vot-translate-button{color:rgb(var(--vot-error-rgb,242, 139, 130))}.vot-segmented-button[data-status=success] .vot-translate-button{color:rgb(var(--vot-primary-rgb,33, 150, 243))}.vot-segmented-button .vot-segment,.vot-segmented-button .vot-segment-only-icon{min-width:0;height:100%;color:inherit;transition:background-color var(--vot-duration-fast) var(--vot-easing-standard);-webkit-tap-highlight-color:transparent;background-color:#0000;outline:none;flex:auto;justify-content:center;align-items:center;display:flex;position:relative;overflow:hidden;gap:var(--vot-space-2)!important;padding:0 var(--vot-space-2)!important;border:none!important}.vot-segmented-button .vot-segment:focus,.vot-segmented-button .vot-segment-only-icon:focus{box-shadow:inset 0 0 0 2px var(--vot-focus-ring-color);outline:none}.vot-segmented-button .vot-segment:focus:not(:focus-visible),.vot-segmented-button .vot-segment-only-icon:focus:not(:focus-visible){box-shadow:none}.vot-segmented-button .vot-segment:before,.vot-segmented-button .vot-segment-only-icon:before,.vot-segmented-button .vot-segment:after,.vot-segmented-button .vot-segment-only-icon:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-segmented-button .vot-segment:before,.vot-segmented-button .vot-segment-only-icon:before{background-color:rgb(var(--vot-helper-theme-rgb));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-segmented-button .vot-segment:after,.vot-segmented-button .vot-segment-only-icon:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-segmented-button .vot-segment:hover:before,.vot-segmented-button .vot-segment-only-icon:hover:before{opacity:.04}.vot-segmented-button .vot-segment:active:after,.vot-segmented-button .vot-segment-only-icon:active:after{opacity:.16;background-size:100% 100%;transition:background-size}.vot-segmented-button .vot-segment:before,.vot-segmented-button .vot-segment-only-icon:before,.vot-segmented-button .vot-segment:after,.vot-segmented-button .vot-segment-only-icon:after{pointer-events:none}.vot-segmented-button .vot-segment svg,.vot-segmented-button .vot-segment-only-icon svg{font-size:24px}.vot-segmented-button .vot-segment>svg,.vot-segmented-button .vot-segment-only-icon>svg,.vot-segmented-button .vot-segment-label,.vot-segmented-button .vot-segment .vot-dropdown-arrow,.vot-segmented-button .vot-segment-only-icon .vot-dropdown-arrow{z-index:1;position:relative}.vot-segmented-button .vot-segment-only-icon{min-width:36px;padding:0!important}.vot-segmented-button .vot-segment-only-icon[data-active=true]{color:rgb(var(--vot-primary-rgb,33, 150, 243))}.vot-segmented-button .vot-segment-label{text-overflow:ellipsis;white-space:nowrap;min-width:0;color:inherit;flex:auto;line-height:1;overflow:hidden;font-weight:400!important}.vot-segmented-button .vot-dropdown-arrow{width:30px;min-width:30px;height:100%;color:inherit;fill:inherit;opacity:.95;cursor:default;-webkit-tap-highlight-color:transparent;outline:none;flex:none;justify-content:center;align-items:center;display:inline-flex;position:relative;border-radius:var(--vot-radius-s)!important;margin-inline-end:-4px!important;margin-top:2px!important}.vot-segmented-button .vot-dropdown-arrow:focus{box-shadow:inset 0 0 0 2px var(--vot-focus-ring-color)}.vot-segmented-button .vot-dropdown-arrow:focus:not(:focus-visible){box-shadow:none}.vot-segmented-button .vot-dropdown-arrow:hover{background:rgba(var(--vot-helper-theme-rgb), .04)}.vot-segmented-button .vot-dropdown-arrow:before,.vot-segmented-button .vot-dropdown-arrow:after{display:none}.vot-segmented-button .vot-dropdown-arrow svg{transform-origin:50%;transition:transform var(--vot-duration-fast) var(--vot-easing-standard);font-size:28px;transform:scale(1.08)}.vot-segmented-button .vot-dropdown-arrow[aria-expanded=true] svg{transform:rotate(180deg)scale(1.08)}.vot-segmented-button .vot-separator{background:rgba(var(--vot-helper-theme-rgb), .1);width:1px;height:50%}.vot-overlay.vot-overlay__segmented-button{--vot-overlay-default-top:5rem;--vot-overlay-top-offset:max(16px, env(safe-area-inset-top,0px));--vot-overlay-side-offset:max(16px, env(safe-area-inset-left,0px));--vot-overlay-side-offset-right:max(16px, env(safe-area-inset-right,0px));--vot-overlay-side-top-offset:max(clamp(48px, 12.5vh, 128px), env(safe-area-inset-top,0px));transition:opacity var(--vot-duration-slow) var(--vot-easing-standard);pointer-events:auto;touch-action:none;max-width:100%;left:50%;transform:translate(-50%)}.vot-overlay.vot-overlay__segmented-button[data-dragging=true]{cursor:grabbing;will-change:transform;transform:translate3d(var(--vot-button-drag-left,0px), var(--vot-button-drag-top,0px), 0)!important;opacity:.96!important;transition:none!important;top:0!important;left:0!important;right:auto!important}.vot-overlay.vot-overlay__segmented-button,.vot-overlay.vot-overlay__segmented-button .vot-segmented-button,.vot-overlay.vot-overlay__segmented-button .vot-segment,.vot-overlay.vot-overlay__segmented-button .vot-segment-only-icon,.vot-overlay.vot-overlay__segmented-button .vot-dropdown-arrow{touch-action:none}.vot-overlay.vot-overlay__segmented-button[data-position=left]{left:var(--vot-overlay-side-offset);right:auto;top:var(--vot-overlay-side-top-offset);transform:none}.vot-overlay.vot-overlay__segmented-button[data-position=right]{left:auto;right:var(--vot-overlay-side-offset-right);top:var(--vot-overlay-side-top-offset);transform:none}.vot-overlay.vot-overlay__segmented-button[data-position=leftCenter]{left:var(--vot-overlay-side-offset);top:50%;right:auto;transform:translateY(-50%)}.vot-overlay.vot-overlay__segmented-button[data-position=rightCenter]{left:auto;right:var(--vot-overlay-side-offset-right);top:50%;transform:translateY(-50%)}.vot-overlay.vot-overlay__segmented-button.vot-segmented-button--dock-preview{z-index:2147483646;transition:left var(--vot-duration-medium) var(--vot-easing-standard), right var(--vot-duration-medium) var(--vot-easing-standard), top var(--vot-duration-medium) var(--vot-easing-standard), transform var(--vot-duration-medium) var(--vot-easing-standard), opacity var(--vot-duration-fast) var(--vot-easing-standard);opacity:.72!important;pointer-events:none!important}.vot-voice-icon{display:block;overflow:visible}.vot-voice-icon .vot-eq-bar{transform-origin:50% 100%;transform-box:fill-box;transform:scaleY(1)}.vot-voice-icon--standard .vot-eq-bar{fill:rgba(var(--vot-onsurface-rgb,227, 227, 227), .4)}.vot-voice-icon--live .vot-eq-bar{fill:#e040a0}.vot-voice-popover{--vot-helper-surface-rgb:var(--vot-surface-rgb,32, 33, 36);--vot-helper-surface:rgb(var(--vot-helper-surface-rgb));--vot-helper-onsurface-rgb:var(--vot-onsurface-rgb,227, 227, 227);--vot-helper-onsurface:rgba(var(--vot-helper-onsurface-rgb), .87);--vot-helper-onsurface-secondary:rgba(var(--vot-helper-onsurface-rgb), .55);--vot-voice-active-standard-bg:rgba(var(--vot-primary-rgb,139, 180, 245), .1);--vot-voice-active-standard-fg:rgb(var(--vot-primary-rgb,139, 180, 245));--vot-voice-active-live-bg:#e040a01a;--vot-voice-active-live-fg:#e040a0;z-index:2147483647;background:var(--vot-helper-surface);min-width:230px;max-width:var(--vot-voice-popover-max-width,310px);max-height:var(--vot-voice-popover-max-height,calc(100vh - 16px));cursor:default;user-select:none;overscroll-behavior:contain;transform-origin:0 0;width:max-content;display:block;position:absolute;top:0;left:0;overflow:hidden auto;border:1px solid var(--vot-border-color)!important;border-radius:var(--vot-radius-m)!important;box-shadow:var(--vot-shadow-2)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;text-align:left!important}.vot-voice-popover,.vot-voice-popover *{box-sizing:border-box!important}.vot-voice-popover{opacity:0;visibility:hidden;pointer-events:none;transition:none;transform:none}.vot-voice-popover[hidden]{display:none!important}.vot-voice-popover:not([hidden]),.vot-voice-popover.is-open,.vot-voice-popover[aria-hidden=false]{opacity:1;visibility:visible;pointer-events:auto;transform:none}.vot-voice-popover[data-placement=top]{transform-origin:bottom}.vot-voice-popover[data-placement=bottom]{transform-origin:top}.vot-voice-popover[data-placement=left]{transform-origin:100%}.vot-voice-popover[data-placement=right]{transform-origin:0}.vot-voice-popover.is-closing{opacity:0;visibility:visible;pointer-events:none;transform:none}.vot-voice-popover__item{cursor:pointer;min-height:62px;color:var(--vot-helper-onsurface);outline:none;gap:12px;transition:none;display:flex;position:relative;overflow:hidden;padding:14px 44px 14px 16px!important}.vot-voice-popover__item:before{content:\"\";opacity:0;pointer-events:none;background:linear-gradient(180deg, rgba(var(--vot-helper-onsurface-rgb), .045), rgba(var(--vot-helper-onsurface-rgb), .06));transition:none;position:absolute;inset:0}.vot-voice-popover__item:hover,.vot-voice-popover__item:focus-visible{box-shadow:inset 0 1px #ffffff08,inset 0 -1px #0000000a}.vot-voice-popover__item:hover:before,.vot-voice-popover__item:focus-visible:before{opacity:1}.vot-voice-popover__item:focus-visible{box-shadow:inset 0 0 0 1px rgba(var(--vot-primary-rgb,139, 180, 245), .18)}.vot-voice-popover__item:after{content:\"\";opacity:0;background-color:currentColor;width:18px;height:18px;transition:none;position:absolute;top:50%;right:14px;transform:translateY(-50%)scale(.88);-webkit-mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E\") 50%/contain no-repeat;mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E\") 50%/contain no-repeat}.vot-voice-popover__item--active{font-weight:500!important}.vot-voice-popover__item--active:after{opacity:1;transform:translateY(-50%)scale(1)}.vot-voice-popover__item[data-voice=standard].vot-voice-popover__item--active{background-color:var(--vot-voice-active-standard-bg);color:var(--vot-voice-active-standard-fg)}.vot-voice-popover__item[data-voice=standard].vot-voice-popover__item--active .vot-voice-popover__item-title{color:inherit}.vot-voice-popover__item[data-voice=standard].vot-voice-popover__item--active .vot-voice-icon--standard .vot-eq-bar{fill:currentColor}.vot-voice-popover__item[data-voice=live].vot-voice-popover__item--active{background-color:var(--vot-voice-active-live-bg);color:var(--vot-voice-active-live-fg)}.vot-voice-popover__item[data-voice=live].vot-voice-popover__item--active .vot-voice-popover__item-title{color:inherit}.vot-voice-popover__item-icon{font-size:20px}.vot-voice-popover__item-text{flex-direction:column;gap:2px;min-width:0;display:flex}.vot-voice-popover__item-title{color:inherit;white-space:nowrap;font-size:15px;line-height:1.3;transition:none;font-weight:400!important}.vot-voice-popover__item-subtitle{color:var(--vot-helper-onsurface-secondary);white-space:normal;font-size:12px;line-height:1.4}.vot-voice-popover__divider{background:var(--vot-border-color);height:1px;margin:0!important}@media (prefers-reduced-motion:reduce){.vot-voice-icon .vot-eq-bar{animation:none!important;transform:scaleY(1)!important}.vot-voice-popover,.vot-voice-popover *,.vot-voice-popover:before,.vot-voice-popover:after{transition:none!important;animation:none!important}.vot-voice-popover,.vot-voice-popover.is-closing,.vot-voice-popover:not([hidden]),.vot-voice-popover.is-open,.vot-voice-popover[aria-hidden=false]{transform:none!important}}.vot-segmented-button__menu-header{align-items:center;gap:var(--vot-space-2);margin-left:auto;display:flex}.vot-langpair-select{--vot-helper-theme-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-theme:rgba(var(--vot-helper-theme-rgb), .87);color:var(--vot-helper-theme);justify-content:space-between;align-items:center;display:flex}.vot-langpair-select__icon{justify-content:center;align-items:center;font-size:24px;display:flex}.vot-overlay.vot-overlay__segmented-button-menu{--vot-overlay-default-top:calc(5rem + 48px);--vot-menu-side-offset:max(76px, calc(env(safe-area-inset-left,0px) + 64px));--vot-menu-side-offset-right:max(76px, calc(env(safe-area-inset-right,0px) + 64px));--vot-menu-side-top-offset:max(clamp(48px, 12.5vh, 128px), env(safe-area-inset-top,0px))}@media (pointer:coarse){.vot-overlay.vot-overlay__segmented-button-menu{--vot-menu-default-top:calc(3rem + 48px);--vot-menu-side-offset:max(64px, calc(env(safe-area-inset-left,0px) + 54px));--vot-menu-side-offset-right:max(64px, calc(env(safe-area-inset-right,0px) + 54px))}}.vot-overlay.vot-overlay__segmented-button-menu{transform-origin:top;transition:opacity var(--vot-duration-medium) var(--vot-easing-standard), transform var(--vot-duration-medium) var(--vot-easing-standard);left:50%;right:auto;transform:translate(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[aria-hidden=true]{transform:translate(-50%,-4px)scale(.98)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=left] .vot-menu,.vot-overlay.vot-overlay__segmented-button-menu[data-position=right] .vot-menu{max-height:calc(var(--vot-container-height,75vh) - var(--vot-menu-side-top-offset,48px) - 16px)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=leftCenter] .vot-menu,.vot-overlay.vot-overlay__segmented-button-menu[data-position=rightCenter] .vot-menu{max-height:calc(var(--vot-container-height,75vh) - 16px)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=left]{left:var(--vot-menu-side-offset);right:auto;top:var(--vot-menu-side-top-offset);transform-origin:0 0;transform:scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=right]{left:auto;right:var(--vot-menu-side-offset-right);top:var(--vot-menu-side-top-offset);transform-origin:100% 0;transform:scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=leftCenter]{left:var(--vot-menu-side-offset);transform-origin:0;top:50%;right:auto;transform:translateY(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=rightCenter]{left:auto;right:var(--vot-menu-side-offset-right);transform-origin:100%;top:50%;transform:translateY(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=left]{transform-origin:0;top:50%;transform:translateY(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=left] .vot-menu{max-height:calc(var(--vot-container-height,75vh) - 16px)}.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=right]{transform-origin:100%;top:50%;transform:translateY(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=right] .vot-menu{max-height:calc(var(--vot-container-height,75vh) - 16px)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=left][aria-hidden=true],.vot-overlay.vot-overlay__segmented-button-menu[data-position=right][aria-hidden=true]{transform:translateY(-4px)scale(.98)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=leftCenter][aria-hidden=true],.vot-overlay.vot-overlay__segmented-button-menu[data-position=rightCenter][aria-hidden=true],.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=left][aria-hidden=true],.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=right][aria-hidden=true]{transform:translateY(calc(-50% - 4px))scale(.98)}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-menu__header{flex-wrap:wrap}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-menu__header .vot-segmented-button__menu-header:has(>:nth-child(2)){margin-left:inherit}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-menu__body{max-height:275px}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-langpair-select{gap:var(--vot-space-1);flex-direction:column}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-langpair-select__icon{transform:rotate(90deg)}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-select{justify-content:start;gap:var(--vot-space-1);flex-direction:column;align-items:start;width:100%}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-select-outer{justify-content:space-around;width:100%;max-width:100%}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-select-outer__title{min-width:0;max-width:120px}@property --vot-subtitles-opacity{syntax:\"<number>\";inherits:true;initial-value:.8}@property --vot-subtitles-scale-compensation{syntax:\"<number>\";inherits:true;initial-value:1}.vot-subtitles{--vot-subtitles-background:rgba(var(--vot-surface-rgb,46, 47, 52), var(--vot-subtitles-opacity,.8));--vot-subtitles-effective-max-width:var(--vot-subtitles-max-width,var(--vot-subtitles-smart-max-width,70vw));max-width:var(--vot-subtitles-effective-max-width);max-inline-size:var(--vot-subtitles-effective-max-width);background:var(--vot-subtitles-background,#2e2f34cc);width:max-content;inline-size:max-content;color:var(--vot-subtitles-color,#e3e3e3);pointer-events:all;touch-action:none;font-size:calc(var(--vot-subtitles-font-size,clamp(18px, var(--vot-subtitles-smart-font-preferred,2.2vw), 50px)) * var(--vot-subtitles-scale-compensation,1));-webkit-text-stroke:var(--vot-subtitles-text-stroke-width,clamp(1px, .08em, 2px)) var(--vot-subtitles-text-stroke-color,#000000eb);paint-order:stroke fill;text-shadow:var(--vot-subtitles-text-shadow,0 1px 2px #00000073, 0 2px 8px #00000040);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-synthesis:none;position:relative;--vot-subtitles-font-family:var(--vot-subtitles-font-family-custom,var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif))!important;font-family:var(--vot-subtitles-font-family)!important;font-style:normal!important;font-weight:var(--vot-subtitles-font-weight,500)!important;text-transform:none!important;letter-spacing:normal!important;border-radius:.5em!important;padding:.5em .75em!important;line-height:1.25!important}.vot-subtitles,.vot-subtitles *{-webkit-text-stroke:inherit;paint-order:inherit;font-family:var(--vot-subtitles-font-family)!important}.vot-subtitles{box-sizing:border-box;user-select:none;contain:layout paint;isolation:isolate;text-align:center;text-wrap:balance;white-space:normal;overflow-wrap:anywhere;unicode-bidi:plaintext;margin:0 auto;display:block}.vot-subtitles-widget{--vot-subtitles-anchor-width:100vw;--vot-subtitles-anchor-height:100vh;--vot-subtitles-effective-max-width:var(--vot-subtitles-max-width,var(--vot-subtitles-smart-max-width,70vw));--vot-subtitles-smart-target-width:48ch;--vot-subtitles-smart-min-width-ratio:.62;--vot-subtitles-smart-max-width-ratio:.78;--vot-subtitles-smart-font-preferred:calc(var(--vot-subtitles-anchor-height) * .0333);--vot-subtitles-smart-max-width:clamp(calc(var(--vot-subtitles-anchor-width) * var(--vot-subtitles-smart-min-width-ratio)), var(--vot-subtitles-smart-target-width), calc(var(--vot-subtitles-anchor-width) * var(--vot-subtitles-smart-max-width-ratio)));box-sizing:border-box;z-index:2147483647;--vot-subtitles-fallback-bottom-inset:calc(env(safe-area-inset-bottom,0px) + clamp(56px, 10vh, 220px) + 10px);left:50%;top:calc(100% - var(--vot-subtitles-fallback-bottom-inset));width:max-content;inline-size:max-content;max-width:var(--vot-subtitles-effective-max-width);max-inline-size:var(--vot-subtitles-effective-max-width);pointer-events:none;will-change:left, top, transform;max-height:100%;display:block;position:absolute;transform:translate(-50%,-100%)}.vot-subtitles-info{color:#f5f7fa;-webkit-backdrop-filter:blur(18px);text-align:start;background:#1f2023f5;border:1px solid #ffffff14;flex-direction:column;gap:10px;min-width:min(360px,100vw - 32px);max-width:min(720px,100vw - 32px);display:flex;box-shadow:0 18px 48px #00000057,0 4px 16px #00000038;border-radius:18px!important;padding:18px 22px 20px!important}.vot-subtitles-info-service{display:none!important}.vot-subtitles-info-title{letter-spacing:-.01em;align-items:baseline;gap:8px;min-width:0;max-width:100%;display:flex;font-size:clamp(18px,2.4vw,26px)!important;line-height:1.18!important}.vot-subtitles-info-source,.vot-subtitles-info-divider,.vot-subtitles-info-header,.vot-subtitles-info-context{overflow-wrap:anywhere;white-space:normal!important}.vot-subtitles-info-source{color:#f5f7faad;flex:0 auto;font-weight:650!important}.vot-subtitles-info-divider{color:#f5f7fa61;flex:none;font-weight:500!important}.vot-subtitles-info-header{color:#fff;flex:auto;min-width:0;font-weight:750!important}.vot-subtitles-info-context{color:#dee4ecb8;max-width:100%;font-size:clamp(14px,1.45vw,17px)!important;line-height:1.42!important}.vot-subtitles span[data-vot-highlight-index].passed{color:var(--vot-subtitles-passed-color,#8bb4f5)}.vot-subtitles span[data-vot-token=\"1\"]{cursor:pointer;white-space:normal;overflow-wrap:inherit;word-break:normal;position:relative;font-size:inherit!important;font-family:inherit!important;font-style:inherit!important;font-weight:inherit!important;line-height:inherit!important;text-transform:inherit!important;text-decoration:none!important}.vot-subtitles span[data-vot-token=\"1\"]:before{content:\"\";z-index:-1;position:absolute;inset:2px -2px;border-radius:4px!important}.vot-subtitles span[data-vot-token=\"1\"]:hover:before,.vot-subtitles span[data-vot-token=\"1\"]:focus-visible:before{background:var(--vot-subtitles-hover-color,#ffffff8c)}.vot-subtitles span[data-vot-token=\"1\"].selected:before{background:var(--vot-subtitles-passed-color,#8bb4f5)}.vot-subtitles span[data-vot-token=\"1\"].passed.selected:before{background:rgba(var(--vot-primary-rgb,139, 180, 245), .4)}.vot-subtitles span[data-vot-token=\"1\"].passed:hover:before{background:rgba(var(--vot-primary-rgb,139, 180, 245), .3)}.vot-subtitles span[data-vot-style-italic=\"1\"]{font-style:italic!important}.vot-subtitles span[data-vot-style-bold=\"1\"]{font-weight:700!important}.vot-subtitles span[data-vot-style-underline=\"1\"]{text-decoration:underline!important}.vot-subtitles span[data-vot-style-color=\"1\"]{color:var(--vot-subtitles-inline-color)!important}.vot-subtitles-layer{pointer-events:none;z-index:2147483647;contain:layout paint;width:100vw!important;height:100vh!important;position:fixed!important;inset:0!important}.vot-subtitles-guides{pointer-events:none;z-index:2147483646;position:absolute;inset:0}.vot-subtitles-guide{background:rgba(var(--vot-primary-rgb,33, 150, 243), .7);box-shadow:0 0 0 1px rgba(var(--vot-primary-rgb,33, 150, 243), .12);opacity:0;transition:opacity .12s linear;position:absolute}.vot-subtitles-guide[data-visible=true]{opacity:1}.vot-subtitles-guide--vertical{width:2px;transform:translate(-50%)}.vot-subtitles-guide--horizontal{height:2px;transform:translateY(-50%)}@media (aspect-ratio<=1){.vot-subtitles-widget{--vot-subtitles-smart-target-width:28ch;--vot-subtitles-smart-min-width-ratio:.8;--vot-subtitles-smart-max-width-ratio:.92;--vot-subtitles-smart-font-preferred:calc(var(--vot-subtitles-anchor-height) * .0296)}}@media (aspect-ratio>=1) and (aspect-ratio<=7/5){.vot-subtitles-widget{--vot-subtitles-smart-target-width:32ch;--vot-subtitles-smart-min-width-ratio:.55;--vot-subtitles-smart-max-width-ratio:.9;--vot-subtitles-smart-font-preferred:calc(var(--vot-subtitles-anchor-height) * .0333)}}@media (width<=900px) and (pointer:coarse){.vot-subtitles-widget{--vot-subtitles-fallback-bottom-inset:env(safe-area-inset-bottom,0px)}}@media (prefers-contrast:more){.vot-subtitles{--vot-subtitles-background:rgba(var(--vot-surface-rgb,46, 47, 52), .92);--vot-subtitles-text-stroke-width:max(2px, .1em);--vot-subtitles-text-shadow:0 2px 10px #0000008c}}:is(:fullscreen .vot-subtitles-widget,:fullscreen .vot-subtitles-widget){--vot-subtitles-smart-max-width-ratio:.8}:is(:fullscreen .vot-subtitles,:fullscreen .vot-subtitles){font-size:calc(var(--vot-subtitles-font-size,clamp(18px, var(--vot-subtitles-smart-font-preferred,2vw), 50px)) * var(--vot-subtitles-fullscreen-scale,1) * .95 * var(--vot-subtitles-scale-compensation,1))}#vot-subtitles-info.vot-subtitles-info *{user-select:text!important}.vot-or-block{--vot-or-block-line:rgba(var(--vot-primary-rgb,139, 180, 245), .5);color:rgb(var(--vot-primary-rgb));align-items:center;gap:12px;font-size:.75em;font-weight:600;display:flex}.vot-or-block:before,.vot-or-block:after{background:var(--vot-or-block-line);content:\"\";flex:1;height:1px}.vot-menu{--vot-helper-surface-rgb:var(--vot-surface-rgb,255, 255, 255);--vot-helper-surface:rgb(var(--vot-helper-surface-rgb));--vot-helper-onsurface-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-onsurface:rgba(var(--vot-helper-onsurface-rgb), .87);background:var(--vot-helper-surface);color:var(--vot-helper-onsurface);width:fit-content;min-width:min(320px, 100% - var(--vot-menu-side-offset,0px));max-width:min(90vw,560px);min-height:100px;max-height:calc(var(--vot-container-height,75vh) - var(--vot-overlay-default-top,0px) - 16px);flex-direction:column;font-size:16px;line-height:1.5;display:flex;overflow:auto;border:1px solid var(--vot-border-color)!important;border-radius:var(--vot-radius-m)!important;box-shadow:var(--vot-shadow-2)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important}.vot-menu__header{align-items:center;gap:var(--vot-space-2);flex-shrink:0;min-height:32px;display:flex;padding:var(--vot-space-2) var(--vot-space-4)!important}.vot-menu__body{box-sizing:border-box;gap:var(--vot-space-2);overscroll-behavior:contain;flex-direction:column;min-height:1.375rem;display:flex;overflow:auto;padding:0 var(--vot-space-4)!important;scrollbar-color:rgba(var(--vot-helper-onsurface-rgb), .1) var(--vot-helper-surface)!important}.vot-menu__body::-webkit-scrollbar{background:var(--vot-helper-surface)!important;width:12px!important;height:12px!important}.vot-menu__body::-webkit-scrollbar-track{background:var(--vot-helper-surface)!important;width:12px!important;height:12px!important}.vot-menu__body::-webkit-scrollbar-thumb{border-radius:1ex;background:rgba(var(--vot-helper-onsurface-rgb), .1)!important;border:5px solid var(--vot-helper-surface)!important}.vot-menu__body::-webkit-scrollbar-thumb:hover{border-width:3px!important}.vot-menu__body::-webkit-scrollbar-corner{background:var(--vot-helper-surface)!important}.vot-menu__footer{flex-shrink:0;justify-content:flex-end;display:flex;padding:var(--vot-space-4)!important}.vot-menu__footer:empty{padding:var(--vot-space-4) 0 0 0!important}.vot-tooltip{--vot-helper-theme-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-theme:rgba(var(--vot-helper-theme-rgb), .87);--vot-helper-border:rgb(var(--vot-tooltip-border,69, 69, 69));user-select:none;background:rgb(var(--vot-surface-rgb,255, 255, 255));color:var(--vot-helper-theme);fill:var(--vot-helper-theme);font-family:var(--vot-font-family);cursor:default;z-index:2147483647;overflow-wrap:anywhere;white-space:normal;opacity:0;align-items:center;width:max-content;max-width:calc(100vw - 10px);height:max-content;font-size:14px;line-height:1.5;transition:opacity .5s;display:flex;position:absolute;inset:0;overflow:hidden;box-shadow:0 1px 3px #0000001f;border-radius:4px!important;padding:4px 8px!important}.vot-tooltip[data-trigger=hover]:not([data-mode=follow]){pointer-events:none}.vot-tooltip[data-trigger=click]{user-select:text}.vot-tooltip[data-mode=follow]{pointer-events:auto;user-select:text;align-items:stretch}.vot-tooltip[data-mode=follow],.vot-tooltip[data-mode=follow] *{user-select:text!important}.vot-tooltip.vot-tooltip-bordered{border:1px solid var(--vot-helper-border)}.vot-tooltip *{box-sizing:border-box!important;font-family:inherit!important}.vot-tooltip.vot-tooltip--subtitles-info{overflow:visible;box-shadow:none!important;background:0 0!important;border-radius:18px!important;padding:0!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info{flex-direction:column;gap:8px;width:max-content;max-width:min(420px,100vw - 24px);display:flex;color:#ffffffeb!important;letter-spacing:0!important;background:#1f2024f5!important;border:1px solid #ffffff14!important;border-radius:16px!important;padding:14px 16px!important;font-size:13px!important;line-height:1.35!important;box-shadow:0 12px 30px #00000047,0 2px 6px #00000038!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-title{flex-wrap:wrap;align-items:center;gap:6px;min-width:0;display:flex;font-size:15px!important;font-weight:600!important;line-height:1.35!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-source{overflow-wrap:anywhere;color:#fffffff0!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-divider{color:#ffffff6b!important;font-weight:500!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-header{overflow-wrap:anywhere;color:rgb(var(--vot-primary-rgb,255, 83, 151))!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-context{overflow-wrap:anywhere;max-width:100%;color:#ffffffad!important;font-size:13px!important;font-weight:400!important;line-height:1.45!important}.vot-overlay{--vot-overlay-default-top:0;user-select:none;width:fit-content;max-width:100vw;right:auto;top:var(--vot-overlay-default-top);z-index:2147483646;font-size:16px;line-height:1.5;position:absolute;overflow:hidden;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important}.vot-overlay[aria-hidden=true]{pointer-events:none;opacity:0;display:none;visibility:hidden!important}");
+	var shadowScopedCssText = scopeCssForShadowRoots(":root{--vot-font-family:\"Roboto\", \"Segoe UI\", system-ui, sans-serif;--vot-primary-rgb:139, 180, 245;--vot-onprimary-rgb:32, 33, 36;--vot-surface-rgb:32, 33, 36;--vot-secondary-rgb:43, 44, 48;--vot-onsurface-rgb:227, 227, 227;--vot-danger-rgb:255, 99, 99;--vot-error-rgb:242, 139, 130;--vot-subtitles-color:rgb(var(--vot-onsurface-rgb,227, 227, 227));--vot-subtitles-passed-color:rgb(var(--vot-primary-rgb,139, 180, 245));--vot-space-1:4px;--vot-space-2:8px;--vot-space-3:12px;--vot-space-4:16px;--vot-space-5:20px;--vot-space-6:24px;--vot-radius-xs:6px;--vot-radius-s:10px;--vot-radius-m:14px;--vot-radius-l:18px;--vot-border-color:rgba(var(--vot-onsurface-rgb,227, 227, 227), .14);--vot-border-color-hover:rgba(var(--vot-onsurface-rgb,227, 227, 227), .22);--vot-shadow-1:0 1px 2px #0000002e, 0 8px 24px #00000024;--vot-shadow-2:0 2px 4px #00000038, 0 12px 32px #00000038;--vot-duration-fast:.12s;--vot-duration-medium:.2s;--vot-duration-slow:.32s;--vot-easing-standard:cubic-bezier(.2, 0, 0, 1);--vot-focus-ring-color:rgba(var(--vot-primary-rgb,139, 180, 245), .9);--vot-focus-ring:0 0 0 2px var(--vot-focus-ring-color);--vot-focus-ring-offset:0 0 0 4px rgba(var(--vot-surface-rgb,32, 33, 36), .9)}vot-block,vot-block *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}vot-block[hidden]:not(.vot-menu),vot-block [hidden]:not(.vot-menu){display:none!important}vot-block{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizelegibility;-moz-text-size-adjust:100%;text-size-adjust:100%;display:block;--vot-font-family:\"Roboto\", \"Segoe UI\", system-ui, sans-serif!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;visibility:visible!important;font-weight:400!important}vot-block *{font-weight:inherit!important}.vot-portal-local,.vot-subtitles-widget{isolation:isolate}vot-block:focus,vot-block :focus{box-shadow:none!important;outline:none!important}html.vot-keyboard-nav vot-block:focus-visible,html.vot-keyboard-nav vot-block :focus-visible{box-shadow:var(--vot-focus-ring), var(--vot-focus-ring-offset)!important}@supports not selector(:focus-visible){html.vot-keyboard-nav vot-block:focus,html.vot-keyboard-nav vot-block :focus{box-shadow:var(--vot-focus-ring), var(--vot-focus-ring-offset)!important}}@media (prefers-reduced-motion:reduce){.vot-portal-local *,.vot-portal *,.vot-subtitles-widget *{scroll-behavior:auto!important;transition-duration:.001ms!important;animation-duration:.001ms!important;animation-iteration-count:1!important}}.vot-portal{display:contents}.vot-portal-local{z-index:2147483647;position:fixed;top:0;left:0}.vot-segmented-button,.vot-menu{pointer-events:auto}.vot-about-item{justify-content:space-between;align-items:center;gap:.5em;font-size:.8em;display:flex}.vot-about-item__label{text-transform:lowercase;color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68)}.vot-about-item__link{background-color:rgba(var(--vot-primary-rgb,33, 150, 243), .12);color:rgb(var(--vot-primary-rgb,33, 150, 243));font:inherit;cursor:pointer;border-radius:8px;align-items:center;padding:.125em .625em;font-weight:500;transition:background-color .15s;display:inline-flex}@media (hover:hover){.vot-about-item__link:hover{background-color:rgba(var(--vot-primary-rgb,33, 150, 243), .2)}}.vot-about-item__link:active{background-color:rgba(var(--vot-primary-rgb,33, 150, 243), .24)}.vot-about-item__value{text-align:end;color:rgba(var(--vot-primary-rgb,33, 150, 243), .9)}@media screen and (width>=450px){.vot-about-item__value[data-has-link=true]{flex-direction:row-reverse;align-items:center;gap:.25em;display:flex}}.vot-about-item__value_detail{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68)}.vot-about-item__value_detail[data-state=error]{color:rgba(var(--vot-error-rgb,255, 0, 0), .9)}.vot-about-item__value_detail[data-state=loading]{align-items:center;gap:.25em;display:flex}.vot-about-item__value_detail[data-state=loading] svg{font-size:1.25em}.vot-about-section{--vot-about-sep-color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12);flex-direction:column;gap:.5em;display:flex}.vot-about-section>.vot-about-item:not(:last-child){border-bottom:1px solid var(--vot-about-sep-color);padding-bottom:1em}.vot-account-info{--vot-account-label-color:rgba(var(--vot-onsurface-rgb,13, 1, 31), .68);--vot-account-username-color:rgb(var(--vot-primary-rgb,139, 180, 245));flex-direction:column;gap:1em;font-weight:600;display:flex}.vot-account-info__block{align-items:center;gap:.5em;display:flex}.vot-account-info__avatar{border-radius:50%;min-width:36px;max-width:36px;min-height:36px;max-height:36px;overflow:hidden}.vot-account-info__avatar--failed{background:var(--vot-account-label-color)}.vot-account-info__avatar--failed>.vot-account-info__avatar-img{display:none}.vot-account-info__avatar-img{object-fit:cover;width:36px;height:36px}.vot-account-info__content{flex-direction:column;line-height:1.125em;display:flex}.vot-account-info__label{color:var(--vot-account-label-color);font-size:.75em}.vot-account-info__username{color:var(--vot-account-username-color);font-weight:600}.vot-account-info__refresh{margin-left:auto}.vot-account-login{flex-direction:column;gap:1em;display:flex}.vot-account-login__btn{cursor:pointer;color:#0d011f;border-radius:var(--vot-space-5);background:#fff;align-items:center;gap:1em;min-width:194px;height:56px;padding:14px 16px;font-size:1em;line-height:1.25em;transition:background .25s;display:flex}.vot-account-login__btn:hover{background:#f1eeeb}.vot-account-login__btn-icon{background-image:url(\"data:image/svg+xml,%3Csvg width='44' height='44' viewBox='0 0 44 44' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='44' height='44' fill='%23FC3F1D'/%3E%3Cpath d='M22.9515 24.2897C24.2907 27.223 24.737 28.2433 24.737 31.7665V36.4375H19.9544V28.5621L10.9313 8.9375H15.9211L22.9515 24.2897ZM28.8501 8.9375L22.9994 22.2332H27.8617L33.7284 8.9375H28.8501Z' fill='white'/%3E%3C/svg%3E%0A\");background-position:50%;background-repeat:no-repeat;background-size:contain;border-radius:50%;flex-shrink:0;width:26px;height:26px;position:relative}.vot-account-login__btn-text{font-weight:600}.vot-account-login__btn[aria-disabled=true]{cursor:not-allowed;user-select:none;opacity:.5}.vot-account-login__token{align-items:center;gap:1em;width:100%;display:flex}.vot-account-login__token .vot-textfield{width:100%}.vot-account-logout{--vot-theme-rgb:var(--vot-danger-rgb,244, 67, 54);width:100%;display:flex}.vot-account-logout .vot-text-button{width:100%;font-weight:600!important}.vot-account-logout__content{align-items:center;gap:.5em;width:100%;font-size:1.125em;display:flex}.vot-account-logout__content svg{width:1.25em;height:1.25em}.vot-account-menu{flex-direction:column;gap:.5em;display:flex}.vot-icon-button{--vot-helper-onsurface:rgba(var(--vot-onsurface-rgb,0, 0, 0), .87);box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:36px;height:36px;font-size:14px;line-height:36px;display:inline-block;position:relative;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;border-radius:50%!important;margin:0!important;padding:0!important;font-weight:500!important}.vot-icon-button[hidden]{display:none!important}.vot-icon-button{width:36px;fill:var(--vot-helper-onsurface);color:var(--vot-helper-onsurface);background-color:#0000;border:none!important}.vot-icon-button:before,.vot-icon-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-icon-button:before{background-color:var(--vot-helper-onsurface);transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-icon-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-icon-button:hover:before{opacity:.04}.vot-icon-button:active:after{opacity:.32;background-size:100% 100%;transition:background-size}.vot-icon-button[disabled=true],.vot-icon-button[aria-disabled=true]{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);fill:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);cursor:initial;background-color:#0000}.vot-icon-button[disabled=true]:before,.vot-icon-button[disabled=true]:after,.vot-icon-button[aria-disabled=true]:before,.vot-icon-button[aria-disabled=true]:after{opacity:0}.vot-icon-button svg{fill:inherit;stroke:inherit;width:24px;height:36px}.vot-text-button{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:64px;height:36px;font-size:14px;line-height:36px;display:inline-block;position:relative;border-radius:var(--vot-radius-s)!important;padding:0 var(--vot-space-2)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;margin:0!important;font-weight:500!important}.vot-text-button[hidden]{display:none!important}.vot-text-button{color:rgb(var(--vot-helper-theme));background-color:#0000;border:none!important}.vot-text-button:before,.vot-text-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-text-button:before{background-color:rgb(var(--vot-helper-theme));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-text-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-text-button:hover:before{opacity:.04}.vot-text-button:active:after{opacity:.16;background-size:100% 100%;transition:background-size}.vot-text-button[disabled=true],.vot-text-button[aria-disabled=true]{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);cursor:initial;background-color:#0000}.vot-text-button[disabled=true]:before,.vot-text-button[disabled=true]:after,.vot-text-button[aria-disabled=true]:before,.vot-text-button[aria-disabled=true]:after{opacity:0}.vot-button{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));--vot-helper-ontheme:var(--vot-ontheme-rgb,var(--vot-onprimary-rgb,255, 255, 255));box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:64px;height:36px;font-size:14px;line-height:36px;display:inline-block;position:relative;border-radius:var(--vot-radius-s)!important;padding:0 var(--vot-space-4)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;font-weight:500!important}.vot-button[hidden]{display:none!important}.vot-button{color:rgb(var(--vot-helper-ontheme));background-color:rgb(var(--vot-helper-theme));box-shadow:var(--vot-shadow-1);transition:box-shadow var(--vot-duration-medium) var(--vot-easing-standard);border:none!important}.vot-button:before,.vot-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-button:before{background-color:rgb(var(--vot-helper-ontheme));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-button:hover:before{opacity:.08}.vot-button:active:after{opacity:.32;background-size:100% 100%;transition:background-size}.vot-button:hover,.vot-button:active{box-shadow:var(--vot-shadow-2)}.vot-button[disabled=true]{background-color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12);color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);box-shadow:none;cursor:initial}.vot-button[disabled=true]:before,.vot-button[disabled=true]:after{opacity:0}.vot-outlined-button{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:64px;height:36px;font-size:14px;line-height:34px;display:inline-block;position:relative;border-radius:var(--vot-radius-s)!important;padding:0 var(--vot-space-4)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;margin:0!important;font-weight:500!important}.vot-outlined-button[hidden]{display:none!important}.vot-outlined-button{color:rgb(var(--vot-helper-theme));background-color:#0000;border:solid 1px var(--vot-border-color)!important}.vot-outlined-button:before,.vot-outlined-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-outlined-button:before{background-color:rgb(var(--vot-helper-theme));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-outlined-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-outlined-button:hover:before{opacity:.04}.vot-outlined-button:active:after{opacity:.16;background-size:100% 100%;transition:background-size}.vot-outlined-button[disabled=true],.vot-outlined-button[aria-disabled=true]{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);cursor:initial;background-color:#0000}.vot-outlined-button[disabled=true]:before,.vot-outlined-button[disabled=true]:after,.vot-outlined-button[aria-disabled=true]:before,.vot-outlined-button[aria-disabled=true]:after{opacity:0}.vot-details{color:rgba(var(--vot-onsurface-rgb), .87);text-align:start;cursor:pointer;user-select:none;transition:background var(--vot-duration-medium) var(--vot-easing-standard);justify-content:space-between;align-items:center;font-size:16px;line-height:1.5;display:flex;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;border-radius:.5em!important;margin:-.5em!important;padding:.5em!important}.vot-details-arrow-icon{width:20px;height:32px;fill:rgba(var(--vot-onsurface-rgb), .87);justify-content:center;align-items:center;font-size:24px;display:flex;transform:scale(1.25)rotate(-90deg)}.vot-details:not([aria-disabled=true]):hover{background:rgba(var(--vot-onsurface-rgb,0, 0, 0), .06)}.vot-details[aria-disabled=true]{cursor:not-allowed;opacity:.38}.vot-hotkey{justify-content:flex-start;align-items:center;gap:var(--vot-space-3,12px);flex-wrap:wrap;display:flex}.vot-hotkey-label{overflow-wrap:anywhere;flex:1}.vot-hotkey-button{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));box-sizing:border-box;vertical-align:middle;text-align:center;text-overflow:ellipsis;cursor:pointer;outline:none;min-width:32px;height:fit-content;font-size:15px;line-height:1.5;display:inline-block;position:relative;border-radius:var(--vot-radius-s)!important;padding:0 var(--vot-space-2)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;margin:0!important;font-weight:400!important}.vot-hotkey-button[hidden]{display:none!important}.vot-hotkey-button{background-color:#0000;width:fit-content;border:solid 1px var(--vot-border-color)!important}.vot-hotkey-button:before,.vot-hotkey-button:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-hotkey-button:before{background-color:rgb(var(--vot-helper-theme));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-hotkey-button:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-hotkey-button:hover:before{opacity:.04}.vot-hotkey-button:active:after{opacity:.16;background-size:100% 100%;transition:background-size}.vot-hotkey-button[data-status=active]{color:rgb(var(--vot-helper-theme))}.vot-hotkey-button[data-status=active]:before{opacity:.04}.vot-hotkey-button[disabled=true]{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38);cursor:initial;background-color:#0000}.vot-hotkey-button[disabled=true]:before,.vot-hotkey-button[disabled=true]:after{opacity:0}.vot-progress-icon{--vot-helper-theme:var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243));fill:none;stroke:rgb(var(--vot-helper-theme));stroke-width:2px;stroke-linecap:round;transform-origin:50%;transform:rotate(-90deg)}.vot-progress-icon_base{--vot-helper-theme:var(--vot-secondary-rgb,43, 44, 48)}.vot-select{user-select:none;justify-content:end;align-items:center;display:flex;position:relative}.vot-select-label{flex:1}.vot-select-label__description{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68);letter-spacing:.25px;font-size:14px;font-weight:400;line-height:20px}.vot-select-outer{cursor:pointer;border:1px solid var(--vot-border-color);width:120px;max-width:120px;color:rgba(var(--vot-onsurface-rgb), .87);transition:border-color var(--vot-duration-medium) var(--vot-easing-standard);border-radius:.75em;align-items:center;padding:.5em;display:flex}.vot-select-outer__title{text-overflow:ellipsis;white-space:nowrap;flex:1;align-content:center;height:24px;margin-top:-2px;font-size:.8em;overflow:hidden}.vot-select-outer__arrow{fill:currentColor;transition:transform var(--vot-duration-medium) var(--vot-easing-standard);font-size:1.5em;display:flex}.vot-select-outer[aria-disabled=true]{cursor:not-allowed;opacity:.38}.vot-select-outer:not([aria-disabled=true]):hover{border-color:var(--vot-border-color-hover)}.vot-select-outer[aria-expanded=true] .vot-select-outer__arrow{transform:rotate(180deg)}.vot-select-inner{--vot-select-inner-primary-rgb:var(--vot-primary-rgb,33, 150, 243);z-index:2147483647;user-select:none;background:rgb(var(--vot-secondary-rgb,43, 44, 48));color:rgba(var(--vot-onsurface-rgb), .87);max-width:min(300px,100%);max-height:min(85vh, 350px, var(--vot-floating-available-height,100vh));pointer-events:auto;border-radius:.75em;flex-direction:column;padding:.5em;font-size:16px;display:flex;position:fixed;overflow:hidden}.vot-select-inner.vot-select-inner__static-width{width:100%}.vot-select-inner .vot-textfield{margin-bottom:.5em}.vot-select-inner__no-options{color:rgba(var(--vot-onsurface-rgb), .38);text-align:center;padding:.5em .75em}.vot-select-inner__no-options[data-searching=true]{color:rgba(var(--vot-onsurface-rgb), .68);padding:0;font-size:1.75em}.vot-select-inner__options{overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:rgba(var(--vot-onsurface-rgb), .38) transparent;min-height:0;margin-right:-8px;padding-right:8px;overflow-y:auto}.vot-select-inner__option{cursor:pointer;transition:background var(--vot-duration-medium) var(--vot-easing-standard);border-radius:.5em;padding:.5em .75em}.vot-select-inner__option[aria-disabled=true]{cursor:not-allowed;opacity:.38}.vot-select-inner__option:not([aria-disabled=true]):hover{background:rgba(var(--vot-onsurface-rgb), .14)}.vot-select-inner__option[aria-selected=true]{color:rgb(var(--vot-select-inner-primary-rgb));background:rgba(var(--vot-select-inner-primary-rgb), .2)}.vot-select-inner__option[aria-selected=true]:not([aria-disabled=true]):hover{background:rgba(var(--vot-select-inner-primary-rgb), .1)}.vot-switch{--vot-switch-outline:rgba(var(--vot-onsurface-rgb,0, 0, 0), .6);--vot-switch-primary:rgb(var(--vot-primary-rgb,33, 150, 243));--vot-switch-onprimary:rgb(var(--vot-onprimary-rgb,32, 33, 36));--vot-switch-track:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12);--vot-switch-duration:var(--vot-duration-medium,.2s);--vot-switch-label-offset:24px;box-sizing:border-box;color:rgb(var(--vot-onsurface-rgb,0, 0, 0));cursor:pointer;align-items:center;gap:var(--vot-space-4,16px);width:100%;padding-block:var(--vot-space-2,8px);touch-action:manipulation;vertical-align:middle;display:inline-flex;position:relative;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important}.vot-switch[data-disabled=true]{cursor:not-allowed;user-select:none}.vot-switch_sub{padding-left:var(--vot-switch-label-offset)!important}.vot-switch-control{cursor:inherit;opacity:0;z-index:2;width:100%;height:100%;margin:0;position:absolute;inset:0}.vot-switch-control:focus-visible~.vot-switch-track{outline:2px solid var(--vot-focus-ring-color,rgba(var(--vot-primary-rgb,33, 150, 243), .9));outline-offset:2px}.vot-switch-control:hover:not(:disabled)~.vot-switch-track .vot-switch-handle{box-shadow:0 0 0 12px rgba(var(--vot-onsurface-rgb,0, 0, 0), .08)}.vot-switch-control:active:not(:disabled)~.vot-switch-track .vot-switch-handle{box-shadow:0 0 0 12px rgba(var(--vot-onsurface-rgb,0, 0, 0), .12)}.vot-switch-control:hover:not(:disabled)~.vot-switch-track[data-checked=true] .vot-switch-handle{box-shadow:0 0 0 8px rgba(var(--vot-primary-rgb,33, 150, 243), .08)}.vot-switch-control:active:not(:disabled)~.vot-switch-track[data-checked=true] .vot-switch-handle{box-shadow:0 0 0 8px rgba(var(--vot-primary-rgb,33, 150, 243), .12)}.vot-switch-control:disabled{cursor:not-allowed}.vot-switch-control:disabled~.vot-switch-track{background:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12);border-color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .12)}.vot-switch-control:disabled~.vot-switch-track .vot-switch-handle{background:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38)}.vot-switch-control:disabled~.vot-switch-track[data-checked=true] .vot-switch-handle{background:rgb(var(--vot-surface-rgb,32, 33, 36))}.vot-switch-text{flex-direction:column;flex:auto;min-width:0;display:flex}.vot-switch-heading{letter-spacing:.5px;font-size:16px;font-weight:400;line-height:24px}.vot-switch-description{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68);letter-spacing:.25px;font-size:14px;font-weight:400;line-height:20px}.vot-switch[data-disabled=true] .vot-switch-heading,.vot-switch[data-disabled=true] .vot-switch-description{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38)}.vot-switch-track{background:var(--vot-switch-track);border:2px solid var(--vot-switch-outline);box-sizing:border-box;pointer-events:none;height:32px;transition-duration:var(--vot-switch-duration);transition-property:background-color,border-color;transition-timing-function:var(--vot-easing-standard);border-radius:16px;flex:none;align-items:center;width:52px;display:flex;position:relative}.vot-switch-track[data-checked=true]{background:var(--vot-switch-primary);border-color:var(--vot-switch-primary)}.vot-switch-track[data-checked=true] .vot-switch-handle{background:var(--vot-switch-onprimary);width:24px;height:24px;transform:translate(16px,-50%)}.vot-switch-handle{background:var(--vot-switch-outline);height:16px;transition-duration:var(--vot-switch-duration);transition-property:background-color,box-shadow,height,transform,width;transition-timing-function:var(--vot-easing-standard);inset-inline-start:6px;border-radius:50%;width:16px;position:absolute;top:50%;transform:translateY(-50%);box-shadow:0 0 #0000}@media (prefers-reduced-motion:reduce){.vot-switch-track,.vot-switch-handle{transition-duration:.01ms}}.vot-slider{--vot-slider-track-bg:rgba(var(--vot-onsurface-rgb,227, 227, 227), .15);--vot-slider-track-progress-bg:rgb(var(--vot-primary-rgb,33, 150, 243));--vot-slider-size:1em;--vot-slider-border-radius:.5em;--vot-slider-handle-bg:rgb(var(--vot-primary-rgb,139, 180, 245));--vot-slider-handle-size:44px;--vot-slider-transition:var(--vot-duration-medium) var(--vot-easing-standard);height:var(--vot-slider-handle-size);align-items:center;display:flex;position:relative}.vot-slider[aria-disabled=true]{user-select:none;opacity:.5}.vot-slider[aria-disabled=true] .vot-slider__control{cursor:not-allowed}.vot-slider__control{opacity:0;appearance:none;cursor:pointer;width:100%;height:100%;position:absolute}.vot-slider__track{background:var(--vot-slider-track-bg);width:100%;height:var(--vot-slider-size);border-radius:var(--vot-slider-border-radius);pointer-events:none}.vot-slider__track-progress{background:var(--vot-slider-track-progress-bg);width:calc(100% * var(--vot-progress,0));transition:width var(--vot-slider-transition);border-top-right-radius:0;border-bottom-right-radius:0;position:absolute}.vot-slider__handle{left:calc(100% * var(--vot-progress,0));width:4px;height:var(--vot-slider-handle-size);background:var(--vot-slider-handle-bg);outline:4px solid var(--vot-slider-track-bg);pointer-events:none;will-change:transform;transition:transform var(--vot-slider-transition), left var(--vot-slider-transition);transform:translateX(calc(-100% * var(--vot-progress,0)));border-radius:4px;position:absolute}.vot-slider[data-dragging] .vot-slider__track-progress,.vot-slider[data-dragging] .vot-slider__handle{transition:none}.vot-slider-label{flex-wrap:nowrap;align-items:baseline;gap:.75em;display:flex}.vot-slider-label__text{text-align:left;flex:auto}.vot-slider-label__text-desc{color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .68);letter-spacing:.25px;font-size:14px;font-weight:400;line-height:20px}.vot-slider-label__value{text-align:right;font-variant-numeric:tabular-nums;flex:none;font-weight:600!important}.vot-slider-label[aria-disabled=true]{opacity:.5;user-select:none;color:rgba(var(--vot-onsurface-rgb,227, 227, 227), .5)}.vot-slider-wrapper{flex-direction:column;gap:.25em;display:flex}.vot-dialog{--vot-helper-surface-rgb:var(--vot-surface-rgb,255, 255, 255);--vot-helper-surface:rgb(var(--vot-helper-surface-rgb));--vot-helper-onsurface-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-onsurface:rgba(var(--vot-helper-onsurface-rgb), .87);--vot-dialog-viewport-margin:16px;--vot-dialog-max-height:75vh;max-width:initial;max-height:initial;width:min(var(--vot-dialog-width,512px), 100%);border:1px solid var(--vot-border-color);border-radius:var(--vot-radius-l);background-color:var(--vot-helper-surface);height:fit-content;color:var(--vot-helper-onsurface);box-shadow:var(--vot-shadow-2);user-select:none;visibility:visible;opacity:1;transform-origin:50%;transition:opacity var(--vot-duration-medium) var(--vot-easing-standard), transform var(--vot-duration-medium) var(--vot-easing-standard);font-size:16px;line-height:1.5;display:block;position:fixed;inset-block:0;inset-inline:0;overflow:auto hidden;transform:scale(1);font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;margin:auto!important;padding:0!important}.vot-dialog[data-vertical-align=top]{inset-block-start:var(--vot-dialog-viewport-margin);inset-block-end:auto;margin:0 auto!important}.vot-dialog-container{visibility:visible;z-index:2147483647;position:absolute}.vot-dialog-container *{box-sizing:border-box!important}.vot-dialog-backdrop{opacity:1;background-color:#0009;transition:opacity .3s;position:fixed;inset:0}.vot-dialog-content-wrapper{max-height:var(--vot-dialog-max-height,75vh);flex-direction:column;display:flex;overflow:auto}.vot-dialog-header-container{flex-shrink:0;align-items:flex-start;min-height:31px;display:flex}.vot-dialog-header-container:empty{padding:0 0 20px}.vot-dialog-header-container>.vot-icon-button{margin-inline-end:var(--vot-space-1)!important;margin-top:var(--vot-space-1)!important}.vot-dialog-title-container{font-size:inherit;outline:0;flex:1;display:flex;font-weight:inherit!important;margin:0!important}.vot-dialog-title{flex:1;font-size:115.385%;line-height:1;padding:var(--vot-space-5) var(--vot-space-5) var(--vot-space-4)!important;font-weight:700!important}.vot-dialog-body-container{box-sizing:border-box;gap:var(--vot-space-4);overscroll-behavior:contain;flex-direction:column;min-height:1.375rem;display:flex;overflow:auto;padding:0 var(--vot-space-5)!important;scrollbar-color:rgba(var(--vot-helper-onsurface-rgb), .1) var(--vot-helper-surface)!important}.vot-dialog-body-container::-webkit-scrollbar{background:var(--vot-helper-surface)!important;width:12px!important;height:12px!important}.vot-dialog-body-container::-webkit-scrollbar-track{background:var(--vot-helper-surface)!important;width:12px!important;height:12px!important}.vot-dialog-body-container::-webkit-scrollbar-thumb{border-radius:1ex;background:rgba(var(--vot-helper-onsurface-rgb), .1)!important;border:5px solid var(--vot-helper-surface)!important}.vot-dialog-body-container::-webkit-scrollbar-thumb:hover{border-width:3px!important}.vot-dialog-body-container::-webkit-scrollbar-corner{background:var(--vot-helper-surface)!important}.vot-dialog-body-container:last-child{padding-block-end:var(--vot-space-5)!important}.vot-dialog-footer-container{justify-content:flex-end;gap:var(--vot-space-2);flex-wrap:wrap;flex-shrink:0;display:flex;padding:var(--vot-space-4)!important}@media (width<=480px){.vot-dialog-footer-container{flex-direction:column;align-items:stretch}.vot-dialog-footer-container>:is(.vot-button,.vot-outlined-button,.vot-text-button){white-space:normal;text-overflow:clip;text-align:center;justify-content:center;align-items:center;width:100%;height:auto;min-height:36px;padding:8px 16px;line-height:1.2;display:flex;overflow:visible}}.vot-settings-section{border:1px solid var(--vot-border-color);border-radius:var(--vot-radius-l);padding:var(--vot-space-2);background:rgba(var(--vot-helper-onsurface-rgb), .03);flex-direction:column;display:flex}.vot-settings-section>*{margin:0!important}.vot-settings-section>*+*{margin-top:var(--vot-space-2)!important}.vot-settings-section__header{border-radius:var(--vot-radius-m);margin:0!important;padding:.45em .5em!important}.vot-settings-section__header .vot-details-arrow-icon{transition:transform var(--vot-duration-medium) var(--vot-easing-standard)}.vot-settings-section__header[data-open=true] .vot-details-arrow-icon{transform:scale(1.25)rotate(0)}.vot-settings-section__content{--vot-settings-control-width:200px;--vot-settings-row-gap:var(--vot-space-2);gap:var(--vot-settings-row-gap);padding:0 var(--vot-space-1) var(--vot-space-1);flex-direction:column;display:flex}.vot-settings-section__content>*{margin:0!important}.vot-settings-section__content>.vot-switch,.vot-settings-section__content>.vot-hotkey,.vot-settings-section__content>.vot-select,.vot-settings-section__content>.vot-slider-wrapper{padding:var(--vot-space-1);box-sizing:border-box;width:100%!important}.vot-volume-mode .vot-select{flex-direction:column;align-items:stretch;gap:8px}.vot-volume-mode .vot-select-outer{width:auto;max-width:none}.vot-volume-offset .vot-textfield{width:100%}.vot-settings-footer{gap:var(--vot-space-2);display:flex}.vot-textfield{display:inline-block;--vot-helper-theme:rgb(var(--vot-theme-rgb,var(--vot-primary-rgb,33, 150, 243)))!important;--vot-helper-safari1:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38)!important;--vot-helper-safari2:rgba(var(--vot-onsurface-rgb,0, 0, 0), .6)!important;--vot-helper-safari3:rgba(var(--vot-onsurface-rgb,0, 0, 0), .87)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;text-align:start!important;padding-top:6px!important;font-size:16px!important;line-height:1.5!important;position:relative!important}.vot-textfield>:is(input,textarea){box-sizing:border-box!important;border-style:solid!important;border-width:1px!important;border-color:transparent var(--vot-helper-safari2) var(--vot-helper-safari2)!important;width:100%!important;height:inherit!important;color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .87)!important;-webkit-text-fill-color:currentColor!important;font-family:inherit!important;font-size:inherit!important;line-height:inherit!important;caret-color:var(--vot-helper-theme)!important;background-color:#0000!important;border-radius:4px!important;margin:0!important;padding:15px 13px!important;transition:border .2s,box-shadow .2s!important;box-shadow:inset 1px 0 #0000,inset -1px 0 #0000,inset 0 -1px #0000!important}.vot-textfield>:is(input,textarea):not(:focus):not(:is(.vot-show-placeholder,.vot-show-placeholer))::placeholder{color:#0000!important}.vot-textfield>:is(input,textarea):not(:focus):placeholder-shown{border-top-color:var(--vot-helper-safari2)!important}.vot-textfield>:is(input,textarea)+.vot-textfield__label{font-family:inherit;width:100%!important;max-height:100%!important;color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .6)!important;cursor:text!important;pointer-events:none!important;font-size:75%!important;line-height:15px!important;transition:color .2s,font-size .2s,line-height .2s!important;display:flex!important;position:absolute!important;top:0!important;left:0!important}.vot-textfield>:is(input,textarea):not(:focus):placeholder-shown+.vot-textfield__label{font-size:inherit!important;line-height:68px!important}.vot-textfield>input+.vot-textfield__label:before,.vot-textfield>input+.vot-textfield__label:after,.vot-textfield>textarea+.vot-textfield__label:before,.vot-textfield>textarea+.vot-textfield__label:after{content:\"\"!important;box-sizing:border-box!important;border-top:solid 1px var(--vot-helper-safari2)!important;pointer-events:none!important;min-width:10px!important;height:8px!important;margin-top:6px!important;transition:border .2s,box-shadow .2s!important;display:block!important;box-shadow:inset 0 1px #0000!important}.vot-textfield>input+.vot-textfield__label:before,.vot-textfield>textarea+.vot-textfield__label:before{border-left:1px solid #0000!important;border-radius:4px 0!important;margin-right:4px!important}.vot-textfield>input+.vot-textfield__label:after,.vot-textfield>textarea+.vot-textfield__label:after{border-right:1px solid #0000!important;border-radius:0 4px!important;flex-grow:1!important;margin-left:4px!important}.vot-textfield>input:is(.vot-show-placeholder,.vot-show-placeholer)+.vot-textfield__label:before,.vot-textfield>textarea:is(.vot-show-placeholder,.vot-show-placeholer)+.vot-textfield__label:before{margin-right:0!important}.vot-textfield>input:is(.vot-show-placeholder,.vot-show-placeholer)+.vot-textfield__label:after,.vot-textfield>textarea:is(.vot-show-placeholder,.vot-show-placeholer)+.vot-textfield__label:after{margin-left:0!important}.vot-textfield>input:not(:focus):placeholder-shown+.vot-textfield__label:before,.vot-textfield>input:not(:focus):placeholder-shown+.vot-textfield__label:after,.vot-textfield>textarea:not(:focus):placeholder-shown+.vot-textfield__label:before,.vot-textfield>textarea:not(:focus):placeholder-shown+.vot-textfield__label:after{border-top-color:#0000!important}.vot-textfield>textarea{resize:none!important}.vot-textfield:hover>input:not(:disabled),.vot-textfield:hover>textarea:not(:disabled){border-color:transparent var(--vot-helper-safari3) var(--vot-helper-safari3)!important}.vot-textfield:hover>input:not(:disabled)+.vot-textfield__label:before,.vot-textfield:hover>input:not(:disabled)+.vot-textfield__label:after,.vot-textfield:hover>textarea:not(:disabled)+.vot-textfield__label:before,.vot-textfield:hover>textarea:not(:disabled)+.vot-textfield__label:after{border-top-color:var(--vot-helper-safari3)!important}.vot-textfield:hover>input:not(:disabled):not(:focus):placeholder-shown,.vot-textfield:hover>textarea:not(:disabled):not(:focus):placeholder-shown{border-color:var(--vot-helper-safari3)!important}.vot-textfield>input:focus,.vot-textfield>textarea:focus{border-color:transparent var(--vot-helper-theme) var(--vot-helper-theme)!important;box-shadow:inset 1px 0 var(--vot-helper-theme), inset -1px 0 var(--vot-helper-theme), inset 0 -1px var(--vot-helper-theme)!important;outline:none!important}.vot-textfield>input:focus+.vot-textfield__label,.vot-textfield>textarea:focus+.vot-textfield__label{color:var(--vot-helper-theme)!important}.vot-textfield>input:focus+.vot-textfield__label:before,.vot-textfield>input:focus+.vot-textfield__label:after,.vot-textfield>textarea:focus+.vot-textfield__label:before,.vot-textfield>textarea:focus+.vot-textfield__label:after{border-top-color:var(--vot-helper-theme)!important;box-shadow:inset 0 1px var(--vot-helper-theme)!important}.vot-textfield>input:disabled,.vot-textfield>input:disabled+.vot-textfield__label,.vot-textfield>textarea:disabled,.vot-textfield>textarea:disabled+.vot-textfield__label{border-color:transparent var(--vot-helper-safari1) var(--vot-helper-safari1)!important;color:rgba(var(--vot-onsurface-rgb,0, 0, 0), .38)!important;pointer-events:none!important}.vot-textfield>input:disabled+.vot-textfield__label:before,.vot-textfield>input:disabled+.vot-textfield__label:after,.vot-textfield>textarea:disabled+.vot-textfield__label:before,.vot-textfield>textarea:disabled+.vot-textfield__label:after,.vot-textfield>input:disabled:placeholder-shown,.vot-textfield>input:disabled:placeholder-shown+.vot-textfield__label,.vot-textfield>textarea:disabled:placeholder-shown,.vot-textfield>textarea:disabled:placeholder-shown+.vot-textfield__label{border-top-color:var(--vot-helper-safari1)!important}.vot-textfield>input:disabled:placeholder-shown+.vot-textfield__label:before,.vot-textfield>input:disabled:placeholder-shown+.vot-textfield__label:after,.vot-textfield>textarea:disabled:placeholder-shown+.vot-textfield__label:before,.vot-textfield>textarea:disabled:placeholder-shown+.vot-textfield__label:after{border-top-color:#0000!important}@media not all and (resolution>=.001dpcm){@supports ((-webkit-appearance:none)){.vot-textfield>input,.vot-textfield>input+.vot-textfield__label,.vot-textfield>textarea,.vot-textfield>textarea+.vot-textfield__label,.vot-textfield>input+.vot-textfield__label:before,.vot-textfield>input+.vot-textfield__label:after,.vot-textfield>textarea+.vot-textfield__label:before,.vot-textfield>textarea+.vot-textfield__label:after{transition-duration:.1s!important}}}.vot-segmented-button{--vot-helper-theme-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-theme:rgba(var(--vot-helper-theme-rgb), .87);cursor:default;user-select:none;background:rgb(var(--vot-surface-rgb,255, 255, 255));max-width:100%;height:36px;color:var(--vot-helper-theme);fill:var(--vot-helper-theme);align-items:center;font-size:16px;display:flex;overflow:hidden;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;border:1px solid var(--vot-border-color)!important;border-radius:var(--vot-radius-s)!important;box-shadow:var(--vot-shadow-1)!important}.vot-segmented-button[data-direction=column]{flex-direction:column;height:fit-content}.vot-segmented-button[data-direction=column] .vot-segment,.vot-segmented-button[data-direction=column] .vot-segment-only-icon{padding:var(--vot-space-2)!important}.vot-segmented-button[data-direction=column] .vot-separator{width:50%;height:1px}.vot-segmented-button[data-status=error] .vot-translate-button{color:rgb(var(--vot-error-rgb,242, 139, 130))}.vot-segmented-button[data-status=success] .vot-translate-button{color:rgb(var(--vot-primary-rgb,33, 150, 243))}.vot-segmented-button .vot-segment,.vot-segmented-button .vot-segment-only-icon{min-width:0;height:100%;color:inherit;transition:background-color var(--vot-duration-fast) var(--vot-easing-standard);-webkit-tap-highlight-color:transparent;background-color:#0000;outline:none;flex:auto;justify-content:center;align-items:center;display:flex;position:relative;overflow:hidden;gap:var(--vot-space-2)!important;padding:0 var(--vot-space-2)!important;border:none!important}.vot-segmented-button .vot-segment:focus,.vot-segmented-button .vot-segment-only-icon:focus{box-shadow:inset 0 0 0 2px var(--vot-focus-ring-color);outline:none}.vot-segmented-button .vot-segment:focus:not(:focus-visible),.vot-segmented-button .vot-segment-only-icon:focus:not(:focus-visible){box-shadow:none}.vot-segmented-button .vot-segment:before,.vot-segmented-button .vot-segment-only-icon:before,.vot-segmented-button .vot-segment:after,.vot-segmented-button .vot-segment-only-icon:after{content:\"\";opacity:0;position:absolute;inset:0;border-radius:inherit!important}.vot-segmented-button .vot-segment:before,.vot-segmented-button .vot-segment-only-icon:before{background-color:rgb(var(--vot-helper-theme-rgb));transition:opacity var(--vot-duration-medium) var(--vot-easing-standard)}.vot-segmented-button .vot-segment:after,.vot-segmented-button .vot-segment-only-icon:after{transition:opacity var(--vot-duration-slow) var(--vot-easing-standard), background-size var(--vot-duration-slow) var(--vot-easing-standard);background:radial-gradient(circle,currentColor 1%,#0000 1%) 50%/10000% 10000% no-repeat}.vot-segmented-button .vot-segment:hover:before,.vot-segmented-button .vot-segment-only-icon:hover:before{opacity:.04}.vot-segmented-button .vot-segment:active:after,.vot-segmented-button .vot-segment-only-icon:active:after{opacity:.16;background-size:100% 100%;transition:background-size}.vot-segmented-button .vot-segment:before,.vot-segmented-button .vot-segment-only-icon:before,.vot-segmented-button .vot-segment:after,.vot-segmented-button .vot-segment-only-icon:after{pointer-events:none}.vot-segmented-button .vot-segment svg,.vot-segmented-button .vot-segment-only-icon svg{font-size:24px}.vot-segmented-button .vot-segment>svg,.vot-segmented-button .vot-segment-only-icon>svg,.vot-segmented-button .vot-segment-label,.vot-segmented-button .vot-segment .vot-dropdown-arrow,.vot-segmented-button .vot-segment-only-icon .vot-dropdown-arrow{z-index:1;position:relative}.vot-segmented-button .vot-segment-only-icon{min-width:36px;padding:0!important}.vot-segmented-button .vot-segment-only-icon[data-active=true]{color:rgb(var(--vot-primary-rgb,33, 150, 243))}.vot-segmented-button .vot-segment-label{text-overflow:ellipsis;white-space:nowrap;min-width:0;color:inherit;flex:auto;line-height:1;overflow:hidden;font-weight:400!important}.vot-segmented-button .vot-dropdown-arrow{width:30px;min-width:30px;height:100%;color:inherit;fill:inherit;opacity:.95;cursor:default;-webkit-tap-highlight-color:transparent;outline:none;flex:none;justify-content:center;align-items:center;display:inline-flex;position:relative;border-radius:var(--vot-radius-s)!important;margin-inline-end:-4px!important;margin-top:2px!important}.vot-segmented-button .vot-dropdown-arrow:focus{box-shadow:inset 0 0 0 2px var(--vot-focus-ring-color)}.vot-segmented-button .vot-dropdown-arrow:focus:not(:focus-visible){box-shadow:none}.vot-segmented-button .vot-dropdown-arrow:hover{background:rgba(var(--vot-helper-theme-rgb), .04)}.vot-segmented-button .vot-dropdown-arrow:before,.vot-segmented-button .vot-dropdown-arrow:after{display:none}.vot-segmented-button .vot-dropdown-arrow svg{transform-origin:50%;transition:transform var(--vot-duration-fast) var(--vot-easing-standard);font-size:28px;transform:scale(1.08)}.vot-segmented-button .vot-dropdown-arrow[aria-expanded=true] svg{transform:rotate(180deg)scale(1.08)}.vot-segmented-button .vot-separator{background:rgba(var(--vot-helper-theme-rgb), .1);width:1px;height:50%}.vot-overlay.vot-overlay__segmented-button{--vot-overlay-default-top:5rem;--vot-overlay-top-offset:max(16px, env(safe-area-inset-top,0px));--vot-overlay-side-offset:max(16px, env(safe-area-inset-left,0px));--vot-overlay-side-offset-right:max(16px, env(safe-area-inset-right,0px));--vot-overlay-side-top-offset:max(clamp(48px, 12.5vh, 128px), env(safe-area-inset-top,0px));transition:opacity var(--vot-duration-slow) var(--vot-easing-standard);pointer-events:auto;touch-action:none;max-width:100%;left:50%;transform:translate(-50%)}.vot-overlay.vot-overlay__segmented-button[data-dragging=true]{cursor:grabbing;will-change:transform;transform:translate3d(var(--vot-button-drag-left,0px), var(--vot-button-drag-top,0px), 0)!important;opacity:.96!important;transition:none!important;top:0!important;left:0!important;right:auto!important}.vot-overlay.vot-overlay__segmented-button,.vot-overlay.vot-overlay__segmented-button .vot-segmented-button,.vot-overlay.vot-overlay__segmented-button .vot-segment,.vot-overlay.vot-overlay__segmented-button .vot-segment-only-icon,.vot-overlay.vot-overlay__segmented-button .vot-dropdown-arrow{touch-action:none}.vot-overlay.vot-overlay__segmented-button[data-position=left]{left:var(--vot-overlay-side-offset);right:auto;top:var(--vot-overlay-side-top-offset);transform:none}.vot-overlay.vot-overlay__segmented-button[data-position=right]{left:auto;right:var(--vot-overlay-side-offset-right);top:var(--vot-overlay-side-top-offset);transform:none}.vot-overlay.vot-overlay__segmented-button[data-position=leftCenter]{left:var(--vot-overlay-side-offset);top:50%;right:auto;transform:translateY(-50%)}.vot-overlay.vot-overlay__segmented-button[data-position=rightCenter]{left:auto;right:var(--vot-overlay-side-offset-right);top:50%;transform:translateY(-50%)}.vot-overlay.vot-overlay__segmented-button.vot-segmented-button--dock-preview{z-index:2147483646;transition:left var(--vot-duration-medium) var(--vot-easing-standard), right var(--vot-duration-medium) var(--vot-easing-standard), top var(--vot-duration-medium) var(--vot-easing-standard), transform var(--vot-duration-medium) var(--vot-easing-standard), opacity var(--vot-duration-fast) var(--vot-easing-standard);opacity:.72!important;pointer-events:none!important}.vot-voice-icon{display:block;overflow:visible}.vot-voice-icon .vot-eq-bar{transform-origin:50% 100%;transform-box:fill-box;transform:scaleY(1)}.vot-voice-icon--standard .vot-eq-bar{fill:rgba(var(--vot-onsurface-rgb,227, 227, 227), .4)}.vot-voice-icon--live .vot-eq-bar{fill:#e040a0}.vot-voice-popover{--vot-helper-surface-rgb:var(--vot-surface-rgb,32, 33, 36);--vot-helper-surface:rgb(var(--vot-helper-surface-rgb));--vot-helper-onsurface-rgb:var(--vot-onsurface-rgb,227, 227, 227);--vot-helper-onsurface:rgba(var(--vot-helper-onsurface-rgb), .87);--vot-helper-onsurface-secondary:rgba(var(--vot-helper-onsurface-rgb), .55);--vot-voice-active-standard-bg:rgba(var(--vot-primary-rgb,139, 180, 245), .1);--vot-voice-active-standard-fg:rgb(var(--vot-primary-rgb,139, 180, 245));--vot-voice-active-live-bg:#e040a01a;--vot-voice-active-live-fg:#e040a0;z-index:2147483647;background:var(--vot-helper-surface);min-width:230px;max-width:var(--vot-voice-popover-max-width,310px);max-height:var(--vot-voice-popover-max-height,calc(100vh - 16px));cursor:default;user-select:none;overscroll-behavior:contain;transform-origin:0 0;width:max-content;display:block;position:absolute;top:0;left:0;overflow:hidden auto;border:1px solid var(--vot-border-color)!important;border-radius:var(--vot-radius-m)!important;box-shadow:var(--vot-shadow-2)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important;text-align:left!important}.vot-voice-popover,.vot-voice-popover *{box-sizing:border-box!important}.vot-voice-popover{opacity:0;visibility:hidden;pointer-events:none;transition:none;transform:none}.vot-voice-popover[hidden]{display:none!important}.vot-voice-popover:not([hidden]),.vot-voice-popover.is-open,.vot-voice-popover[aria-hidden=false]{opacity:1;visibility:visible;pointer-events:auto;transform:none}.vot-voice-popover[data-placement=top]{transform-origin:bottom}.vot-voice-popover[data-placement=bottom]{transform-origin:top}.vot-voice-popover[data-placement=left]{transform-origin:100%}.vot-voice-popover[data-placement=right]{transform-origin:0}.vot-voice-popover.is-closing{opacity:0;visibility:visible;pointer-events:none;transform:none}.vot-voice-popover__item{cursor:pointer;min-height:62px;color:var(--vot-helper-onsurface);outline:none;gap:12px;transition:none;display:flex;position:relative;overflow:hidden;padding:14px 44px 14px 16px!important}.vot-voice-popover__item:before{content:\"\";opacity:0;pointer-events:none;background:linear-gradient(180deg, rgba(var(--vot-helper-onsurface-rgb), .045), rgba(var(--vot-helper-onsurface-rgb), .06));transition:none;position:absolute;inset:0}.vot-voice-popover__item:hover,.vot-voice-popover__item:focus-visible{box-shadow:inset 0 1px #ffffff08,inset 0 -1px #0000000a}.vot-voice-popover__item:hover:before,.vot-voice-popover__item:focus-visible:before{opacity:1}.vot-voice-popover__item:focus-visible{box-shadow:inset 0 0 0 1px rgba(var(--vot-primary-rgb,139, 180, 245), .18)}.vot-voice-popover__item:after{content:\"\";opacity:0;background-color:currentColor;width:18px;height:18px;transition:none;position:absolute;top:50%;right:14px;transform:translateY(-50%)scale(.88);-webkit-mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E\") 50%/contain no-repeat;mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E\") 50%/contain no-repeat}.vot-voice-popover__item--active{font-weight:500!important}.vot-voice-popover__item--active:after{opacity:1;transform:translateY(-50%)scale(1)}.vot-voice-popover__item[data-voice=standard].vot-voice-popover__item--active{background-color:var(--vot-voice-active-standard-bg);color:var(--vot-voice-active-standard-fg)}.vot-voice-popover__item[data-voice=standard].vot-voice-popover__item--active .vot-voice-popover__item-title{color:inherit}.vot-voice-popover__item[data-voice=standard].vot-voice-popover__item--active .vot-voice-icon--standard .vot-eq-bar{fill:currentColor}.vot-voice-popover__item[data-voice=live].vot-voice-popover__item--active{background-color:var(--vot-voice-active-live-bg);color:var(--vot-voice-active-live-fg)}.vot-voice-popover__item[data-voice=live].vot-voice-popover__item--active .vot-voice-popover__item-title{color:inherit}.vot-voice-popover__item-icon{font-size:20px}.vot-voice-popover__item-text{flex-direction:column;gap:2px;min-width:0;display:flex}.vot-voice-popover__item-title{color:inherit;white-space:nowrap;font-size:15px;line-height:1.3;transition:none;font-weight:400!important}.vot-voice-popover__item-subtitle{color:var(--vot-helper-onsurface-secondary);white-space:normal;font-size:12px;line-height:1.4}.vot-voice-popover__divider{background:var(--vot-border-color);height:1px;margin:0!important}@media (prefers-reduced-motion:reduce){.vot-voice-icon .vot-eq-bar{animation:none!important;transform:scaleY(1)!important}.vot-voice-popover,.vot-voice-popover *,.vot-voice-popover:before,.vot-voice-popover:after{transition:none!important;animation:none!important}.vot-voice-popover,.vot-voice-popover.is-closing,.vot-voice-popover:not([hidden]),.vot-voice-popover.is-open,.vot-voice-popover[aria-hidden=false]{transform:none!important}}.vot-segmented-button__menu-header{align-items:center;gap:var(--vot-space-2);margin-left:auto;display:flex}.vot-langpair-select{--vot-helper-theme-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-theme:rgba(var(--vot-helper-theme-rgb), .87);color:var(--vot-helper-theme);justify-content:space-between;align-items:center;display:flex}.vot-langpair-select__icon{justify-content:center;align-items:center;font-size:24px;display:flex}.vot-volume-quick{gap:var(--vot-space-2,8px);margin-block:var(--vot-space-2,8px);display:flex}.vot-volume-quick__button{border:1px solid rgba(var(--vot-onsurface-rgb,0, 0, 0), .3);color:rgb(var(--vot-onsurface-rgb,0, 0, 0));cursor:pointer;text-align:center;border-radius:20px;flex:1 1 0;padding:8px;font-size:12px}.vot-volume-quick__button[aria-pressed=true]{background:rgba(var(--vot-primary-rgb,33, 150, 243), .18);border-color:rgb(var(--vot-primary-rgb,33, 150, 243))}.vot-volume-quick__button[aria-disabled=true]{cursor:not-allowed;opacity:.38}.vot-volume-quick__button:focus-visible{outline:2px solid rgb(var(--vot-primary-rgb,33, 150, 243));outline-offset:2px}.vot-overlay.vot-overlay__segmented-button-menu{--vot-overlay-default-top:calc(5rem + 48px);--vot-menu-side-offset:max(76px, calc(env(safe-area-inset-left,0px) + 64px));--vot-menu-side-offset-right:max(76px, calc(env(safe-area-inset-right,0px) + 64px));--vot-menu-side-top-offset:max(clamp(48px, 12.5vh, 128px), env(safe-area-inset-top,0px))}@media (pointer:coarse){.vot-overlay.vot-overlay__segmented-button-menu{--vot-menu-default-top:calc(3rem + 48px);--vot-menu-side-offset:max(64px, calc(env(safe-area-inset-left,0px) + 54px));--vot-menu-side-offset-right:max(64px, calc(env(safe-area-inset-right,0px) + 54px))}}.vot-overlay.vot-overlay__segmented-button-menu{transform-origin:top;transition:opacity var(--vot-duration-medium) var(--vot-easing-standard), transform var(--vot-duration-medium) var(--vot-easing-standard);left:50%;right:auto;transform:translate(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[aria-hidden=true]{transform:translate(-50%,-4px)scale(.98)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=left] .vot-menu,.vot-overlay.vot-overlay__segmented-button-menu[data-position=right] .vot-menu{max-height:calc(var(--vot-container-height,75vh) - var(--vot-menu-side-top-offset,48px) - 16px)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=leftCenter] .vot-menu,.vot-overlay.vot-overlay__segmented-button-menu[data-position=rightCenter] .vot-menu{max-height:calc(var(--vot-container-height,75vh) - 16px)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=left]{left:var(--vot-menu-side-offset);right:auto;top:var(--vot-menu-side-top-offset);transform-origin:0 0;transform:scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=right]{left:auto;right:var(--vot-menu-side-offset-right);top:var(--vot-menu-side-top-offset);transform-origin:100% 0;transform:scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=leftCenter]{left:var(--vot-menu-side-offset);transform-origin:0;top:50%;right:auto;transform:translateY(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=rightCenter]{left:auto;right:var(--vot-menu-side-offset-right);transform-origin:100%;top:50%;transform:translateY(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=left]{transform-origin:0;top:50%;transform:translateY(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=left] .vot-menu{max-height:calc(var(--vot-container-height,75vh) - 16px)}.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=right]{transform-origin:100%;top:50%;transform:translateY(-50%)scale(1)}.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=right] .vot-menu{max-height:calc(var(--vot-container-height,75vh) - 16px)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=left][aria-hidden=true],.vot-overlay.vot-overlay__segmented-button-menu[data-position=right][aria-hidden=true]{transform:translateY(-4px)scale(.98)}.vot-overlay.vot-overlay__segmented-button-menu[data-position=leftCenter][aria-hidden=true],.vot-overlay.vot-overlay__segmented-button-menu[data-position=rightCenter][aria-hidden=true],.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=left][aria-hidden=true],.vot-overlay.vot-overlay__segmented-button-menu[data-compact][data-position=right][aria-hidden=true]{transform:translateY(calc(-50% - 4px))scale(.98)}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-menu__header{flex-wrap:wrap}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-menu__header .vot-segmented-button__menu-header:has(>:nth-child(2)){margin-left:inherit}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-menu__body{max-height:275px}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-langpair-select{gap:var(--vot-space-1);flex-direction:column}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-langpair-select__icon{transform:rotate(90deg)}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-select{justify-content:start;gap:var(--vot-space-1);flex-direction:column;align-items:start;width:100%}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-select-outer{justify-content:space-around;width:100%;max-width:100%}.vot-overlay.vot-overlay__segmented-button-menu[data-vertical]:not([data-position=default])>.vot-menu .vot-select-outer__title{min-width:0;max-width:120px}@property --vot-subtitles-opacity{syntax:\"<number>\";inherits:true;initial-value:.8}@property --vot-subtitles-scale-compensation{syntax:\"<number>\";inherits:true;initial-value:1}.vot-subtitles{--vot-subtitles-background:rgba(var(--vot-surface-rgb,46, 47, 52), var(--vot-subtitles-opacity,.8));--vot-subtitles-effective-max-width:var(--vot-subtitles-max-width,var(--vot-subtitles-smart-max-width,70vw));max-width:var(--vot-subtitles-effective-max-width);max-inline-size:var(--vot-subtitles-effective-max-width);background:var(--vot-subtitles-background,#2e2f34cc);width:max-content;inline-size:max-content;color:var(--vot-subtitles-color,#e3e3e3);pointer-events:all;touch-action:none;font-size:calc(var(--vot-subtitles-font-size,clamp(18px, var(--vot-subtitles-smart-font-preferred,2.2vw), 50px)) * var(--vot-subtitles-scale-compensation,1));-webkit-text-stroke:var(--vot-subtitles-text-stroke-width,clamp(1px, .08em, 2px)) var(--vot-subtitles-text-stroke-color,#000000eb);paint-order:stroke fill;text-shadow:var(--vot-subtitles-text-shadow,0 1px 2px #00000073, 0 2px 8px #00000040);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-synthesis:none;position:relative;--vot-subtitles-font-family:var(--vot-subtitles-font-family-custom,var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif))!important;font-family:var(--vot-subtitles-font-family)!important;font-style:normal!important;font-weight:var(--vot-subtitles-font-weight,500)!important;text-transform:none!important;letter-spacing:normal!important;border-radius:.5em!important;padding:.5em .75em!important;line-height:1.25!important}.vot-subtitles,.vot-subtitles *{-webkit-text-stroke:inherit;paint-order:inherit;font-family:var(--vot-subtitles-font-family)!important}.vot-subtitles{box-sizing:border-box;user-select:none;contain:layout paint;isolation:isolate;text-align:center;text-wrap:balance;white-space:normal;overflow-wrap:anywhere;unicode-bidi:plaintext;margin:0 auto;display:block}.vot-subtitles-widget{--vot-subtitles-anchor-width:100vw;--vot-subtitles-anchor-height:100vh;--vot-subtitles-effective-max-width:var(--vot-subtitles-max-width,var(--vot-subtitles-smart-max-width,70vw));--vot-subtitles-smart-target-width:48ch;--vot-subtitles-smart-min-width-ratio:.62;--vot-subtitles-smart-max-width-ratio:.78;--vot-subtitles-smart-font-preferred:calc(var(--vot-subtitles-anchor-height) * .0333);--vot-subtitles-smart-max-width:clamp(calc(var(--vot-subtitles-anchor-width) * var(--vot-subtitles-smart-min-width-ratio)), var(--vot-subtitles-smart-target-width), calc(var(--vot-subtitles-anchor-width) * var(--vot-subtitles-smart-max-width-ratio)));box-sizing:border-box;z-index:2147483647;--vot-subtitles-fallback-bottom-inset:calc(env(safe-area-inset-bottom,0px) + clamp(56px, 10vh, 220px) + 10px);left:50%;top:calc(100% - var(--vot-subtitles-fallback-bottom-inset));width:max-content;inline-size:max-content;max-width:var(--vot-subtitles-effective-max-width);max-inline-size:var(--vot-subtitles-effective-max-width);pointer-events:none;will-change:left, top, transform;max-height:100%;display:block;position:absolute;transform:translate(-50%,-100%)}.vot-subtitles-info{color:#f5f7fa;-webkit-backdrop-filter:blur(18px);text-align:start;background:#1f2023f5;border:1px solid #ffffff14;flex-direction:column;gap:10px;min-width:min(360px,100vw - 32px);max-width:min(720px,100vw - 32px);display:flex;box-shadow:0 18px 48px #00000057,0 4px 16px #00000038;border-radius:18px!important;padding:18px 22px 20px!important}.vot-subtitles-info-service{display:none!important}.vot-subtitles-info-title{letter-spacing:-.01em;align-items:baseline;gap:8px;min-width:0;max-width:100%;display:flex;font-size:clamp(18px,2.4vw,26px)!important;line-height:1.18!important}.vot-subtitles-info-source,.vot-subtitles-info-divider,.vot-subtitles-info-header,.vot-subtitles-info-context{overflow-wrap:anywhere;white-space:normal!important}.vot-subtitles-info-source{color:#f5f7faad;flex:0 auto;font-weight:650!important}.vot-subtitles-info-divider{color:#f5f7fa61;flex:none;font-weight:500!important}.vot-subtitles-info-header{color:#fff;flex:auto;min-width:0;font-weight:750!important}.vot-subtitles-info-context{color:#dee4ecb8;max-width:100%;font-size:clamp(14px,1.45vw,17px)!important;line-height:1.42!important}.vot-subtitles span[data-vot-highlight-index].passed{color:var(--vot-subtitles-passed-color,#8bb4f5)}.vot-subtitles span[data-vot-token=\"1\"]{cursor:pointer;white-space:normal;overflow-wrap:inherit;word-break:normal;position:relative;font-size:inherit!important;font-family:inherit!important;font-style:inherit!important;font-weight:inherit!important;line-height:inherit!important;text-transform:inherit!important;text-decoration:none!important}.vot-subtitles span[data-vot-token=\"1\"]:before{content:\"\";z-index:-1;position:absolute;inset:2px -2px;border-radius:4px!important}.vot-subtitles span[data-vot-token=\"1\"]:hover:before,.vot-subtitles span[data-vot-token=\"1\"]:focus-visible:before{background:var(--vot-subtitles-hover-color,#ffffff8c)}.vot-subtitles span[data-vot-token=\"1\"].selected:before{background:var(--vot-subtitles-passed-color,#8bb4f5)}.vot-subtitles span[data-vot-token=\"1\"].passed.selected:before{background:rgba(var(--vot-primary-rgb,139, 180, 245), .4)}.vot-subtitles span[data-vot-token=\"1\"].passed:hover:before{background:rgba(var(--vot-primary-rgb,139, 180, 245), .3)}.vot-subtitles span[data-vot-style-italic=\"1\"]{font-style:italic!important}.vot-subtitles span[data-vot-style-bold=\"1\"]{font-weight:700!important}.vot-subtitles span[data-vot-style-underline=\"1\"]{text-decoration:underline!important}.vot-subtitles span[data-vot-style-color=\"1\"]{color:var(--vot-subtitles-inline-color)!important}.vot-subtitles-layer{pointer-events:none;z-index:2147483647;contain:layout paint;width:100vw!important;height:100vh!important;position:fixed!important;inset:0!important}.vot-subtitles-guides{pointer-events:none;z-index:2147483646;position:absolute;inset:0}.vot-subtitles-guide{background:rgba(var(--vot-primary-rgb,33, 150, 243), .7);box-shadow:0 0 0 1px rgba(var(--vot-primary-rgb,33, 150, 243), .12);opacity:0;transition:opacity .12s linear;position:absolute}.vot-subtitles-guide[data-visible=true]{opacity:1}.vot-subtitles-guide--vertical{width:2px;transform:translate(-50%)}.vot-subtitles-guide--horizontal{height:2px;transform:translateY(-50%)}@media (aspect-ratio<=1){.vot-subtitles-widget{--vot-subtitles-smart-target-width:28ch;--vot-subtitles-smart-min-width-ratio:.8;--vot-subtitles-smart-max-width-ratio:.92;--vot-subtitles-smart-font-preferred:calc(var(--vot-subtitles-anchor-height) * .0296)}}@media (aspect-ratio>=1) and (aspect-ratio<=7/5){.vot-subtitles-widget{--vot-subtitles-smart-target-width:32ch;--vot-subtitles-smart-min-width-ratio:.55;--vot-subtitles-smart-max-width-ratio:.9;--vot-subtitles-smart-font-preferred:calc(var(--vot-subtitles-anchor-height) * .0333)}}@media (width<=900px) and (pointer:coarse){.vot-subtitles-widget{--vot-subtitles-fallback-bottom-inset:env(safe-area-inset-bottom,0px)}}@media (prefers-contrast:more){.vot-subtitles{--vot-subtitles-background:rgba(var(--vot-surface-rgb,46, 47, 52), .92);--vot-subtitles-text-stroke-width:max(2px, .1em);--vot-subtitles-text-shadow:0 2px 10px #0000008c}}:is(:fullscreen .vot-subtitles-widget,:fullscreen .vot-subtitles-widget){--vot-subtitles-smart-max-width-ratio:.8}:is(:fullscreen .vot-subtitles,:fullscreen .vot-subtitles){font-size:calc(var(--vot-subtitles-font-size,clamp(18px, var(--vot-subtitles-smart-font-preferred,2vw), 50px)) * var(--vot-subtitles-fullscreen-scale,1) * .95 * var(--vot-subtitles-scale-compensation,1))}#vot-subtitles-info.vot-subtitles-info *{user-select:text!important}.vot-or-block{--vot-or-block-line:rgba(var(--vot-primary-rgb,139, 180, 245), .5);color:rgb(var(--vot-primary-rgb));align-items:center;gap:12px;font-size:.75em;font-weight:600;display:flex}.vot-or-block:before,.vot-or-block:after{background:var(--vot-or-block-line);content:\"\";flex:1;height:1px}.vot-menu{--vot-helper-surface-rgb:var(--vot-surface-rgb,255, 255, 255);--vot-helper-surface:rgb(var(--vot-helper-surface-rgb));--vot-helper-onsurface-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-onsurface:rgba(var(--vot-helper-onsurface-rgb), .87);background:var(--vot-helper-surface);color:var(--vot-helper-onsurface);width:fit-content;min-width:min(320px, 100% - var(--vot-menu-side-offset,0px));max-width:min(90vw,560px);min-height:100px;max-height:calc(var(--vot-container-height,75vh) - var(--vot-overlay-default-top,0px) - 16px);flex-direction:column;font-size:16px;line-height:1.5;display:flex;overflow:auto;border:1px solid var(--vot-border-color)!important;border-radius:var(--vot-radius-m)!important;box-shadow:var(--vot-shadow-2)!important;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important}.vot-menu__header{align-items:center;gap:var(--vot-space-2);flex-shrink:0;min-height:32px;display:flex;padding:var(--vot-space-2) var(--vot-space-4)!important}.vot-menu__body{box-sizing:border-box;gap:var(--vot-space-2);overscroll-behavior:contain;flex-direction:column;min-height:1.375rem;display:flex;overflow:auto;padding:0 var(--vot-space-4)!important;scrollbar-color:rgba(var(--vot-helper-onsurface-rgb), .1) var(--vot-helper-surface)!important}.vot-menu__body::-webkit-scrollbar{background:var(--vot-helper-surface)!important;width:12px!important;height:12px!important}.vot-menu__body::-webkit-scrollbar-track{background:var(--vot-helper-surface)!important;width:12px!important;height:12px!important}.vot-menu__body::-webkit-scrollbar-thumb{border-radius:1ex;background:rgba(var(--vot-helper-onsurface-rgb), .1)!important;border:5px solid var(--vot-helper-surface)!important}.vot-menu__body::-webkit-scrollbar-thumb:hover{border-width:3px!important}.vot-menu__body::-webkit-scrollbar-corner{background:var(--vot-helper-surface)!important}.vot-menu__footer{flex-shrink:0;justify-content:flex-end;display:flex;padding:var(--vot-space-4)!important}.vot-menu__footer:empty{padding:var(--vot-space-4) 0 0 0!important}.vot-tooltip{--vot-helper-theme-rgb:var(--vot-onsurface-rgb,0, 0, 0);--vot-helper-theme:rgba(var(--vot-helper-theme-rgb), .87);--vot-helper-border:rgb(var(--vot-tooltip-border,69, 69, 69));user-select:none;background:rgb(var(--vot-surface-rgb,255, 255, 255));color:var(--vot-helper-theme);fill:var(--vot-helper-theme);font-family:var(--vot-font-family);cursor:default;z-index:2147483647;overflow-wrap:anywhere;white-space:normal;opacity:0;align-items:center;width:max-content;max-width:calc(100vw - 10px);height:max-content;font-size:14px;line-height:1.5;transition:opacity .5s;display:flex;position:absolute;inset:0;overflow:hidden;box-shadow:0 1px 3px #0000001f;border-radius:4px!important;padding:4px 8px!important}.vot-tooltip[data-trigger=hover]:not([data-mode=follow]){pointer-events:none}.vot-tooltip[data-trigger=click]{user-select:text}.vot-tooltip[data-mode=follow]{pointer-events:auto;user-select:text;align-items:stretch}.vot-tooltip[data-mode=follow],.vot-tooltip[data-mode=follow] *{user-select:text!important}.vot-tooltip.vot-tooltip-bordered{border:1px solid var(--vot-helper-border)}.vot-tooltip *{box-sizing:border-box!important;font-family:inherit!important}.vot-tooltip.vot-tooltip--subtitles-info{overflow:visible;box-shadow:none!important;background:0 0!important;border-radius:18px!important;padding:0!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info{flex-direction:column;gap:8px;width:max-content;max-width:min(420px,100vw - 24px);display:flex;color:#ffffffeb!important;letter-spacing:0!important;background:#1f2024f5!important;border:1px solid #ffffff14!important;border-radius:16px!important;padding:14px 16px!important;font-size:13px!important;line-height:1.35!important;box-shadow:0 12px 30px #00000047,0 2px 6px #00000038!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-title{flex-wrap:wrap;align-items:center;gap:6px;min-width:0;display:flex;font-size:15px!important;font-weight:600!important;line-height:1.35!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-source{overflow-wrap:anywhere;color:#fffffff0!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-divider{color:#ffffff6b!important;font-weight:500!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-header{overflow-wrap:anywhere;color:rgb(var(--vot-primary-rgb,255, 83, 151))!important}.vot-tooltip.vot-tooltip--subtitles-info .vot-subtitles-info-context{overflow-wrap:anywhere;max-width:100%;color:#ffffffad!important;font-size:13px!important;font-weight:400!important;line-height:1.45!important}.vot-overlay{--vot-overlay-default-top:0;user-select:none;width:fit-content;max-width:100vw;right:auto;top:var(--vot-overlay-default-top);z-index:2147483646;font-size:16px;line-height:1.5;position:absolute;overflow:hidden;font-family:var(--vot-font-family,\"Roboto\", \"Segoe UI\", system-ui, sans-serif)!important}.vot-overlay[aria-hidden=true]{pointer-events:none;opacity:0;display:none;visibility:hidden!important}");
 	var sharedShadowStyleSheet = null;
 	var sharedShadowStyleSheetReady = false;
 	function scopeCssForShadowRoots(cssText) {
@@ -40931,6 +40275,21 @@ var vot = (function(exports) {
 			}
 		});
 	}
+	// src/videoHandler/volumePreferences.ts
+	function normalizeTranslationOffset(value) {
+		return Number.isFinite(value) ? Math.round(Math.max(-10, Math.min(100, value)) / 5) * 5 : 0;
+	}
+	function isFixedVolumeLink(data) {
+		return Boolean(data?.syncVolume && normalizeTranslationOffset(data.translationVolumeOffset ?? 0) !== 0);
+	}
+	function migrateVolumePreferences(data) {
+		const mode = data.autoVolumeMode;
+		return {
+			autoVolumeMode: mode === "once" || mode === "hold" || mode === "adaptive" ? mode : data.enabledSmartDucking === false ? "once" : "adaptive",
+			translationVolumeOffset: data.volumeLinkMode === "delta" ? 0 : normalizeTranslationOffset(data.translationVolumeOffset ?? 0),
+			muteTranslationWithOriginal: data.muteTranslationWithOriginal ?? true
+		};
+	}
 	// src/components/Button/IconButton.tsx
 	function IconButton(props) {
 		const [local, rest] = splitProps(props, ["ariaLabel", "buttonProps"]);
@@ -41639,6 +40998,94 @@ var vot = (function(exports) {
 			return _el$;
 		})();
 	}
+	// src/localization/fork.ts
+	var en = {
+		quickAutoVolume: "✨ Reduce",
+		quickSyncVolume: "✨ Link",
+		quickAudioBooster: "✨ Boost",
+		autoVolumeMode: "✨ Reduction mode",
+		autoVolumeOnce: "✨ Once",
+		autoVolumeHold: "✨ Hold limit",
+		autoVolumeAdaptive: "✨ Adaptive",
+		autoVolumeModeDescription: "Once lowers the original at translation start; Hold keeps the selected level; Adaptive lowers it only during translated speech.",
+		translationVolumeOffset: "✨ Translation volume offset (percentage points)",
+		translationVolumeOffsetDescription: "0 keeps the current relative gap (classic linking). Any other value sets a fixed offset. Numeric entries round to the nearest 5 points.",
+		muteTranslationWithOriginal: "✨ Mute translation with the original",
+		muteTranslationWithOriginalDescription: "Silence translation when the original is muted or its volume is zero."
+	};
+	var ru = {
+		quickAutoVolume: "✨ Снижение",
+		quickSyncVolume: "✨ Связка",
+		quickAudioBooster: "✨ Усиление",
+		autoVolumeMode: "✨ Режим снижения громкости",
+		autoVolumeOnce: "✨ Однократно",
+		autoVolumeHold: "✨ Удерживать лимит",
+		autoVolumeAdaptive: "✨ Адаптивно",
+		autoVolumeModeDescription: "Однократно — снизить оригинал при запуске перевода; удерживать — сохранять выбранный уровень; адаптивно — снижать только во время речи перевода.",
+		translationVolumeOffset: "✨ Смещение громкости перевода (процентные пункты)",
+		translationVolumeOffsetDescription: "0 сохраняет текущую разницу громкостей (обычная связка). Другое значение задаёт постоянное смещение. Число округляется до ближайших 5 п.п.",
+		muteTranslationWithOriginal: "✨ Выключать перевод вместе с оригиналом",
+		muteTranslationWithOriginalDescription: "Отключать звук перевода, когда оригинал заглушён или его громкость равна нулю."
+	};
+	function forkT(key) {
+		return localizationProvider.lang.split("-")[0] === "ru" ? ru[key] : en[key];
+	}
+	// src/components/SegmentedButton/VolumeQuickControls.tsx
+	function VolumeQuickControls(props) {
+		return (() => {
+			var _el$ = createElement("vot-block");
+			setProp(_el$, "class", "vot-volume-quick");
+			insert(_el$, createComponent(RawButton, {
+				"class": "vot-volume-quick__button",
+				get disabled() {
+					return !props.onVolumePreferenceChange;
+				},
+				get buttonProps() {
+					return {
+						"aria-label": `✨ ${t$1("VOTAutoReduceVolume")}`,
+						"aria-pressed": settings.enabledAutoVolume
+					};
+				},
+				onClick: () => props.onVolumePreferenceChange?.("enabledAutoVolume", !settings.enabledAutoVolume),
+				get children() {
+					return forkT("quickAutoVolume");
+				}
+			}), null);
+			insert(_el$, createComponent(RawButton, {
+				"class": "vot-volume-quick__button",
+				get disabled() {
+					return !props.onVolumePreferenceChange;
+				},
+				get buttonProps() {
+					return {
+						"aria-label": `✨ ${t$1("VOTSyncVolume")}`,
+						"aria-pressed": settings.syncVolume
+					};
+				},
+				onClick: () => props.onVolumePreferenceChange?.("syncVolume", !settings.syncVolume),
+				get children() {
+					return forkT("quickSyncVolume");
+				}
+			}), null);
+			insert(_el$, createComponent(RawButton, {
+				"class": "vot-volume-quick__button",
+				get disabled() {
+					return !props.onVolumePreferenceChange || !props.isAudioContextSupported || settings.syncVolume;
+				},
+				get buttonProps() {
+					return {
+						"aria-label": `✨ ${t$1("VOTAudioBooster")}`,
+						"aria-pressed": settings.audioBooster
+					};
+				},
+				onClick: () => props.onVolumePreferenceChange?.("audioBooster", !settings.audioBooster),
+				get children() {
+					return forkT("quickAudioBooster");
+				}
+			}), null);
+			return _el$;
+		})();
+	}
 	// src/components/SegmentedButton/SegmentedButtonMenu.tsx
 	function MenuHeaderContent(props) {
 		const finalProps = mergeProps$1({
@@ -41876,6 +41323,14 @@ var vot = (function(exports) {
 							return t$1("VOTSubtitles");
 						}
 					}),
+					createComponent(VolumeQuickControls, {
+						get isAudioContextSupported() {
+							return finalProps.isAudioContextSupported;
+						},
+						get onVolumePreferenceChange() {
+							return finalProps.onVolumePreferenceChange;
+						}
+					}),
 					createComponent(Show, {
 						get when() {
 							return memo(() => finalProps.buttonStatus === "success")() && settings.showVideoSlider;
@@ -41911,6 +41366,9 @@ var vot = (function(exports) {
 									get value() {
 										return translationVolumeText();
 									},
+									get disabled() {
+										return isFixedVolumeLink(settings);
+									},
 									get children() {
 										return t$1("VOTVolumeTranslation");
 									}
@@ -41921,7 +41379,11 @@ var vot = (function(exports) {
 									get value() {
 										return translationVolume();
 									},
+									get disabled() {
+										return isFixedVolumeLink(settings);
+									},
 									onInput: (value) => {
+										if (isFixedVolumeLink(settings)) return;
 										setTranslationVolume(value);
 										setSettings("defaultVolume", value);
 										finalProps.onTranslationVolumeInput?.(value);
@@ -43191,6 +42653,12 @@ var vot = (function(exports) {
 				get videoVolume() {
 					return finalProps.videoVolume;
 				},
+				get isAudioContextSupported() {
+					return finalProps.isAudioContextSupported;
+				},
+				get onVolumePreferenceChange() {
+					return finalProps.onVolumePreferenceChange;
+				},
 				get translationVolume() {
 					return settings.defaultVolume;
 				},
@@ -43358,6 +42826,10 @@ var vot = (function(exports) {
 				detectedLanguage: this.videoHandler?.videoData?.detectedLanguage,
 				responseLanguage: this.data.responseLanguage,
 				videoVolume,
+				isAudioContextSupported: this.videoHandler?.isAudioContextSupported,
+				onVolumePreferenceChange: (key, checked) => {
+					this.videoHandler?.uiManager.votSettingsView?.setVolumePreference(key, checked);
+				},
 				selectMount: this.globalPortal ? () => this.globalPortal?.isConnected ? this.globalPortal : void 0 : void 0,
 				onButtonDragActivity: (source) => this.intervalIdleChecker.markActivity(source),
 				onButtonDragEnd: () => this.queueButtonAutoHideAfterInteraction(),
@@ -43537,7 +43009,7 @@ var vot = (function(exports) {
 	function createDefaultUpdaterInfo() {
 		return {
 			checkedAt: 0,
-			remoteVersion: "1.12.6"
+			remoteVersion: "1.12.6.1"
 		};
 	}
 	var [updaterInfo, setUpdaterInfo] = createStore(createDefaultUpdaterInfo());
@@ -43553,7 +43025,7 @@ var vot = (function(exports) {
 	function canCheckUpdate() {
 		return Date.now() - updaterInfo.checkedAt >= UPDATE_CHECK_INTERVAL;
 	}
-	var getAvailableUpdate = (version) => compareVersions(version, "1.12.6") > 0 ? version : false;
+	var getAvailableUpdate = (version) => compareVersions(version, "1.12.6.1") > 0 ? version : false;
 	async function checkUpdate() {
 		if (!canCheckUpdate()) return getAvailableUpdate(updaterInfo.remoteVersion);
 		let remoteVersion;
@@ -43603,7 +43075,7 @@ var vot = (function(exports) {
 		const envInfo = getEnvironmentInfo();
 		const safeGMInfo = getGMInfo();
 		const scriptVersion = envInfo.scriptVersion === "unknown" ? safeGMInfo?.script?.version || t$1("notFound") : envInfo.scriptVersion;
-		const buildAuthors = String("Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng");
+		const buildAuthors = String("Toil, SashaXser, MrSoczekXD, mynovelhost, sodapng; xtalia (fork maintainer); Hermes Agent (Nous Research), using OpenAI models (AI assistance)");
 		const scriptAuthors = (safeGMInfo?.script)?.author || buildAuthors || t$1("notFound");
 		const browserInfo = `${envInfo.browser} (${envInfo.os})`;
 		const localeUpdatedAt = () => locale.updatedAt > 0 ? formatDateTime(locale.updatedAt, localizationProvider.lang) : void 0;
@@ -44950,6 +44422,89 @@ var vot = (function(exports) {
 			}
 		});
 	}
+	// src/components/Settings/VolumeOffsetControl.tsx
+	var formatOffset = (value) => value > 0 ? `+${value}` : String(value);
+	function VolumeOffsetControl(props) {
+		const [draft, setDraft] = createSignal(formatOffset(props.value));
+		const [editing, setEditing] = createSignal(false);
+		const descriptionId = createUniqueId();
+		let sliderRoot;
+		createEffect(() => {
+			if (!editing()) setDraft(formatOffset(props.value));
+		});
+		onMount(() => {
+			const input = sliderRoot?.querySelector("input");
+			input?.setAttribute("aria-label", forkT("translationVolumeOffset"));
+			input?.setAttribute("aria-describedby", descriptionId);
+		});
+		const updateFromText = (text) => {
+			setEditing(true);
+			setDraft(text);
+			if (/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(text.trim())) {
+				const value = Number(text);
+				if (Number.isFinite(value)) props.onInput(normalizeTranslationOffset(value));
+			}
+		};
+		const finishEditing = () => {
+			setEditing(false);
+			setDraft(formatOffset(props.value));
+		};
+		return (() => {
+			var _el$ = createElement("vot-block"), _el$2 = createElement("vot-block");
+			insertNode(_el$, _el$2);
+			setProp(_el$, "class", "vot-volume-offset");
+			insert(_el$, createComponent(SliderWrapper, { get children() {
+				return [createComponent(SliderLabel, {
+					get value() {
+						return formatOffset(props.value);
+					},
+					get disabled() {
+						return props.disabled;
+					},
+					get children() {
+						return forkT("translationVolumeOffset");
+					}
+				}), createComponent(Slider, {
+					ref: (element) => {
+						sliderRoot = element;
+					},
+					min: -10,
+					max: 100,
+					step: 5,
+					get value() {
+						return props.value;
+					},
+					get disabled() {
+						return props.disabled;
+					},
+					onInput: (value) => props.onInput(normalizeTranslationOffset(value))
+				})];
+			} }), _el$2);
+			insert(_el$, createComponent(Textfield, {
+				get labelText() {
+					return forkT("translationVolumeOffset");
+				},
+				get value() {
+					return draft();
+				},
+				get disabled() {
+					return props.disabled;
+				},
+				inputRef: (element) => {
+					element.inputMode = "decimal";
+					element.setAttribute("aria-describedby", descriptionId);
+					element.addEventListener("blur", finishEditing);
+					onCleanup(() => element.removeEventListener("blur", finishEditing));
+				},
+				onInput: updateFromText,
+				onChange: finishEditing
+			}), _el$2);
+			setProp(_el$2, "id", descriptionId);
+			setProp(_el$2, "class", "vot-select-label__description");
+			insert(_el$2, () => forkT("translationVolumeOffsetDescription"));
+			return _el$;
+		})();
+	}
 	// src/components/Settings/SettingsTranslationSection.tsx
 	function SettingsTranslationSection(props) {
 		const finalProps = mergeProps$1({
@@ -44965,6 +44520,8 @@ var vot = (function(exports) {
 			label: t$1(`services.${service}`),
 			value: service
 		}));
+		const muteLabelId = createUniqueId();
+		const muteDescriptionId = createUniqueId();
 		const autoVolumeText = () => `${settings.enabledSmartDucking ? settings.smartDuckingStrength : settings.autoVolume}%`;
 		const useAudioDownloadDescription = () => isSupportGMXhr ? t$1("VOTUseAudioDownloadWarning") : `${t$1("VOTUseAudioDownloadWarning")}. ${t$1("VOTNotSupportedByLoader")}`;
 		return createComponent(SettingsSection, {
@@ -45049,7 +44606,7 @@ var vot = (function(exports) {
 					}),
 					createComponent(Switch, {
 						get heading() {
-							return t$1("VOTAutoReduceVolume");
+							return `✨ ${t$1("VOTAutoReduceVolume")}`;
 						},
 						get checked() {
 							return settings.enabledAutoVolume;
@@ -45057,6 +44614,56 @@ var vot = (function(exports) {
 						onChange: (checked) => {
 							setSettings("enabledAutoVolume", checked);
 							finalProps.onEnabledAutoVolumeChange?.(checked);
+						}
+					}),
+					createComponent(Show, {
+						get when() {
+							return settings.enabledAutoVolume;
+						},
+						get children() {
+							var _el$ = createElement("vot-block");
+							setProp(_el$, "class", "vot-volume-mode");
+							insert(_el$, createComponent(Select, {
+								get title() {
+									return forkT("autoVolumeMode");
+								},
+								search: false,
+								get options() {
+									return [
+										{
+											value: "once",
+											label: forkT("autoVolumeOnce")
+										},
+										{
+											value: "hold",
+											label: forkT("autoVolumeHold")
+										},
+										{
+											value: "adaptive",
+											label: forkT("autoVolumeAdaptive"),
+											disabled: settings.syncVolume
+										}
+									];
+								},
+								get selectedValue() {
+									return settings.autoVolumeMode;
+								},
+								onSelect: (option) => {
+									const mode = option.value;
+									setSettings("autoVolumeMode", mode);
+									setSettings("enabledSmartDucking", mode === "adaptive");
+									finalProps.onAutoVolumeModeSelect?.(mode);
+								},
+								get children() {
+									return [memo(() => forkT("autoVolumeMode")), (() => {
+										var _el$2 = createElement("vot-block");
+										setProp(_el$2, "class", "vot-select-label__description");
+										insert(_el$2, () => forkT("autoVolumeModeDescription"));
+										return _el$2;
+									})()];
+								}
+							}));
+							return _el$;
 						}
 					}),
 					createComponent(SliderWrapper, { get children() {
@@ -45090,24 +44697,6 @@ var vot = (function(exports) {
 					} }),
 					createComponent(Switch, {
 						get heading() {
-							return t$1("smartDucking");
-						},
-						get description() {
-							return localizationProvider.get("VOTIncompatibleWith").replace("{0}", t$1("VOTSyncVolume"));
-						},
-						get disabled() {
-							return settings.syncVolume || !settings.enabledAutoVolume;
-						},
-						get checked() {
-							return settings.enabledSmartDucking;
-						},
-						onChange: (checked) => {
-							setSettings("enabledSmartDucking", checked);
-							finalProps.onEnabledSmartDuckingChange?.(checked);
-						}
-					}),
-					createComponent(Switch, {
-						get heading() {
 							return t$1("showVideoVolumeSlider");
 						},
 						get checked() {
@@ -45129,7 +44718,7 @@ var vot = (function(exports) {
 							return settings.audioBooster;
 						},
 						get disabled() {
-							return !finalProps.isAudioContextSupported;
+							return settings.syncVolume || !finalProps.isAudioContextSupported;
 						},
 						onChange: (checked) => {
 							setSettings("audioBooster", checked);
@@ -45138,7 +44727,7 @@ var vot = (function(exports) {
 					}),
 					createComponent(Switch, {
 						get heading() {
-							return t$1("VOTSyncVolume");
+							return `✨ ${t$1("VOTSyncVolume")}`;
 						},
 						get description() {
 							return t$1("VOTIncompatibleWith").replace("{0}", t$1("smartDucking"));
@@ -45148,13 +44737,50 @@ var vot = (function(exports) {
 						},
 						onChange: (checked) => {
 							setSettings("syncVolume", checked);
-							if (checked) {
+							if (checked && settings.autoVolumeMode === "adaptive") {
+								setSettings("autoVolumeMode", "hold");
 								setSettings("enabledSmartDucking", false);
-								finalProps.onEnabledSmartDuckingChange?.(checked);
 							}
 							finalProps.onSyncVolumeChange?.(checked);
 						}
 					}),
+					createComponent(VolumeOffsetControl, {
+						get value() {
+							return settings.translationVolumeOffset;
+						},
+						get disabled() {
+							return !settings.syncVolume;
+						},
+						onInput: (value) => {
+							setSettings("translationVolumeOffset", value);
+							finalProps.onTranslationVolumeOffsetInput?.(value);
+						}
+					}),
+					(() => {
+						var _el$3 = createElement("label"), _el$4 = createElement("input"), _el$5 = createElement("vot-block"), _el$6 = createElement("vot-block"), _el$7 = createElement("vot-block");
+						insertNode(_el$3, _el$4);
+						insertNode(_el$3, _el$5);
+						setProp(_el$3, "class", "vot-switch");
+						setProp(_el$4, "type", "checkbox");
+						setProp(_el$4, "aria-labelledby", muteLabelId);
+						setProp(_el$4, "aria-describedby", muteDescriptionId);
+						setProp(_el$4, "onChange", (event) => {
+							const checked = event.currentTarget.checked;
+							setSettings("muteTranslationWithOriginal", checked);
+							finalProps.onMuteTranslationWithOriginalChange?.(checked);
+						});
+						insertNode(_el$5, _el$6);
+						insertNode(_el$5, _el$7);
+						setProp(_el$5, "class", "vot-switch-text");
+						setProp(_el$6, "class", "vot-switch-heading");
+						setProp(_el$6, "id", muteLabelId);
+						insert(_el$6, () => forkT("muteTranslationWithOriginal"));
+						setProp(_el$7, "class", "vot-switch-description");
+						setProp(_el$7, "id", muteDescriptionId);
+						insert(_el$7, () => forkT("muteTranslationWithOriginalDescription"));
+						effect((_$p) => setProp(_el$4, "checked", settings.muteTranslationWithOriginal, _$p));
+						return _el$3;
+					})(),
 					createComponent(Switch, {
 						get heading() {
 							return t$1("VOTDownloadWithName");
@@ -45217,10 +44843,10 @@ var vot = (function(exports) {
 								memo(() => t$1("VOTTranslationTextService")),
 								createElement("br"),
 								(() => {
-									var _el$2 = createElement("vot-block");
-									setProp(_el$2, "class", "vot-select-label__description");
-									insert(_el$2, () => t$1("VOTNotAffectToVoice"));
-									return _el$2;
+									var _el$9 = createElement("vot-block");
+									setProp(_el$9, "class", "vot-select-label__description");
+									insert(_el$9, () => t$1("VOTNotAffectToVoice"));
+									return _el$9;
 								})()
 							];
 						}
@@ -45410,6 +45036,28 @@ var vot = (function(exports) {
 			updateAccount(this.data.account);
 			this.updateAccountInfo();
 		}
+		setVolumePreference(key, checked) {
+			this.createPersistedSettingHandler({
+				storageKey: key,
+				apply: () => {
+					setSettings(key, checked);
+					if (key === "syncVolume" && checked && this.data.autoVolumeMode === "adaptive") {
+						this.data.autoVolumeMode = "hold";
+						this.data.enabledSmartDucking = false;
+						setSettings("autoVolumeMode", "hold");
+						setSettings("enabledSmartDucking", false);
+						votStorage.set("autoVolumeMode", "hold");
+						votStorage.set("enabledSmartDucking", false);
+					}
+					if (key === "syncVolume") this.events["change:syncVolume"].dispatch(checked);
+					if (key === "audioBooster") this.events["change:audioBooster"].dispatch(checked);
+					if (key !== "audioBooster") {
+						this.videoHandler?.setupAudioSettings?.();
+						this.videoHandler?.refreshVolumeLink?.();
+					}
+				}
+			})(checked);
+		}
 		initUI() {
 			if (this.isInitialized()) throw new Error("[VOT] SettingsController is already initialized");
 			const getSettingsData = () => this.data;
@@ -45477,9 +45125,16 @@ var vot = (function(exports) {
 						}),
 						onDontTranslateLanguagesChange: this.createPersistedSettingHandler({ storageKey: "dontTranslateLanguages" }),
 						onDontTranslateByYTMusicChange: this.createPersistedSettingHandler({ storageKey: "dontTranslateByYTMusic" }),
-						onEnabledAutoVolumeChange: this.createPersistedSettingHandler({
-							storageKey: "enabledAutoVolume",
-							afterPersist: () => this.videoHandler?.setupAudioSettings?.()
+						onEnabledAutoVolumeChange: (checked) => this.setVolumePreference("enabledAutoVolume", checked),
+						onAutoVolumeModeSelect: this.createPersistedSettingHandler({
+							storageKey: "autoVolumeMode",
+							apply: (mode) => {
+								const smartDucking = mode === "adaptive" && !this.data.syncVolume;
+								this.data.enabledSmartDucking = smartDucking;
+								setSettings("enabledSmartDucking", smartDucking);
+								votStorage.set("enabledSmartDucking", smartDucking);
+								this.videoHandler?.setupAudioSettings?.();
+							}
 						}),
 						onAutoVolumeInput: this.createBufferedNumericInputHandler({
 							storageKey: "autoVolume",
@@ -45497,13 +45152,19 @@ var vot = (function(exports) {
 							storageKey: "showVideoSlider",
 							dispatch: (checked) => this.events["change:showVideoVolume"].dispatch(checked)
 						}),
-						onAudioBoosterChange: this.createPersistedSettingHandler({
-							storageKey: "audioBooster",
-							dispatch: (checked) => this.events["change:audioBooster"].dispatch(checked)
-						}),
-						onSyncVolumeChange: this.createPersistedSettingHandler({
-							storageKey: "syncVolume",
-							dispatch: (checked) => this.events["change:syncVolume"].dispatch(checked)
+						onAudioBoosterChange: (checked) => this.setVolumePreference("audioBooster", checked),
+						onSyncVolumeChange: (checked) => this.setVolumePreference("syncVolume", checked),
+						onTranslationVolumeOffsetInput: (value) => {
+							const normalized = normalizeTranslationOffset(value);
+							setSettings("translationVolumeOffset", normalized);
+							this.createBufferedNumericInputHandler({
+								storageKey: "translationVolumeOffset",
+								dispatch: () => this.videoHandler?.refreshVolumeLink?.()
+							})(normalized);
+						},
+						onMuteTranslationWithOriginalChange: this.createPersistedSettingHandler({
+							storageKey: "muteTranslationWithOriginal",
+							apply: () => this.videoHandler?.refreshVolumeLink?.()
 						}),
 						onDownloadWithNameChange: this.createPersistedSettingHandler({ storageKey: "downloadWithName" }),
 						onSendNotifyOnCompleteChange: this.createPersistedSettingHandler({ storageKey: "sendNotifyOnComplete" }),
@@ -45865,7 +45526,8 @@ var vot = (function(exports) {
 					this.videoHandler.onVideoVolumeSliderSynced(volume);
 					return;
 				}
-				this.videoHandler.syncVolumeWrapper("video", volume);
+				this.videoHandler.syncVideoVolumeSlider();
+				this.videoHandler.syncVolumeWrapper("video", this.videoHandler.isMuted() ? 0 : Math.round(this.videoHandler.getVideoVolume() * 100));
 			}).addEventListener("input:translationVolume", (volume) => {
 				if (!this.videoHandler) return;
 				const nextVolume = volume ?? this.data.defaultVolume ?? 100;
@@ -45915,14 +45577,9 @@ var vot = (function(exports) {
 				this.videoHandler?.syncTranslationPlaybackVolume();
 			}).addEventListener("change:syncVolume", (checked) => {
 				if (!this.videoHandler) return;
+				const controls = this.votOverlayView.overlayViewControls;
+				if (checked && controls) this.videoHandler.resetVolumeLinkState(Math.round(this.videoHandler.getVideoVolume() * 100), controls.getTranslationVolume());
 				this.videoHandler.setupAudioSettings();
-				const overlayViewControls = this.votOverlayView.overlayViewControls;
-				if (!overlayViewControls) return;
-				const nextTranslation = overlayViewControls.getTranslationVolume();
-				this.videoHandler.syncVolumeWrapper("translation", nextTranslation);
-				this.videoHandler.syncTranslationPlaybackVolume();
-				if (!checked) return;
-				this.videoHandler.resetVolumeLinkState(overlayViewControls.getVideoVolume(), nextTranslation);
 			}).addEventListener("change:subtitlesHighlightWords", (checked) => {
 				this.updateSubtitlesWidgetSetting(checked, this.data.highlightWords, (widget, value) => {
 					widget.setHighlightWords(value);
@@ -46302,6 +45959,53 @@ var vot = (function(exports) {
 			return getNowMs();
 		}
 	};
+	// src/videoHandler/autoVolumeLimit.ts
+	var states = new WeakMap();
+	var targetOf = (handler) => {
+		const configured = handler.data?.autoVolume;
+		return Math.round(Math.max(0, Math.min(100, typeof configured === "number" && Number.isFinite(configured) ? configured : 15))) / 100;
+	};
+	function stopAutoVolumeLimit(handler) {
+		const state = states.get(handler);
+		if (!state) return false;
+		states.delete(handler);
+		handler.setVideoVolume(state.baseline, { preserveYoutubeVolumeStorage: true });
+		return true;
+	}
+	function applyAutoVolumeLimit(handler) {
+		const mode = handler.data?.autoVolumeMode;
+		if (!handler.data?.enabledAutoVolume || !handler.hasActiveSource() || mode !== "hold" && mode !== "once") {
+			stopAutoVolumeLimit(handler);
+			return;
+		}
+		let state = states.get(handler);
+		const target = targetOf(handler);
+		if (!state) {
+			state = {
+				baseline: handler.getVideoVolume(),
+				target,
+				mode
+			};
+			states.set(handler, state);
+			handler.setVideoVolume(Math.min(state.baseline, target), { preserveYoutubeVolumeStorage: true });
+		} else if (state.target !== target || state.mode !== mode) {
+			state.target = target;
+			state.mode = mode;
+			handler.setVideoVolume(Math.min(handler.getVideoVolume(), target), { preserveYoutubeVolumeStorage: true });
+		}
+		if (mode === "hold") enforceAutoVolumeCeiling(handler);
+	}
+	function clampAutoVolumeRequest(handler, requested) {
+		if (!states.has(handler) || !handler.data?.enabledAutoVolume || handler.data.autoVolumeMode !== "hold" || !handler.hasActiveSource()) return requested;
+		return Math.min(requested, targetOf(handler));
+	}
+	function enforceAutoVolumeCeiling(handler) {
+		if (!states.has(handler) || !handler.data?.enabledAutoVolume || handler.data.autoVolumeMode !== "hold" || !handler.hasActiveSource()) return false;
+		const target = targetOf(handler);
+		if (handler.getVideoVolume() <= target + 1e-5) return false;
+		handler.setVideoVolume(target, { preserveYoutubeVolumeStorage: true });
+		return true;
+	}
 	// src/core/platformEvents.ts
 	var defaultPlatformConfig = {
 		allowTouchMoveHandler: true,
@@ -46627,12 +46331,13 @@ var vot = (function(exports) {
 	}
 	function stopSmartVolumeDucking(handler, options = {}) {
 		const { restoreVolume } = options;
+		const restoredLimit = stopAutoVolumeLimit(handler);
 		if (handler.smartVolumeDuckingInterval !== void 0) {
 			clearTimeout(handler.smartVolumeDuckingInterval);
 			handler.smartVolumeDuckingInterval = void 0;
 		}
 		const baseline = typeof restoreVolume === "number" ? restoreVolume : handler.smartVolumeDuckingBaseline ?? handler.volumeOnStart;
-		if (typeof baseline === "number" && (typeof restoreVolume === "number" || handler.smartVolumeIsDucked)) try {
+		if (!restoredLimit && typeof baseline === "number" && (handler.smartVolumeIsDucked || typeof handler.smartVolumeDuckingBaseline === "number")) try {
 			handler.setVideoVolume(baseline);
 		} catch {}
 		restoreAutoVolumeMute(handler);
@@ -46760,11 +46465,17 @@ var vot = (function(exports) {
 	}
 	function setupAudioSettings() {
 		if (typeof this.data?.defaultVolume === "number") safeSetPlayerVolume(this.audioPlayer.player, this.data.defaultVolume / 100);
+		if (this.data?.enabledAutoVolume && (this.data.autoVolumeMode === "once" || this.data.autoVolumeMode === "hold")) {
+			if (this.smartVolumeDuckingInterval !== void 0 || this.smartVolumeIsDucked) stopSmartVolumeDucking(this);
+			applyAutoVolumeLimit(this);
+			return;
+		}
 		const autoVolumeMode = getAutoVolumeMode(this);
 		if (autoVolumeMode === "off") {
 			stopSmartVolumeDucking(this, { restoreVolume: this.smartVolumeDuckingBaseline ?? this.volumeOnStart });
 			return;
 		}
+		stopAutoVolumeLimit(this);
 		if (!this.hasActiveSource()) return;
 		if (autoVolumeMode === "smart") {
 			restoreAutoVolumeMute(this);
@@ -46800,6 +46511,7 @@ var vot = (function(exports) {
 	}
 	function applyManualVideoVolumeOverride(volume01) {
 		if (!this.data?.enabledAutoVolume || !this.hasActiveSource()) return;
+		if (this.data.autoVolumeMode === "once" || this.data.autoVolumeMode === "hold") return;
 		const nextVolume = snapVolume01(volume01);
 		this.smartVolumeDuckingBaseline = nextVolume;
 		this.smartVolumeLastApplied = nextVolume;
@@ -47442,6 +47154,14 @@ var vot = (function(exports) {
 		return Number.isFinite(numeric) ? clampPercentInt(numeric) : fallback;
 	}
 	function syncAudioTranslationVolumeFromVideo(self, videoPercent, options = {}) {
+		if (enforceAutoVolumeCeiling(self)) {
+			self.syncVideoVolumeSlider();
+			videoPercent = Math.round(self.getVideoVolume() * 100);
+		}
+		if (self.data?.syncVolume && ((self.data.translationVolumeOffset ?? 0) !== 0 || (self.data.muteTranslationWithOriginal ?? true))) {
+			if (self.audioPlayer?.player?.src) self.syncVolumeWrapper("video", videoPercent);
+			return;
+		}
 		if (options.skipYouTubeLikeHosts && isYouTubeLikeHost(self.site.host)) return;
 		if (self.smartVolumeDuckingInterval !== void 0) return;
 		if (!self.data?.syncVolume || !self.audioPlayer?.player?.src) return;
@@ -47647,7 +47367,8 @@ var vot = (function(exports) {
 				debug.log("Failed to handle emptied lifecycle event", error);
 			});
 		});
-		if (!isMuteSyncDisabledHost(self.site.host)) add(self.video, "volumechange", () => {
+		add(self.video, "volumechange", () => {
+			if (isMuteSyncDisabledHost(self.site.host) && !enforceAutoVolumeCeiling(self)) return;
 			self.syncVideoVolumeSlider();
 			const overlayViewControls = self.uiManager.votOverlayView?.overlayViewControls;
 			if (!overlayViewControls) return;
@@ -47738,6 +47459,14 @@ var vot = (function(exports) {
 			this.data = await updateConfig(this.data);
 			await votStorage.set("compatVersion", actualCompatVersion);
 		}
+		const preferences = migrateVolumePreferences({
+			...this.data,
+			autoVolumeMode: await votStorage.getRaw("autoVolumeMode"),
+			volumeLinkMode: await votStorage.getRaw("volumeLinkMode")
+		});
+		Object.assign(this.data, preferences);
+		await Promise.all(Object.entries(preferences).map(([key, value]) => votStorage.setRaw(key, value)));
+		await votStorage.deleteRaw("volumeLinkMode");
 		updateAccount(this.data.account);
 		setLocale({
 			updatedAt: this.data.localeUpdatedAt,
@@ -48724,8 +48453,26 @@ var vot = (function(exports) {
 			max: clampPercentInt(Math.min(100, translationMax), min, 100)
 		};
 	}
-	function applyVolumeLinkDelta({ state, fromType, newVolume, currentVideo, currentTranslation, translationMin, translationMax }) {
+	function applyVolumeLinkDelta({ state, fromType, newVolume, currentVideo, currentTranslation, translationMin, translationMax, offsetPercent, muteTranslationWithOriginal = false, originalMuted = false }) {
 		const sharedTranslationRange = getSharedTranslationRange(translationMin, translationMax);
+		if (muteTranslationWithOriginal && (originalMuted || (fromType === "video" ? newVolume : currentVideo) === 0)) {
+			state.temporarilySilenced = true;
+			if (!state.initialized) {
+				state.lastVideoPercent = clampPercentInt(currentVideo);
+				state.lastTranslationPercent = clampPercentInt(currentTranslation);
+				state.initialized = true;
+			}
+			return { nextTranslation: 0 };
+		}
+		state.temporarilySilenced = false;
+		if (Number.isFinite(offsetPercent) && offsetPercent !== 0) {
+			const video = clampPercentInt(fromType === "video" ? newVolume : currentVideo);
+			const nextTranslation = clampInt(video + clampInt(offsetPercent ?? 0, -10, 100), sharedTranslationRange.min, sharedTranslationRange.max);
+			state.initialized = true;
+			state.lastVideoPercent = video;
+			state.lastTranslationPercent = nextTranslation;
+			return { nextTranslation };
+		}
 		if (!state.initialized) {
 			state.lastVideoPercent = clampPercentInt(currentVideo);
 			state.lastTranslationPercent = clampInt(Number(currentTranslation), sharedTranslationRange.min, sharedTranslationRange.max);
@@ -48745,6 +48492,37 @@ var vot = (function(exports) {
 		const nextVideo = clampPercentInt(state.lastVideoPercent + delta);
 		state.lastVideoPercent = nextVideo;
 		return { nextVideo };
+	}
+	// src/videoHandler/volumeLinkRuntime.ts
+	function syncLinkedVolume(handler, fromType, newVolume) {
+		const controls = handler.uiManager.votOverlayView?.overlayViewControls;
+		if (!controls || !handler.data?.syncVolume) return;
+		const result = applyVolumeLinkDelta({
+			state: handler.volumeLinkState,
+			fromType,
+			newVolume: fromType === "video" && handler.isMuted() ? Math.round(handler.getVideoVolume() * 100) : newVolume,
+			currentVideo: Math.round(handler.getVideoVolume() * 100),
+			currentTranslation: controls.getTranslationVolume(),
+			translationMin: 0,
+			translationMax: controls.getMaxTranslationVolume(),
+			offsetPercent: normalizeTranslationOffset(handler.data.translationVolumeOffset ?? 0),
+			muteTranslationWithOriginal: handler.data.muteTranslationWithOriginal ?? true,
+			originalMuted: handler.isMuted()
+		});
+		if (typeof result.nextTranslation === "number") {
+			controls.setTranslationVolume(result.nextTranslation);
+			applyTranslationPlaybackVolume(handler.audioPlayer?.player, result.nextTranslation, void 0);
+		}
+		if (typeof result.nextVideo === "number") {
+			handler.setVideoVolume(result.nextVideo / 100);
+			handler.syncVideoVolumeSlider();
+		}
+		return result;
+	}
+	function refreshVolumeLink(handler) {
+		if (!handler.uiManager.votOverlayView?.overlayViewControls) return;
+		handler.syncVideoVolumeSlider();
+		if (handler.data?.syncVolume) syncLinkedVolume(handler, "video", Math.round(handler.getVideoVolume() * 100));
 	}
 	// src/VideoHandler.ts
 	var RESOLVED_VOID_PROMISE = Promise.resolve();
@@ -49196,7 +48974,7 @@ var vot = (function(exports) {
 		}
 		getVideoVolume = () => this.videoManager.getVideoVolume();
 		setVideoVolume(volume, options = {}) {
-			const snapped = snapVolume01(volume);
+			const snapped = clampAutoVolumeRequest(this, snapVolume01(volume));
 			const suppressSyncMs = typeof options.suppressSyncMs === "number" && Number.isFinite(options.suppressSyncMs) ? Math.max(0, options.suppressSyncMs) : this.internalVideoVolumeSuppressionMs;
 			const now = Date.now();
 			const percent = volume01ToPercent(snapped);
@@ -49221,6 +48999,7 @@ var vot = (function(exports) {
 				syncVideoLinkSnapshot(this.volumeLinkState, normalized);
 				return;
 			}
+			if (this.data?.syncVolume && this.volumeLinkState.initialized && ((this.data.translationVolumeOffset ?? 0) !== 0 || (this.data.muteTranslationWithOriginal ?? true))) return;
 			if (this.data?.syncVolume && this.hasActiveSource() && !this.isLikelyInternalVideoVolumeChange(normalized)) return;
 			syncVideoLinkSnapshot(this.volumeLinkState, normalized);
 		}
@@ -49232,8 +49011,10 @@ var vot = (function(exports) {
 			syncTranslationLinkSnapshot(this.volumeLinkState, translationPercent);
 			this.volumeLinkState.initialized = true;
 		}
-		clearVolumeLinkState() {
+		clearVolumeLinkState(preserveTemporarySilence = true) {
+			if (preserveTemporarySilence && this.volumeLinkState.temporarilySilenced) return;
 			this.volumeLinkState.initialized = false;
+			this.volumeLinkState.temporarilySilenced = false;
 			this.volumeLinkState.lastVideoPercent = 0;
 			this.volumeLinkState.lastTranslationPercent = 0;
 		}
@@ -49243,27 +49024,10 @@ var vot = (function(exports) {
 			this.videoManager.setSelectMenuValues(from, to);
 		};
 		syncVolumeWrapper(fromType, newVolume) {
-			const overlayViewControls = this.uiManager.votOverlayView?.overlayViewControls;
-			if (!overlayViewControls) return;
-			const result = applyVolumeLinkDelta({
-				state: this.volumeLinkState,
-				fromType,
-				newVolume,
-				currentVideo: overlayViewControls.getVideoVolume(),
-				currentTranslation: overlayViewControls.getTranslationVolume(),
-				translationMin: 0,
-				translationMax: overlayViewControls.getMaxTranslationVolume()
-			});
-			const { nextVideo, nextTranslation } = result;
-			if (typeof nextTranslation === "number") {
-				overlayViewControls.setTranslationVolume(nextTranslation);
-				return result;
-			}
-			if (typeof nextVideo === "number") {
-				overlayViewControls.setVideoVolume(nextVideo);
-				this.setVideoVolume(nextVideo / 100);
-			}
-			return result;
+			return syncLinkedVolume(this, fromType, newVolume);
+		}
+		refreshVolumeLink() {
+			refreshVolumeLink(this);
 		}
 		getVideoData = () => this.videoManager.getVideoData();
 		videoValidator = () => this.videoManager.videoValidator();
@@ -49275,6 +49039,7 @@ var vot = (function(exports) {
 					try {
 						this.audioPlayer.player.removeVideoEvents();
 						this.audioPlayer.player.src = "";
+						this.clearVolumeLinkState(false);
 						await this.audioPlayer.player.clear();
 					} catch (err) {
 						debug.log("[stopTranslate] audioPlayer cleanup error", err);
@@ -49361,7 +49126,7 @@ var vot = (function(exports) {
 			const isSuccess = overlayViewControls?.getStatus() === "success";
 			if (overlayViewControls) {
 				overlayViewControls.setShowTranslationVolume(isSuccess);
-				this.resetVolumeLinkState(overlayViewControls.getVideoVolume(), overlayViewControls.getTranslationVolume());
+				if (!this.volumeLinkState.temporarilySilenced) this.resetVolumeLinkState(overlayViewControls.getVideoVolume(), overlayViewControls.getTranslationVolume());
 			} else this.volumeLinkState.initialized = false;
 			if (this.videoData && !this.videoData.isStream) {
 				overlayViewControls?.setShowDownloadTranslation(true);
@@ -49399,7 +49164,8 @@ var vot = (function(exports) {
 			return isYouTubeHosts.call(this);
 		}
 		setupAudioSettings() {
-			return setupAudioSettings.call(this);
+			setupAudioSettings.call(this);
+			this.refreshVolumeLink();
 		}
 		applyManualVideoVolumeOverride(volume) {
 			return applyManualVideoVolumeOverride.call(this, volume);
@@ -49415,14 +49181,17 @@ var vot = (function(exports) {
 			if (this.video === video) return;
 			debug.log("[VideoHandler] replaceVideo", video);
 			cancelDeferredTranslationResume(this);
+			stopSmartVolumeDucking(this);
 			await this.audioPlayer.replaceVideo(video);
 			this.abortController.abort();
 			this.releaseExtraEvents();
 			this.video = video;
+			this.volumeOnStart = this.getVideoVolume();
 			this.abortController = new AbortController();
 			this.fullscreenHelper?.updateVideo(video);
 			this.resetSubtitlesWidget();
 			this.initExtraEvents();
+			if (this.hasActiveSource()) this.setupAudioSettings();
 		}
 		async release() {
 			debug.log("[VideoHandler] release");
@@ -49565,4 +49334,4 @@ var vot = (function(exports) {
 	exports.bootstrapContentScript = bootstrapContentScript;
 	return exports;
 })({});
-//# debugId=ed6273ae-2d1a-4aa5-a94a-8f931168bfcf
+//# debugId=595666a7-f348-4e47-9cc5-e00f12af8564

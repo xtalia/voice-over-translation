@@ -27,7 +27,8 @@ export const PROXY_WORKER_HOST = "vot-worker.eu.cc"; // vot-worker.toil.cc
  */
 export const MEDIA_PROXY_HOST = votConfig.mediaProxy;
 
-const repoPath = "ilyhalight/voice-over-translation";
+// [VOT-FORK:metadata] Keep runtime assets and repository links on the personal fork.
+const repoPath = "xtalia/voice-over-translation";
 export const contentUrl = `https://raw.githubusercontent.com/${repoPath}`;
 export const repositoryUrl = `https://github.com/${repoPath}`;
 

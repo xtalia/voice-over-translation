@@ -16,6 +16,7 @@ import { GM_fetch } from "../../utils/gm";
 import { isIframe } from "../../utils/iframeConnector";
 import { clampPercentInt } from "../../utils/volume";
 import type { VideoHandler } from "../../VideoHandler";
+import { enforceAutoVolumeCeiling } from "../autoVolumeLimit";
 import { handlePlaybackResumedTranslationRefresh } from "./translation";
 
 type ScopedAddListener = (
@@ -102,13 +103,27 @@ function toPercentInt(value: unknown, fallback = 0): number {
   const numeric = typeof value === "number" ? value : Number(value);
   return Number.isFinite(numeric) ? clampPercentInt(numeric) : fallback;
 }
-function syncAudioTranslationVolumeFromVideo(
+export function syncAudioTranslationVolumeFromVideo(
   self: VideoHandler,
   videoPercent: number,
   options: {
     skipYouTubeLikeHosts?: boolean;
   } = {},
 ): void {
+  const clamped = enforceAutoVolumeCeiling(self);
+  if (clamped) {
+    self.syncVideoVolumeSlider();
+    videoPercent = Math.round(self.getVideoVolume() * 100);
+  }
+  if (
+    self.data?.syncVolume &&
+    ((self.data.translationVolumeOffset ?? 0) !== 0 ||
+      (self.data.muteTranslationWithOriginal ?? true))
+  ) {
+    if (self.audioPlayer?.player?.src)
+      self.syncVolumeWrapper("video", videoPercent);
+    return;
+  }
   if (options.skipYouTubeLikeHosts && isYouTubeLikeHost(self.site.host)) {
     return;
   }
@@ -411,20 +426,24 @@ function bindVideoLifecycleEvents(ctx: ExtraEventsContext): void {
       debug.log("Failed to handle emptied lifecycle event", error);
     });
   });
-  if (!isMuteSyncDisabledHost(self.site.host)) {
-    add(self.video, "volumechange", () => {
-      self.syncVideoVolumeSlider();
-      const overlayViewControls =
-        self.uiManager.votOverlayView?.overlayViewControls;
-      if (!overlayViewControls) {
-        return;
-      }
-      const videoPercent = toPercentInt(overlayViewControls.getVideoVolume());
-      syncAudioTranslationVolumeFromVideo(self, videoPercent, {
-        skipYouTubeLikeHosts: true,
-      });
+  add(self.video, "volumechange", () => {
+    // These hosts opt out of native mute sync, not continuous volume limits.
+    if (
+      isMuteSyncDisabledHost(self.site.host) &&
+      !enforceAutoVolumeCeiling(self)
+    )
+      return;
+    self.syncVideoVolumeSlider();
+    const overlayViewControls =
+      self.uiManager.votOverlayView?.overlayViewControls;
+    if (!overlayViewControls) {
+      return;
+    }
+    const videoPercent = toPercentInt(overlayViewControls.getVideoVolume());
+    syncAudioTranslationVolumeFromVideo(self, videoPercent, {
+      skipYouTubeLikeHosts: true,
     });
-  }
+  });
   if (self.site.host === "youtube" && !self.site.additionalData) {
     add(document, "yt-page-data-updated", () => {
       debug.log("yt-page-data-updated");

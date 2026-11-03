@@ -1,5 +1,5 @@
 import { availableLangs } from "@vot.js/shared/consts";
-import { type JSX, mergeProps } from "solid-js";
+import { createUniqueId, type JSX, mergeProps, Show } from "solid-js";
 
 import {
   DETECT_SERVICES,
@@ -9,12 +9,11 @@ import type {
   DetectService,
   TranslateTextService,
 } from "#modules/translateText/types.ts";
-import {
-  localizationProvider,
-  t,
-} from "../../localization/localizationProvider";
+import { forkT } from "../../localization/fork";
+import { t } from "../../localization/localizationProvider";
 import { setSettings, settings } from "../../stores/settings";
 import type { LanguageSelectKey } from "../../types/components/select";
+import type { StorageData } from "../../types/storage";
 import { isSupportGMXhr } from "../../utils/gm";
 import {
   genSelectOptionsByLangs,
@@ -26,6 +25,7 @@ import { SliderLabel } from "../Control/SliderLabel";
 import { SliderWrapper } from "../Control/SliderWrapper";
 import { Switch } from "../Control/Switch";
 import { SettingsSection } from "./SettingsSection";
+import { VolumeOffsetControl } from "./VolumeOffsetControl";
 
 export type SettingsTranslationSectionProps = {
   isAudioContextSupported?: boolean;
@@ -40,11 +40,14 @@ export type SettingsTranslationSectionProps = {
   onDontTranslateByYTMusicChange?: (checked: boolean) => void;
   onEnabledAutoVolumeChange?: (checked: boolean) => void;
   onAutoVolumeInput?: (volume: number) => void;
+  onAutoVolumeModeSelect?: (mode: StorageData["autoVolumeMode"]) => void;
   onSmartDuckingStrengthInput?: (volume: number) => void;
   onEnabledSmartDuckingChange?: (checked: boolean) => void;
   onShowVideoSliderChange?: (checked: boolean) => void;
   onAudioBoosterChange?: (checked: boolean) => void;
   onSyncVolumeChange?: (checked: boolean) => void;
+  onTranslationVolumeOffsetInput?: (volume: number) => void;
+  onMuteTranslationWithOriginalChange?: (checked: boolean) => void;
   onDownloadWithNameChange?: (checked: boolean) => void;
   onSendNotifyOnCompleteChange?: (checked: boolean) => void;
   onUseAudioDownloadChange?: (checked: boolean) => void;
@@ -75,6 +78,8 @@ export function SettingsTranslationSection(
     value: service,
   }));
 
+  const muteLabelId = createUniqueId();
+  const muteDescriptionId = createUniqueId();
   const autoVolumeText = () =>
     `${settings.enabledSmartDucking ? settings.smartDuckingStrength : settings.autoVolume}%`;
   const useAudioDownloadDescription = () =>
@@ -136,13 +141,42 @@ export function SettingsTranslationSection(
         }}
       />
       <Switch
-        heading={t("VOTAutoReduceVolume")}
+        heading={`✨ ${t("VOTAutoReduceVolume")}`}
         checked={settings.enabledAutoVolume}
         onChange={(checked) => {
           setSettings("enabledAutoVolume", checked);
           finalProps.onEnabledAutoVolumeChange?.(checked);
         }}
       />
+      <Show when={settings.enabledAutoVolume}>
+        <vot-block class="vot-volume-mode">
+          <Select
+            title={forkT("autoVolumeMode")}
+            search={false}
+            options={[
+              { value: "once", label: forkT("autoVolumeOnce") },
+              { value: "hold", label: forkT("autoVolumeHold") },
+              {
+                value: "adaptive",
+                label: forkT("autoVolumeAdaptive"),
+                disabled: settings.syncVolume,
+              },
+            ]}
+            selectedValue={settings.autoVolumeMode}
+            onSelect={(option) => {
+              const mode = option.value as StorageData["autoVolumeMode"];
+              setSettings("autoVolumeMode", mode);
+              setSettings("enabledSmartDucking", mode === "adaptive");
+              finalProps.onAutoVolumeModeSelect?.(mode);
+            }}
+          >
+            {forkT("autoVolumeMode")}
+            <vot-block class="vot-select-label__description">
+              {forkT("autoVolumeModeDescription")}
+            </vot-block>
+          </Select>
+        </vot-block>
+      </Show>
       <SliderWrapper>
         <SliderLabel
           value={autoVolumeText()}
@@ -171,18 +205,7 @@ export function SettingsTranslationSection(
           }}
         />
       </SliderWrapper>
-      <Switch
-        heading={t("smartDucking")}
-        description={localizationProvider
-          .get("VOTIncompatibleWith")
-          .replace("{0}", t("VOTSyncVolume"))}
-        disabled={settings.syncVolume || !settings.enabledAutoVolume}
-        checked={settings.enabledSmartDucking}
-        onChange={(checked) => {
-          setSettings("enabledSmartDucking", checked);
-          finalProps.onEnabledSmartDuckingChange?.(checked);
-        }}
-      />
+
       <Switch
         heading={t("showVideoVolumeSlider")}
         checked={settings.showVideoSlider}
@@ -199,26 +222,55 @@ export function SettingsTranslationSection(
             : t("VOTNeedWebAudioAPI")
         }
         checked={settings.audioBooster}
-        disabled={!finalProps.isAudioContextSupported}
+        disabled={settings.syncVolume || !finalProps.isAudioContextSupported}
         onChange={(checked) => {
           setSettings("audioBooster", checked);
           finalProps.onAudioBoosterChange?.(checked);
         }}
       />
       <Switch
-        heading={t("VOTSyncVolume")}
+        heading={`✨ ${t("VOTSyncVolume")}`}
         description={t("VOTIncompatibleWith").replace("{0}", t("smartDucking"))}
         checked={settings.syncVolume}
         onChange={(checked) => {
           setSettings("syncVolume", checked);
-          if (checked) {
+          if (checked && settings.autoVolumeMode === "adaptive") {
+            setSettings("autoVolumeMode", "hold");
             setSettings("enabledSmartDucking", false);
-            finalProps.onEnabledSmartDuckingChange?.(checked);
           }
 
           finalProps.onSyncVolumeChange?.(checked);
         }}
       />
+      <VolumeOffsetControl
+        value={settings.translationVolumeOffset}
+        disabled={!settings.syncVolume}
+        onInput={(value) => {
+          setSettings("translationVolumeOffset", value);
+          finalProps.onTranslationVolumeOffsetInput?.(value);
+        }}
+      />
+      <label class="vot-switch">
+        <input
+          type="checkbox"
+          checked={settings.muteTranslationWithOriginal}
+          aria-labelledby={muteLabelId}
+          aria-describedby={muteDescriptionId}
+          onChange={(event) => {
+            const checked = event.currentTarget.checked;
+            setSettings("muteTranslationWithOriginal", checked);
+            finalProps.onMuteTranslationWithOriginalChange?.(checked);
+          }}
+        />
+        <vot-block class="vot-switch-text">
+          <vot-block class="vot-switch-heading" id={muteLabelId}>
+            {forkT("muteTranslationWithOriginal")}
+          </vot-block>
+          <vot-block class="vot-switch-description" id={muteDescriptionId}>
+            {forkT("muteTranslationWithOriginalDescription")}
+          </vot-block>
+        </vot-block>
+      </label>
       <Switch
         heading={t("VOTDownloadWithName")}
         description={isSupportGMXhr ? undefined : t("VOTNotSupportedByLoader")}

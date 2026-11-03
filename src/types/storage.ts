@@ -35,12 +35,16 @@ export const storageKeys = [
   "dontTranslateLanguages",
   "dontTranslateByYTMusic",
   "enabledAutoVolume",
+  "autoVolumeMode",
   "enabledSmartDucking",
   "autoVolume",
   "smartDuckingStrength",
   "buttonPos",
   "showVideoSlider",
   "syncVolume",
+  "translationVolumeOffset",
+  "muteTranslationWithOriginal",
+  "volumeLinkMode",
   "downloadWithName",
   "sendNotifyOnComplete",
   "subtitlesMaxLength",
@@ -105,6 +109,7 @@ export type StorageData = {
   dontTranslateLanguages: LanguageSelectKey[];
   dontTranslateByYTMusic: boolean;
   enabledAutoVolume: boolean;
+  autoVolumeMode: "once" | "hold" | "adaptive";
   /**
    * Smart Auto-Volume ducking: only lower original video volume while translated
    * audio is actually audible.
@@ -127,6 +132,10 @@ export type StorageData = {
   buttonPos: Position;
   showVideoSlider: boolean;
   syncVolume: boolean;
+  translationVolumeOffset: number;
+  muteTranslationWithOriginal: boolean;
+  /** Legacy fork setting, read only during migration. */
+  volumeLinkMode?: "delta" | "offset";
   downloadWithName: boolean;
   sendNotifyOnComplete: boolean;
   subtitlesMaxLength: number;

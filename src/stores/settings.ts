@@ -28,6 +28,11 @@ import type { SubtitleFontFamily, SubtitleFormat } from "../types/subtitles";
 import { isSupportGMXhr } from "../utils/gm";
 import { calculatedResLang } from "../utils/localization";
 
+export type VolumeQuickPreferenceKey =
+  | "enabledAutoVolume"
+  | "syncVolume"
+  | "audioBooster";
+
 export type SettingsStore = {
   // menu
   defaultVolume: number;
@@ -41,11 +46,14 @@ export type SettingsStore = {
   dontTranslateByYTMusic: boolean;
   enabledAutoVolume: boolean;
   autoVolume: number;
+  autoVolumeMode: "once" | "hold" | "adaptive";
   enabledSmartDucking: boolean;
   smartDuckingStrength: number;
   showVideoSlider: boolean;
   audioBooster: boolean;
   syncVolume: boolean;
+  translationVolumeOffset: number;
+  muteTranslationWithOriginal: boolean;
   downloadWithName: boolean;
   sendNotifyOnComplete: boolean;
   useAudioDownload: boolean;
@@ -96,11 +104,14 @@ export function createDefaultSettings(
     dontTranslateByYTMusic: false,
     enabledAutoVolume: true,
     autoVolume: DEFAULT_AUTO_VOLUME,
+    autoVolumeMode: "adaptive",
     enabledSmartDucking: true,
     smartDuckingStrength: DEFAULT_SMART_DUCKING_STRENGTH,
     showVideoSlider: true,
     audioBooster: false,
     syncVolume: false,
+    translationVolumeOffset: 0,
+    muteTranslationWithOriginal: true,
     downloadWithName: isSupportGMXhr,
     sendNotifyOnComplete: false,
     // Audio download uses direct network requests (GM_fetch/GM_xmlhttpRequest).

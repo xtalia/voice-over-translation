@@ -114,6 +114,8 @@ export type OverlayViewProps = {
     Pick<
       SegmentedButtonMenuOverlayProps,
       | "videoVolume"
+      | "isAudioContextSupported"
+      | "onVolumePreferenceChange"
       | "onVideoVolumeInput"
       | "onTranslationVolumeInput"
       | "onDownloadTranslationClick"
@@ -678,6 +680,8 @@ export function OverlayView(props: OverlayViewProps): JSX.Element {
         position={normalizedPosition()}
         hidden={menuHidden()}
         videoVolume={finalProps.videoVolume}
+        isAudioContextSupported={finalProps.isAudioContextSupported}
+        onVolumePreferenceChange={finalProps.onVolumePreferenceChange}
         translationVolume={settings.defaultVolume}
         showTranslationVolume={showTranslationVolume()}
         showDownloadTranslation={showDownloadTranslation()}

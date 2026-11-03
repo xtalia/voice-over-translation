@@ -18,6 +18,7 @@ import { IS_PROXY_ONLY_EXTENSION } from "../../utils/gm";
 import { updateConfig, votStorage } from "../../utils/storage";
 import { calculatedResLang } from "../../utils/utils";
 import type { VideoHandler } from "../../VideoHandler";
+import { migrateVolumePreferences } from "../volumePreferences";
 
 export async function init(this: VideoHandler) {
   if (this.initialized) return;
@@ -43,6 +44,19 @@ export async function init(this: VideoHandler) {
     this.data = await updateConfig(this.data);
     await votStorage.set("compatVersion", actualCompatVersion);
   }
+
+  const preferences = migrateVolumePreferences({
+    ...this.data,
+    autoVolumeMode: await votStorage.getRaw("autoVolumeMode"),
+    volumeLinkMode: await votStorage.getRaw("volumeLinkMode"),
+  });
+  Object.assign(this.data, preferences);
+  await Promise.all(
+    Object.entries(preferences).map(([key, value]) =>
+      votStorage.setRaw(key, value),
+    ),
+  );
+  await votStorage.deleteRaw("volumeLinkMode");
 
   updateAccount(this.data.account);
   setLocale({

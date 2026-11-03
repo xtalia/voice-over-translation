@@ -1,0 +1,12 @@
+.vot-volume-mode .vot-select {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+.vot-volume-mode .vot-select-outer {
+  width: auto;
+  max-width: none;
+}
+.vot-volume-offset .vot-textfield {
+  width: 100%;
+}

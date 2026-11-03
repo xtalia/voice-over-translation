@@ -1,6 +1,6 @@
-import { repositoryUrl } from "../../../src/config/config.ts";
+import { contentUrl, repositoryUrl } from "../../../src/config/config.ts";
 import { getAllMatches } from "../extension/manifest-helpers.ts";
-import { getReleaseDownloadBase } from "../paths.ts";
+
 import { getHeaders, type UserscriptHeader } from "./grants.ts";
 import type { LocaleHeadersFile } from "./locales.ts";
 
@@ -13,8 +13,10 @@ function buildUserscriptMeta(
   repoUpdateBranch: UserscriptBranch,
   localeEntries: Array<[string, LocaleHeadersFile]>,
 ): UserscriptHeader {
+  void repoUpdateBranch;
   const baseMeta = getHeaders<UserscriptHeader>();
-  const finalUrl = `${getReleaseDownloadBase(repoUpdateBranch)}/${filename}.user.js`;
+  // [VOT-FORK:metadata] The fork publishes installable scripts in master/dist.
+  const finalUrl = `${contentUrl}/master/dist/${filename}.user.js`;
   const baseMatch = Array.isArray(baseMeta.match)
     ? baseMeta.match
     : [baseMeta.match];

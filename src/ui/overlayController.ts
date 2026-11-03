@@ -229,6 +229,13 @@ export class OverlayController {
           detectedLanguage: this.videoHandler?.videoData?.detectedLanguage,
           responseLanguage: this.data.responseLanguage,
           videoVolume,
+          isAudioContextSupported: this.videoHandler?.isAudioContextSupported,
+          onVolumePreferenceChange: (key, checked) => {
+            this.videoHandler?.uiManager.votSettingsView?.setVolumePreference(
+              key,
+              checked,
+            );
+          },
           selectMount: this.globalPortal
             ? () =>
                 this.globalPortal?.isConnected ? this.globalPortal : undefined

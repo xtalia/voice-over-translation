@@ -1,286 +1,33 @@
-<!-- loaders links (website > github > store) -->
+# VOT — xtalia’s personal fork
 
-[tampermonkey-link]: https://www.tampermonkey.net/index.php
-[violentmonkey-opera]: https://chrome.google.com/webstore/detail/violent-monkey/jinjaccalgkegednnccohejagnlnfdag
-[violentmonkey-link]: https://violentmonkey.github.io
+[Русский](README.md) · [Settings](FORK.md) · [Maintenance](FORK-MAINTENANCE.md)
 
-<!-- FAQs / Wiki -->
+An unofficial modification of [ilyhalight/voice-over-translation](https://github.com/ilyhalight/voice-over-translation) for convenient original/translation volume controls. I am a regular VOT user adapting it to my viewing habits, not the original project's author.
 
-[devmode-enable]: https://www.tampermonkey.net/faq.php#Q209
-[opera-search-results-access]: https://help.opera.com/en/extensions/content-scripts/
-[vot-faq]: https://github.com/ilyhalight/voice-over-translation/wiki/%5BEN%5D-FAQ
-[vot-supported-sites]: https://github.com/ilyhalight/voice-over-translation/wiki/%5BEN%5D-Supported-sites
-[vot-wiki]: https://github.com/ilyhalight/voice-over-translation/wiki
+**Base:** upstream **1.12.6**, commit [`23335c9a4e489ae2befcdc6dd2052a7d6b405ecb`](https://github.com/ilyhalight/voice-over-translation/commit/23335c9a4e489ae2befcdc6dd2052a7d6b405ecb). Local fork version: **1.12.6.1**; porting and verification progress is tracked in [TASKS.md](TASKS.md).
 
-<!-- Our servers -->
+> This local version is not yet published to `master`. The link below installs the published branch contents, not necessarily the new build described here. A local build is not a publication.
 
-[vot-balancer]: https://vot-worker.toil.cc/health
-[vot-worker]: https://github.com/FOSWLY/vot-worker
-[media-proxy]: https://github.com/FOSWLY/media-proxy
-[vot-backend]: https://github.com/FOSWLY/vot-backend
-[vot-status]: https://votstatus.toil.cc
-[vot-stats]: https://votstats.toil.cc
+## What changes ✨
 
-<!-- Install / Build -->
+- **Original volume reduction:** an enable switch, `once` (apply once), `hold` (maintain a ceiling), `adaptive` (speech-aware ducking), and a level/strength slider. Disabling reduction or stopping translation restores the original baseline.
+- **Volume linking:** an enable switch reveals an offset slider from **−10 to 100 percentage points, step 5**, synchronized with a numeric input. **0** preserves classic delta linking; a nonzero value sets a fixed difference from the original. For example, 15% + 10 pp → 25%, clamped to 0–100%.
+- **Mute with original:** the `muteTranslationWithOriginal` checkbox is enabled by default; translation is silenced when the original is muted or at zero volume. You can turn this option off.
+- Quick reduction/link/boost buttons under subtitles share the same settings; boost is unavailable while linking.
+- Improved controls are marked **✨**. See [FORK.md](FORK.md) for behavior and persistence details.
 
-[vot-dist]: https://github.com/ilyhalight/voice-over-translation/releases/latest/download/vot.user.js
-[vot-releases]: https://github.com/ilyhalight/voice-over-translation/releases
-[nodejs-link]: https://nodejs.org
-[bun-link]: https://bun.sh/
+## Quick start
 
-<!-- Badges -->
+1. Install [Tampermonkey](https://www.tampermonkey.net/). In Chromium, enable Developer mode and permission to run userscripts if required ([instructions](https://www.tampermonkey.net/faq.php#Q209)).
+2. Open **[this fork’s userscript](https://raw.githubusercontent.com/xtalia/voice-over-translation/master/dist/vot.user.js)** and confirm installation. Do not run the original VOT and this fork together.
+3. Open a video on a [supported site](https://github.com/ilyhalight/voice-over-translation/wiki), start translation, and adjust volume in VOT settings.
 
-[badge-en]: https://img.shields.io/badge/lang-English%20%F0%9F%87%AC%F0%9F%87%A7-white
-[badge-ru]: https://img.shields.io/badge/%D1%8F%D0%B7%D1%8B%D0%BA-%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9%20%F0%9F%87%B7%F0%9F%87%BA-white
+Fork installation and update links use `xtalia/master`. Original VOT store extensions are not this build. To build both userscript variants locally: `npm run build:gm` (dependencies must be installed; Node.js ≥22.12).
 
-<!-- Stores -->
+## Authors and rights
 
-[vot-chrome-store]: https://chromewebstore.google.com/detail/dnioaagdjgpcokckfpokpndoblenmfcg
-[vot-firefox-store]: https://addons.mozilla.org/firefox/addon/voice-over-translation/
+- **Original VOT:** ilyhalight (Toil), sodapng, SashaXser, MrSoczekXD, mynovelhost, and [other contributors](https://github.com/ilyhalight/voice-over-translation/graphs/contributors). The project originated from [sodapng/voice-over-translation](https://github.com/sodapng/voice-over-translation).
+- **xtalia:** initiator and maintainer of the personal fork; claims no authorship of the original project.
+- **Hermes Agent (Nous Research), using OpenAI models:** AI assistance with implementation, tests, and verification. These changes are AI-assisted, not manually written by the fork owner.
 
-<!-- Other -->
-
-[vot-readme-ru]: README.md
-[vot-readme-en]: README-EN.md
-[vot-langs]: LANG_SUPPORT.md
-[vot-issues]: https://github.com/ilyhalight/voice-over-translation/issues
-[votjs-link]: https://github.com/FOSWLY/vot.js
-[vot-cli-link]: https://github.com/FOSWLY/vot-cli
-[yabrowser-link]: https://browser.yandex.com
-[yatranslate-link]: https://translate.yandex.ru/
-[contributors-link]: https://github.com/ilyhalight/voice-over-translation/graphs/contributors
-
-<!-- Content -->
-
-<div align="center">
-  <h1>voice-over-translation (<code>vot</code>)</h1>
-  <p>Watch videos in other languages with voice-over translation and subtitles in <a href="./BROWSERS-EXTS-TEST.md">any browser</a></p>
-
-[![en][badge-en]][vot-readme-en]
-[![ru][badge-ru]][vot-readme-ru]
-
-[Installation](#installing-the-extension) ·
-[Development](#how-to-build-an-extension) ·
-[FAQ][vot-faq] ·
-[Supported sites][vot-supported-sites]
-
-<a href="https://chromewebstore.google.com/detail/dnioaagdjgpcokckfpokpndoblenmfcg"><img src="./img/badges/chrome-webstore.png" alt="Install from Chrome Web Store"></a>
-<a href="https://addons.mozilla.org/firefox/addon/voice-over-translation/"><img src="./img/badges/firefox-addons.png" alt="Install from Firefox Add-ons"></a>
-<a href="https://github.com/ilyhalight/voice-over-translation/releases/latest"><img src="./img/badges/github-releases.png" alt="Install from Github Releases"></a>
-
-  <img src="./img/promo/vot-promo-en.gif" alt="vot promotion banner"/>
-</div>
-
----
-
-> All rights to the original software belong to their respective owners. This extension is not affiliated with the original rights holders.
-
-Thanks to the **[Yandex.Translate][yatranslate-link]** and **[Yandex.Browser][yabrowser-link]** teams, and everyone [helping make the extension][contributors-link] even better.
-
-## Installing the extension From GitHub Releases
-
-> [!CAUTION]
-> Before creating an issue, we strongly recommend reading the [FAQ][vot-faq] and existing [issues][vot-issues].
-
-### Native for Chrome (Chromium)
-
-1. Open [Releases][vot-releases]
-2. Click to `vot-extension-chrome.zip`
-3. Open your extensions page:
-   - Chrome: `chrome://extensions`
-   - Edge: `edge://extensions`
-   - Brave: `brave://extensions`
-   - Opera: `opera://extensions`
-4. Enable **Developer mode**
-5. Drag and drop the downloaded `.zip` file onto the extensions page
-
-### Native for Firefox
-
-1. Open [Releases][vot-releases]
-2. Click to `vot-extension-firefox.xpi`
-3. Confirm the installation in Firefox
-
-### Userscript Loader (Tampermonkey)
-
-> [!WARNING]
-> **Important for Tampermonkey 5.2+ (MV3) users:**
-> In **Chromium**-based browsers (Chrome, Edge, Brave, Vivaldi, etc.) you must:
->
-> 1. Open the extensions page (`chrome://extensions`) and enable **"Developer mode"** (details in [Tampermonkey documentation][devmode-enable]).
-> 2. If you use **Chromium 138+**, open extension details and enable **"Allow User Scripts"**.
-
-> [!WARNING]
-> **For Opera users:**
->
-> 1. Use **[Violentmonkey][violentmonkey-opera]** instead of Tampermonkey.
-> 2. In the extension settings, enable **"Allow access to search page results"** (Opera guide: [where to find this setting][opera-search-results-access]), otherwise the script will not work.
-
-1. Install a userscript manager: **[Tampermonkey][tampermonkey-link]** (or [Violentmonkey][violentmonkey-opera] for Opera)
-2. Click -> **[Install the script][vot-dist]**
-
-## Features
-
-- Translate videos into Russian, English, or Kazakh from [supported source languages][vot-langs]
-- Auto-translate videos on open
-- Auto-enable subtitles on open
-- Smart subtitle layout that adapts line width and text size to player dimensions
-- Display AI-generated subtitles
-- Display site-provided subtitles (for example, auto-translated YouTube subtitles)
-- Save subtitles in `.srt`, `.vtt`, `.ass` and `.json` formats
-- Save translated audio as `.mp3`
-- Separate volume sliders for original and translated audio
-- Adaptive volume: duck original audio while translated speech is playing
-- Link translation volume with video volume
-- Limit translation from selected languages (selectable in the menu)
-- Hotkeys for translation and subtitles (including key combinations)
-- Easy subtitle appearance customization
-- Word-by-word translation directly in subtitles
-
-### Useful links
-
-1. Tested compatibility: **[Link](./BROWSERS-EXTS-TEST.md)**
-2. JavaScript library (vot.js): **[Link][votjs-link]**
-3. Terminal version (vot-cli): **[Link][vot-cli-link]**
-
-## Limitations and recommendations
-
-1. It is recommended to allow autoplay for audio/video to avoid runtime playback errors
-2. The extension cannot translate videos longer than 4 hours (translator API limitation)
-3. For stable audio-download flow, use up-to-date and supported userscript managers (for example, [Tampermonkey][tampermonkey-link] or [Violentmonkey][violentmonkey-link])
-
-## Supported sites
-
-You can find the full list of supported websites and their specific limitations in the **[wiki][vot-supported-sites]**.
-
-### Our domains:
-
-These domains can be changed in the extension settings without rebuilding:
-
-#### Proxy-server
-
-Required for proxying requests when direct access to Yandex servers is unavailable.
-
-- [vot-new.toil-dump.workers.dev][vot-worker] (⚠️ doesn't work in Russia)
-
-#### Media Proxy-server
-
-Required for proxying `.m3u8` files and correctly processing indirect links to `.mp4` and `.webm`.
-
-- [media-proxy.toil.cc][media-proxy]
-
-## How to build an extension?
-
-1. Install [Node.js 22+][nodejs-link] / [Bun.sh][bun-link]
-2. Install dependencies:
-
-NPM:
-
-```bash
-npm install
-```
-
-Bun:
-
-```bash
-bun install
-```
-
-3. Build targets:
-
-### Automatic Build
-
-Automatic builds are available only when using [Bun.sh][bun-link]:
-
-```bash
-bun run autobuild
-```
-
-After the build completes, the `.output` directory (the single WXT output folder) will contain all build artifacts ready for publishing to the Chrome and Firefox extension stores, including the sources archive (`vot-extension-<version>-sources.zip`).
-
-The `dist-ext` directory contains non-store builds distributed as `.zip` archives (for Chrome) and `.xpi` archives (for Firefox).
-
-The `dist` directory contains the userscript build, which can be installed using [Tampermonkey][tampermonkey-link] or other userscript managers.
-
-### Manual Build
-
-Userscript (standard build):
-
-```bash
-npm run build:gm:default
-```
-
-Userscript (minified build):
-
-```bash
-npm run build:gm:min
-```
-
-Userscript (both builds):
-
-```bash
-npm run build:gm
-```
-
-Native Chrome/Firefox extensions :
-
-```bash
-bun build:chrome     # Chrome
-bun build:firefox    # Firefox
-bun build:ext        # production build for Chrome + Firefox → .output/ and dist-ext/
-bun build:ext:debug  # unminified, with inline source maps
-bun zip:ext          # package as .zip
-```
-
-Development:
-
-```bash
-bun dev          # extension, Chrome : dev mode, opens the browser on YouTube
-bun dev:firefox  # extension, Firefox (wxt -b firefox)
-bun dev:gm       # userscript (vite build --watch)
-```
-
-Extension pages and Solid components update via Vite HMR, while WXT automatically rebuilds and re-injects content scripts — no manual extension reload needed.
-
-Development userscript build with source maps:
-
-```bash
-npm run build:dev
-```
-
-Userscript build artifacts are placed in `dist/`, unpacked extension builds in `.output/chrome-mv3` and `.output/firefox-mv3` , and packaged `.zip`/`.xpi` archives in `dist-ext/`.
-
-## Customization of appearance:
-
-The extension supports appearance customization via Stylus, Stylish, and similar tools.
-
-Example style override:
-
-```css
-/* ==UserStyle==
-@name         VOT-styles
-@version      16.09.2023
-@namespace    vot-styles
-@description  LLL
-@author       Toil
-@license      No License
-==/UserStyle== */
-
-:root {
-  --vot-font-family:
-    "Roboto", "Segoe UI", BlinkMacSystemFont, system-ui, -apple-system;
-
-  --vot-primary-rgb: 139, 180, 245;
-  --vot-onprimary-rgb: 32, 33, 36;
-  --vot-surface-rgb: 32, 33, 36;
-  --vot-onsurface-rgb: 227, 227, 227;
-
-  --vot-subtitles-color: rgb(var(--vot-onsurface-rgb, 227, 227, 227));
-  --vot-subtitles-passed-color: rgb(var(--vot-primary-rgb, 33, 150, 243));
-}
-```
-
-## Contributing
-
-Please refer to the [contributing guide](./CONTRIBUTING.md).
-
-> Based on [sodapng/voice-over-translation](https://github.com/sodapng/voice-over-translation) project (license MIT)
+Original copyright notices and the [MIT license](LICENSE) are preserved. Third-party code, materials, and services belong to their respective owners.

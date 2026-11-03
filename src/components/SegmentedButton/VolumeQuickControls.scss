@@ -1,0 +1,31 @@
+.vot-volume-quick {
+  display: flex;
+  gap: var(--vot-space-2, 8px);
+  margin-block: var(--vot-space-2, 8px);
+
+  &__button {
+    border: 1px solid rgba(var(--vot-onsurface-rgb, 0, 0, 0), 0.3);
+    border-radius: 20px;
+    color: rgb(var(--vot-onsurface-rgb, 0, 0, 0));
+    cursor: pointer;
+    flex: 1 1 0;
+    font-size: 12px;
+    padding: 8px;
+    text-align: center;
+
+    &[aria-pressed="true"] {
+      background: rgba(var(--vot-primary-rgb, 33, 150, 243), 0.18);
+      border-color: rgb(var(--vot-primary-rgb, 33, 150, 243));
+    }
+
+    &[aria-disabled="true"] {
+      cursor: not-allowed;
+      opacity: 0.38;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgb(var(--vot-primary-rgb, 33, 150, 243));
+      outline-offset: 2px;
+    }
+  }
+}

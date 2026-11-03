@@ -61,6 +61,7 @@ import {
   volume01ToPercent,
 } from "./utils/volume";
 import VOTLocalizedError from "./VOTLocalizedError";
+import { clampAutoVolumeRequest } from "./videoHandler/autoVolumeLimit";
 import {
   getAutoHideDelay as getAutoHideDelayImpl,
   initExtraEvents as initExtraEventsImpl,
@@ -102,10 +103,14 @@ import {
 import { ensureCountryCode, getCountryCode } from "./videoHandler/shared";
 import {
   type ApplyVolumeLinkDeltaResult,
-  applyVolumeLinkDelta,
   syncTranslationLinkSnapshot,
   syncVideoLinkSnapshot,
+  type VolumeLinkState,
 } from "./videoHandler/volumeLink";
+import {
+  refreshVolumeLink,
+  syncLinkedVolume,
+} from "./videoHandler/volumeLinkRuntime";
 
 const RESOLVED_VOID_PROMISE: Promise<void> = Promise.resolve();
 const TRANSLATION_LOADING_MESSAGES = new Set([
@@ -198,7 +203,7 @@ export class VideoHandler {
    * syncVolume (link translation and video volume) runtime state.
    * We keep last-known slider values to apply deltas reliably.
    */
-  volumeLinkState = {
+  volumeLinkState: VolumeLinkState = {
     initialized: false,
     lastVideoPercent: 0,
     lastTranslationPercent: 0,
@@ -1026,7 +1031,7 @@ export class VideoHandler {
       suppressSyncMs?: number;
     } = {},
   ): this {
-    const snapped = snapVolume01(volume);
+    const snapped = clampAutoVolumeRequest(this, snapVolume01(volume));
     const suppressSyncMs =
       typeof options.suppressSyncMs === "number" &&
       Number.isFinite(options.suppressSyncMs)
@@ -1075,6 +1080,13 @@ export class VideoHandler {
 
     if (
       this.data?.syncVolume &&
+      this.volumeLinkState.initialized &&
+      ((this.data.translationVolumeOffset ?? 0) !== 0 ||
+        (this.data.muteTranslationWithOriginal ?? true))
+    )
+      return;
+    if (
+      this.data?.syncVolume &&
       this.hasActiveSource() &&
       !this.isLikelyInternalVideoVolumeChange(normalized)
     ) {
@@ -1102,8 +1114,12 @@ export class VideoHandler {
     this.volumeLinkState.initialized = true;
   }
 
-  clearVolumeLinkState(): void {
+  clearVolumeLinkState(preserveTemporarySilence = true): void {
+    // Source refreshes must not turn the muted overlay's 0/0 into a new gap.
+    if (preserveTemporarySilence && this.volumeLinkState.temporarilySilenced)
+      return;
     this.volumeLinkState.initialized = false;
+    this.volumeLinkState.temporarilySilenced = false;
     this.volumeLinkState.lastVideoPercent = 0;
     this.volumeLinkState.lastTranslationPercent = 0;
   }
@@ -1142,35 +1158,11 @@ export class VideoHandler {
     fromType: "translation" | "video",
     newVolume: number,
   ): ApplyVolumeLinkDeltaResult | undefined {
-    const overlayViewControls =
-      this.uiManager.votOverlayView?.overlayViewControls;
-    if (!overlayViewControls) {
-      return undefined;
-    }
+    return syncLinkedVolume(this, fromType, newVolume);
+  }
 
-    const result = applyVolumeLinkDelta({
-      state: this.volumeLinkState,
-      fromType,
-      newVolume,
-      currentVideo: overlayViewControls.getVideoVolume(),
-      currentTranslation: overlayViewControls.getTranslationVolume(),
-      translationMin: 0,
-      translationMax: overlayViewControls.getMaxTranslationVolume(),
-    });
-
-    const { nextVideo, nextTranslation } = result;
-
-    if (typeof nextTranslation === "number") {
-      overlayViewControls.setTranslationVolume(nextTranslation);
-      return result;
-    }
-
-    if (typeof nextVideo === "number") {
-      overlayViewControls.setVideoVolume(nextVideo);
-      this.setVideoVolume(nextVideo / 100);
-    }
-
-    return result;
+  refreshVolumeLink(): void {
+    refreshVolumeLink(this);
   }
 
   /**
@@ -1200,6 +1192,7 @@ export class VideoHandler {
         try {
           this.audioPlayer.player.removeVideoEvents();
           this.audioPlayer.player.src = "";
+          this.clearVolumeLinkState(false);
           await this.audioPlayer.player.clear();
         } catch (err) {
           debug.log("[stopTranslate] audioPlayer cleanup error", err);
@@ -1384,10 +1377,12 @@ export class VideoHandler {
     const isSuccess = overlayViewControls?.getStatus() === "success";
     if (overlayViewControls) {
       overlayViewControls.setShowTranslationVolume(isSuccess);
-      this.resetVolumeLinkState(
-        overlayViewControls.getVideoVolume(),
-        overlayViewControls.getTranslationVolume(),
-      );
+      if (!this.volumeLinkState.temporarilySilenced) {
+        this.resetVolumeLinkState(
+          overlayViewControls.getVideoVolume(),
+          overlayViewControls.getTranslationVolume(),
+        );
+      }
     } else {
       this.volumeLinkState.initialized = false;
     }
@@ -1492,7 +1487,8 @@ export class VideoHandler {
    * Configures audio settings such as volume.
    */
   setupAudioSettings() {
-    return setupAudioSettingsImpl.call(this);
+    setupAudioSettingsImpl.call(this);
+    this.refreshVolumeLink();
   }
 
   applyManualVideoVolumeOverride(volume: number) {
@@ -1521,15 +1517,18 @@ export class VideoHandler {
     debug.log("[VideoHandler] replaceVideo", video);
     // Before the await: a visibilitychange during it must not play the old video.
     cancelDeferredTranslationResumeImpl(this);
+    stopSmartVolumeDuckingImpl(this);
     await this.audioPlayer.replaceVideo(video);
     this.abortController.abort();
     this.releaseExtraEvents();
 
     this.video = video;
+    this.volumeOnStart = this.getVideoVolume();
     this.abortController = new AbortController();
     this.fullscreenHelper?.updateVideo(video);
     this.resetSubtitlesWidget();
     this.initExtraEvents();
+    if (this.hasActiveSource()) this.setupAudioSettings();
   }
 
   /**

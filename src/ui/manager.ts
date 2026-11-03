@@ -257,7 +257,13 @@ export class UIManager {
           return;
         }
 
-        this.videoHandler.syncVolumeWrapper("video", volume);
+        this.videoHandler.syncVideoVolumeSlider();
+        this.videoHandler.syncVolumeWrapper(
+          "video",
+          this.videoHandler.isMuted()
+            ? 0
+            : Math.round(this.videoHandler.getVideoVolume() * 100),
+        );
       })
       .addEventListener("input:translationVolume", (volume) => {
         if (!this.videoHandler) {
@@ -377,24 +383,14 @@ export class UIManager {
         if (!this.videoHandler) {
           return;
         }
+        const controls = this.votOverlayView.overlayViewControls;
+        if (checked && controls) {
+          this.videoHandler.resetVolumeLinkState(
+            Math.round(this.videoHandler.getVideoVolume() * 100),
+            controls.getTranslationVolume(),
+          );
+        }
         this.videoHandler.setupAudioSettings();
-
-        const overlayViewControls = this.votOverlayView.overlayViewControls;
-        if (!overlayViewControls) {
-          return;
-        }
-
-        const nextTranslation = overlayViewControls.getTranslationVolume();
-        this.videoHandler.syncVolumeWrapper("translation", nextTranslation);
-        this.videoHandler.syncTranslationPlaybackVolume();
-        if (!checked) {
-          return;
-        }
-
-        this.videoHandler.resetVolumeLinkState(
-          overlayViewControls.getVideoVolume(),
-          nextTranslation,
-        );
       })
       .addEventListener("change:subtitlesHighlightWords", (checked) => {
         this.updateSubtitlesWidgetSetting(

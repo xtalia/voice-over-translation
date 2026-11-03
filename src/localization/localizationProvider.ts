@@ -20,8 +20,8 @@ const LOCALE_STORAGE_KEYS: readonly LocaleStorageKey[] = [
 ];
 const DEFAULT_LOCALE: FlatPhrases = toFlatObj(rawDefaultLocale);
 
-const repoBranch =
-  typeof REPO_BRANCH !== "undefined" && REPO_BRANCH ? REPO_BRANCH : "master";
+// [VOT-FORK:metadata] Local feature branches must not route users to missing locale files.
+const repoBranch = "master";
 const availableLocales: readonly LangOverride[] = (() => {
   const locales =
     typeof AVAILABLE_LOCALES !== "undefined" && Array.isArray(AVAILABLE_LOCALES)

@@ -4,6 +4,7 @@ export type VolumeLinkState = {
   initialized: boolean;
   lastVideoPercent: number;
   lastTranslationPercent: number;
+  temporarilySilenced?: boolean;
 };
 
 type VolumeLinkDirection = "translation" | "video";
@@ -16,6 +17,10 @@ type ApplyVolumeLinkDeltaInput = {
   currentTranslation: number;
   translationMin: number;
   translationMax: number;
+  /** Nonzero values select the fork's original-master percentage-point mode. */
+  offsetPercent?: number;
+  muteTranslationWithOriginal?: boolean;
+  originalMuted?: boolean;
 };
 
 export type ApplyVolumeLinkDeltaResult = {
@@ -67,11 +72,43 @@ export function applyVolumeLinkDelta({
   currentTranslation,
   translationMin,
   translationMax,
+  offsetPercent,
+  muteTranslationWithOriginal = false,
+  originalMuted = false,
 }: ApplyVolumeLinkDeltaInput): ApplyVolumeLinkDeltaResult {
   const sharedTranslationRange = getSharedTranslationRange(
     translationMin,
     translationMax,
   );
+
+  // Silence is temporary: retain the delta snapshots for the unmute transition.
+  const original = fromType === "video" ? newVolume : currentVideo;
+  if (muteTranslationWithOriginal && (originalMuted || original === 0)) {
+    state.temporarilySilenced = true;
+    if (!state.initialized) {
+      state.lastVideoPercent = clampPercentInt(currentVideo);
+      state.lastTranslationPercent = clampPercentInt(currentTranslation);
+      state.initialized = true;
+    }
+    return { nextTranslation: 0 };
+  }
+  state.temporarilySilenced = false;
+
+  // [VOT-FORK:volume-offset] Zero intentionally retains upstream delta behavior.
+  if (Number.isFinite(offsetPercent) && offsetPercent !== 0) {
+    const video = clampPercentInt(
+      fromType === "video" ? newVolume : currentVideo,
+    );
+    const nextTranslation = clampInt(
+      video + clampInt(offsetPercent ?? 0, -10, 100),
+      sharedTranslationRange.min,
+      sharedTranslationRange.max,
+    );
+    state.initialized = true;
+    state.lastVideoPercent = video;
+    state.lastTranslationPercent = nextTranslation;
+    return { nextTranslation };
+  }
 
   if (!state.initialized) {
     state.lastVideoPercent = clampPercentInt(currentVideo);

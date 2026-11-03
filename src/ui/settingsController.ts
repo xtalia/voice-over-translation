@@ -56,7 +56,7 @@ import { updateAccountByCallbackData } from "../modules/auth/yandex";
 import type { HotkeyActionItem } from "../modules/hotkeys/types";
 import { account, resetAccount, updateAccount } from "../stores/account";
 import { setLocale } from "../stores/locale";
-import { setSettings } from "../stores/settings";
+import { setSettings, type VolumeQuickPreferenceKey } from "../stores/settings";
 import type { Position } from "../types/components/votButton";
 import type {
   Account,
@@ -71,6 +71,7 @@ import { votStorage } from "../utils/storage";
 import { isPiPAvailable } from "../utils/utils";
 import type { VideoHandler } from "../VideoHandler";
 import { normalizeMediaProxyHost } from "../videoHandler/modules/proxyShared";
+import { normalizeTranslationOffset } from "../videoHandler/volumePreferences";
 import { render } from "./solid/renderer";
 
 type SettingsControllerProps = {
@@ -107,6 +108,7 @@ type SettingsControllerEventMap = {
 };
 
 type BufferedNumericStorageKey =
+  | "translationVolumeOffset"
   | "autoVolume"
   | "smartDuckingStrength"
   | "subtitlesMaxLength"
@@ -257,6 +259,35 @@ export class SettingsController {
     this.updateAccountInfo();
   }
 
+  setVolumePreference(key: VolumeQuickPreferenceKey, checked: boolean): void {
+    this.createPersistedSettingHandler({
+      storageKey: key,
+      apply: () => {
+        setSettings(key, checked);
+        if (
+          key === "syncVolume" &&
+          checked &&
+          this.data.autoVolumeMode === "adaptive"
+        ) {
+          this.data.autoVolumeMode = "hold";
+          this.data.enabledSmartDucking = false;
+          setSettings("autoVolumeMode", "hold");
+          setSettings("enabledSmartDucking", false);
+          void votStorage.set("autoVolumeMode", "hold");
+          void votStorage.set("enabledSmartDucking", false);
+        }
+        if (key === "syncVolume")
+          this.events["change:syncVolume"].dispatch(checked);
+        if (key === "audioBooster")
+          this.events["change:audioBooster"].dispatch(checked);
+        if (key !== "audioBooster") {
+          this.videoHandler?.setupAudioSettings?.();
+          this.videoHandler?.refreshVolumeLink?.();
+        }
+      },
+    })(checked);
+  }
+
   initUI() {
     if (this.isInitialized()) {
       throw new Error("[VOT] SettingsController is already initialized");
@@ -350,9 +381,17 @@ export class SettingsController {
           onDontTranslateByYTMusicChange: this.createPersistedSettingHandler({
             storageKey: "dontTranslateByYTMusic",
           }),
-          onEnabledAutoVolumeChange: this.createPersistedSettingHandler({
-            storageKey: "enabledAutoVolume",
-            afterPersist: () => this.videoHandler?.setupAudioSettings?.(),
+          onEnabledAutoVolumeChange: (checked) =>
+            this.setVolumePreference("enabledAutoVolume", checked),
+          onAutoVolumeModeSelect: this.createPersistedSettingHandler({
+            storageKey: "autoVolumeMode",
+            apply: (mode) => {
+              const smartDucking = mode === "adaptive" && !this.data.syncVolume;
+              this.data.enabledSmartDucking = smartDucking;
+              setSettings("enabledSmartDucking", smartDucking);
+              void votStorage.set("enabledSmartDucking", smartDucking);
+              this.videoHandler?.setupAudioSettings?.();
+            },
           }),
           onAutoVolumeInput: this.createBufferedNumericInputHandler({
             storageKey: "autoVolume",
@@ -371,16 +410,23 @@ export class SettingsController {
             dispatch: (checked) =>
               this.events["change:showVideoVolume"].dispatch(checked),
           }),
-          onAudioBoosterChange: this.createPersistedSettingHandler({
-            storageKey: "audioBooster",
-            dispatch: (checked) =>
-              this.events["change:audioBooster"].dispatch(checked),
-          }),
-          onSyncVolumeChange: this.createPersistedSettingHandler({
-            storageKey: "syncVolume",
-            dispatch: (checked) =>
-              this.events["change:syncVolume"].dispatch(checked),
-          }),
+          onAudioBoosterChange: (checked) =>
+            this.setVolumePreference("audioBooster", checked),
+          onSyncVolumeChange: (checked) =>
+            this.setVolumePreference("syncVolume", checked),
+          onTranslationVolumeOffsetInput: (value) => {
+            const normalized = normalizeTranslationOffset(value);
+            setSettings("translationVolumeOffset", normalized);
+            this.createBufferedNumericInputHandler({
+              storageKey: "translationVolumeOffset",
+              dispatch: () => this.videoHandler?.refreshVolumeLink?.(),
+            })(normalized);
+          },
+          onMuteTranslationWithOriginalChange:
+            this.createPersistedSettingHandler({
+              storageKey: "muteTranslationWithOriginal",
+              apply: () => this.videoHandler?.refreshVolumeLink?.(),
+            }),
           onDownloadWithNameChange: this.createPersistedSettingHandler({
             storageKey: "downloadWithName",
           }),
